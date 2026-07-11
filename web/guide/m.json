@@ -4,31 +4,31 @@
       "name": "Shahadah",
       "ar": "الشهادة",
       "icon": "📜",
-      "url": "https://raw.githack.com/olorono8/web/main/web/guide/shahada.html"
+      "url": "https://raw.githack.com/olorono8/web/main/web/guide/shahada.html?v=7"
     },
     {
       "name": "Salah",
       "ar": "الصلاة",
       "icon": "🕌",
-      "url": "https://raw.githack.com/olorono8/web/main/web/guide/salah.html"
+      "url": "https://raw.githack.com/olorono8/web/main/web/guide/salah.html?v=6"
     },
     {
       "name": "Sawm",
       "ar": "الصوم",
       "icon": "🌙",
-      "url": "https://en.wikipedia.org/wiki/Sawm"
+      "url": "#"
     },
     {
       "name": "Zakat",
       "ar": "الزكاة",
       "icon": "💰",
-      "url": "https://en.wikipedia.org/wiki/Zakat"
+      "url": "#"
     },
     {
       "name": "Hajj",
       "ar": "الحج",
       "icon": "🕋",
-      "url": "https://en.wikipedia.org/wiki/Hajj"
+      "url": "#"
     }
   ],
   "topics": [
@@ -37,63 +37,63 @@
       "desc": "Become Muslim — full guide",
       "icon": "📜",
       "tag": "Pillar 1",
-      "url": "https://raw.githack.com/olorono8/web/main/web/guide/shahada.html"
+      "url": "https://raw.githack.com/olorono8/web/main/web/guide/shahada.html?v=7"
     },
     {
       "name": "How to do Wudu",
       "desc": "Step-by-step ablution",
       "icon": "💧",
       "tag": "Essential",
-      "url": "https://raw.githack.com/olorono8/web/main/web/guide/wudu.html"
+      "url": "https://raw.githack.com/olorono8/web/main/web/guide/wudu.html?v=6"
     },
     {
       "name": "How to do Ghusl",
       "desc": "Ritual purification",
       "icon": "🚿",
       "tag": "Fard",
-      "url": "https://raw.githack.com/olorono8/web/main/web/guide/gusl.html"
+      "url": "https://raw.githack.com/olorono8/web/main/web/guide/gusl.html?v=6"
     },
     {
       "name": "Fajr Guide",
       "desc": "2 rakat with method",
       "icon": "🌅",
       "tag": "Daily",
-      "url": "https://raw.githack.com/olorono8/web/main/web/guide/salah.html"
+      "url": "https://raw.githack.com/olorono8/web/main/web/guide/salah.html?v=6"
     },
     {
       "name": "Complete Salah",
       "desc": "All prayers full guide",
       "icon": "📋",
       "tag": "Pillar",
-      "url": "https://raw.githack.com/olorono8/web/main/web/guide/salah.html"
+      "url": "https://raw.githack.com/olorono8/web/main/web/guide/salah.html?v=6"
     },
     {
       "name": "Ramadan Guide",
       "desc": "Suhoor · Iftar · Tarawih",
       "icon": "🌟",
       "tag": "Annual",
-      "url": "https://en.wikipedia.org/wiki/Ramadan"
+      "url": "#"
     },
     {
       "name": "Adhan & Iqamah",
       "desc": "Words & responses",
       "icon": "📢",
       "tag": "Sunnah",
-      "url": "https://en.wikipedia.org/wiki/Adhan"
+      "url": "#"
     },
     {
       "name": "Tayammum",
       "desc": "Dry purification",
       "icon": "🌍",
       "tag": "Rukhsah",
-      "url": "https://en.wikipedia.org/wiki/Tayammum"
+      "url": "#"
     },
     {
       "name": "Zakat Calculator",
       "desc": "Nisab & rules",
       "icon": "🧮",
       "tag": "Tool",
-      "url": "https://en.wikipedia.org/wiki/Zakat"
+      "url": "#"
     }
   ],
   "categories": [
@@ -101,73 +101,73 @@
       "name": "Quran Learning",
       "sub": "Recitation · Tajweed · Hifz",
       "color": "#22b589",
-      "url": "https://en.wikipedia.org/wiki/Quran"
+      "url": "#"
     },
     {
       "name": "Nikah (Marriage)",
       "sub": "Contract · Mahr · Wali",
       "color": "#4a9fd5",
-      "url": "https://en.wikipedia.org/wiki/Marriage_in_Islam"
+      "url": "#"
     },
     {
       "name": "Qurbani",
       "sub": "Sacrifice · Rules · Distribution",
       "color": "#c9992c",
-      "url": "https://en.wikipedia.org/wiki/Qurbani"
+      "url": "#"
     },
     {
       "name": "Aqeeqah",
       "sub": "Newborn Rituals · Naming",
       "color": "#c0614a",
-      "url": "https://en.wikipedia.org/wiki/Aqiqah"
+      "url": "#"
     },
     {
       "name": "Dua & Dhikr",
       "sub": "Daily Supplications",
       "color": "#8b82e0",
-      "url": "https://en.wikipedia.org/wiki/Dua"
+      "url": "#"
     },
     {
       "name": "Halal & Haram",
       "sub": "Food · Finance · Conduct",
       "color": "#5d9e30",
-      "url": "https://en.wikipedia.org/wiki/Halal"
+      "url": "#"
     },
     {
       "name": "Raising Muslim Kids",
       "sub": "Education · Values · Adab",
       "color": "#c05080",
-      "url": "https://en.wikipedia.org/wiki/Islamic_adab"
+      "url": "#"
     },
     {
       "name": "Taharah",
       "sub": "Wudu · Ghusl · Tayammum",
       "color": "#22b589",
-      "url": "https://raw.githack.com/olorono8/web/main/web/guide/wudu.html"
+      "url": "https://raw.githack.com/olorono8/web/main/web/guide/wudu.html?v=6"
     },
     {
       "name": "Akhlaq & Character",
       "sub": "Honesty · Patience · Kindness",
       "color": "#8a8680",
-      "url": "https://en.wikipedia.org/wiki/Islamic_ethics"
+      "url": "#"
     },
     {
       "name": "Janazah (Funeral)",
       "sub": "Ghusl · Kafan · Burial",
       "color": "#666462",
-      "url": "https://en.wikipedia.org/wiki/Islamic_funeral"
+      "url": "#"
     },
     {
       "name": "Aqeedah (Belief)",
       "sub": "Six Pillars of Faith",
       "color": "#8b82e0",
-      "url": "https://en.wikipedia.org/wiki/Aqidah"
+      "url": "#"
     },
     {
       "name": "Seerah of Prophet ﷺ",
       "sub": "Life · Battles · Legacy",
       "color": "#d06840",
-      "url": "https://en.wikipedia.org/wiki/Prophetic_biography"
+      "url": "#"
     }
   ]
 }
