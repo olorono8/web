@@ -832,10 +832,22 @@ render();
 // Dark mode listener for if it's set from index
 let isDark = window.matchMedia('(prefers-color-scheme:dark)').matches;
 try {
-  const g = localStorage.getItem('globalTheme');
-  if(g) isDark = g === 'dark';
+  const urlParams = new URLSearchParams(window.location.search);
+  const themeParam = urlParams.get('theme');
+  if (themeParam) {
+    isDark = themeParam === 'dark';
+  } else {
+    const g = localStorage.getItem('globalTheme');
+    if(g) isDark = g === 'dark';
+  }
 } catch(e){}
-if(isDark) document.documentElement.setAttribute('data-theme', 'dark');
+document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+
+window.addEventListener('message', (e) => {
+  if (e.data && e.data.type === 'set-theme') {
+    document.documentElement.setAttribute('data-theme', e.data.theme);
+  }
+});
 </script>
 </body>
 </html>

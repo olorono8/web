@@ -411,6 +411,10 @@ function toggleTheme(){
   applyTheme();
   localStorage.setItem('globalTheme', isDark ? 'dark' : 'light');
   localStorage.setItem('quranNightMode', (!isDark).toString());
+  const iframe = document.getElementById('contentIframe');
+  if (iframe && iframe.contentWindow) {
+    iframe.contentWindow.postMessage({ type: 'set-theme', theme: isDark ? 'dark' : 'light' }, '*');
+  }
 }
 window.toggleTheme = toggleTheme;
 
@@ -473,7 +477,13 @@ function bindInteractions() {
         const isOurFile = targetUrl.includes('githack.com') || targetUrl.includes('github.io');
         document.querySelector('.iframe-header').style.display = isOurFile ? 'none' : 'flex';
 
-        contentIframe.src = targetUrl;
+        let finalUrl = targetUrl;
+        if (isOurFile) {
+          const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+          finalUrl += (targetUrl.includes('?') ? '&' : '?') + 'theme=' + theme;
+        }
+
+        contentIframe.src = finalUrl;
         iframeModal.classList.add('show');
       }
     });
@@ -484,7 +494,7 @@ window.addEventListener('message', function(e) {
   if (e.data === 'close-iframe') {
     iframeModal.classList.remove('show');
     setTimeout(() => {
-      contentIframe.src = '';
+      contentIframe.removeAttribute('src');
       iframeTitle.innerText = 'Loading...';
     }, 350);
   }
@@ -493,7 +503,7 @@ window.addEventListener('message', function(e) {
 closeIframeBtn.addEventListener('click', () => {
   iframeModal.classList.remove('show');
   setTimeout(() => {
-    contentIframe.src = '';
+    contentIframe.removeAttribute('src');
     iframeTitle.innerText = 'Loading...';
   }, 350); 
 });
