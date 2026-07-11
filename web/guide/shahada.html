@@ -81,14 +81,15 @@ button{font-family:'Inter',sans-serif;cursor:pointer;border:none;outline:none;ba
   --check-bg:rgba(0,137,123,0.10);--check-bd:rgba(0,137,123,0.25);
 }
 
-html{background:var(--bg);}
-body{background:var(--bg);color:var(--t1);}
+html,body{height:100%;overflow:hidden;background:var(--bg);}
+body{color:var(--t1);}
 
 /* ── APP SHELL ── */
 #app{
+  position:fixed;inset:0;
   display:flex;flex-direction:column;
-  height:100%;
-  position:relative;
+  background:var(--bg);color:var(--t1);
+  transition:background var(--tr),color var(--tr);
 }
 
 /* ── TOPBAR ── */
@@ -382,9 +383,7 @@ body{background:var(--bg);color:var(--t1);}
 .fade-in{animation:fadeIn 0.25s ease forwards;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
 
-@media(min-width:600px){
-  #app{box-shadow:0 0 48px rgba(0,0,0,0.08);}
-}
+
 </style>
 </head>
 <body>
