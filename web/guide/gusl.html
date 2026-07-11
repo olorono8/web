@@ -860,33 +860,25 @@ function svgFeet(){return`
   </g>
 </svg>`;}
 
-/* ── THEME ICONS ── */
-const sunIcon = `<i class="fas fa-sun" style="font-size: clamp(12px, 3.5vw, 14px);"></i>`;
-const moonIcon = `<i class="fas fa-moon" style="font-size: clamp(12px, 3.5vw, 14px);"></i>`;
-
-/* ── THEME ── */
+// Dark mode listener for if it's set from index
 let isDark = window.matchMedia('(prefers-color-scheme:dark)').matches;
-(()=>{
-  try {
+try {
+  const urlParams = new URLSearchParams(window.location.search);
+  const themeParam = urlParams.get('theme');
+  if (themeParam) {
+    isDark = themeParam === 'dark';
+  } else {
     const g = localStorage.getItem('globalTheme');
-    if (g) isDark = g === 'dark';
-    else {
-      const q = localStorage.getItem('quranNightMode');
-      if (q) isDark = q !== 'true';
-    }
-  } catch(e) {}
-  applyTheme();
-})();
+    if(g) isDark = g === 'dark';
+  }
+} catch(e){}
+document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
 
-function applyTheme(){
-  document.documentElement.setAttribute('data-theme', isDark?'dark':'light');
-  document.getElementById('themeIcon').innerHTML = isDark ? sunIcon : moonIcon;
-}
-function toggleTheme(){
-  isDark=!isDark; applyTheme();
-  localStorage.setItem('globalTheme', isDark ? 'dark' : 'light');
-  localStorage.setItem('quranNightMode', (!isDark).toString());
-}
+window.addEventListener('message', (e) => {
+  if (e.data && e.data.type === 'set-theme') {
+    document.documentElement.setAttribute('data-theme', e.data.theme);
+  }
+});
 
 /* ── STATE ── */
 let current = 0;
