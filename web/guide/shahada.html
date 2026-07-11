@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
+<script>
+(function(){
+  var isDark = window.matchMedia('(prefers-color-scheme:dark)').matches;
+  try {
+    var p = new URLSearchParams(window.location.search).get('theme');
+    if (p) { isDark = p === 'dark'; }
+    else { var g = localStorage.getItem('globalTheme'); if(g) isDark = g === 'dark'; }
+  } catch(e){}
+  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+})();
+</script>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"/>
 <meta name="mobile-web-app-capable" content="yes"/>
