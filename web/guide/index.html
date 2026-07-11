@@ -409,6 +409,9 @@ body{background:var(--bg);color:var(--t1);transition:background var(--tr),color 
 </div>
 
 <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
 const sunIcon=`<i class="fas fa-sun" style="font-size: clamp(12px, 3.5vw, 14px);"></i>`;
 const moonIcon=`<i class="fas fa-moon" style="font-size: clamp(12px, 3.5vw, 14px);"></i>`;
 
@@ -540,8 +543,6 @@ closeIframeBtn.addEventListener('click', () => {
 });
 
 // ── FIREBASE FETCH LOGIC ──
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
