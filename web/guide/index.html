@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<title>Muslim Knowledge Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.31.0/iconfont/tabler-icons.min.css"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<style>
+/* ── RESET ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{min-height:100%;}
+body{
+  font-family:'Inter',sans-serif;
+  -webkit-font-smoothing:antialiased;
+  user-select:none;-webkit-user-select:none;
+}
+button,a{font-family:'Inter',sans-serif;cursor:pointer;border:none;outline:none;background:none;text-decoration:none;}
+
+/* ── TOKENS ── */
+:root{
+  --teal:#00897b;--teal-d:#00564e;--teal-l:#4db6ac;
+  --gold:#ffb300;
+  --r:14px;--rp:100px;
+  --tr:0.28s cubic-bezier(0.4,0,0.2,1);
+  --sat:env(safe-area-inset-top,0px);
+  --sab:env(safe-area-inset-bottom,0px);
+}
+[data-theme="light"]{
+  --bg:#f0efea;--surf:#fff;--surf2:#f5f4ef;
+  --bd:rgba(0,0,0,0.07);
+  --t1:#111;--t2:#555;--t3:#999;
+  --hero:linear-gradient(145deg,#00352c 0%,#00897b 60%,#26a69a 100%);
+  --nb:rgba(255,255,255,0.95);--nbl:blur(20px) saturate(1.8);
+  --sh:0 2px 16px rgba(0,86,78,0.06);
+  --pill:rgba(0,137,123,0.10);--pillt:#00564e;
+}
+[data-theme="dark"]{
+  --bg:#1e1e1e;--surf:#2c2c2c;--surf2:#353535;
+  --bd:rgba(255,255,255,0.07);
+  --t1:#f0f0f0;--t2:#a0a0a0;--t3:#606060;
+  --hero:linear-gradient(145deg,#181818 0%,#263532 60%,#1e2e2c 100%);
+  --nb:rgba(28,28,28,0.95);--nbl:blur(20px) saturate(1.4);
+  --sh:0 2px 16px rgba(0,0,0,0.40);
+  --pill:rgba(77,182,172,0.14);--pillt:#4db6ac;
+}
+
+/* Apply bg/color via theme on html so it covers full viewport */
+html{background:var(--bg);}
+body{background:var(--bg);color:var(--t1);transition:background var(--tr),color var(--tr);}
+
+/* ── APP SHELL — natural scroll, centered column ── */
+#app{
+  display:flex;
+  flex-direction:column;
+  min-height:100vh;
+  max-width:680px;
+  margin:0 auto;
+}
+
+/* ── TOPBAR — sticky ── */
+.topbar{
+  position:sticky;top:0;z-index:200;
+  flex-shrink:0;
+  padding:20px 16px 8px;
+  background:transparent;
+  border-bottom:none;
+  display:flex;align-items:center;gap:8px;
+  pointer-events:none;
+}
+.topbar button {
+  pointer-events:auto;
+}
+.tb-left{display:flex;align-items:center;gap:8px;flex:1;min-width:0;}
+.tb-right{display:flex;align-items:center;justify-content:flex-end;flex-shrink:0;}
+.tb-back{
+  width:clamp(26px, 6vw, 32px);height:clamp(26px, 6vw, 32px);border-radius:50%;background:transparent;
+  color:var(--t1);display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.tb-back svg{width:clamp(12px, 3.5vw, 14px);height:clamp(12px, 3.5vw, 14px);}
+.topbar-title{
+  font-size:15px;font-weight:700;letter-spacing:-0.3px;
+  color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.tb-theme-btn{
+  width:clamp(26px, 6vw, 32px);height:clamp(26px, 6vw, 32px);border-radius:50%;
+  background:transparent;color:var(--t1);
+  display:flex;align-items:center;justify-content:center;
+  transition:color var(--tr);flex-shrink:0;
+}
+.tb-theme-btn svg{width:clamp(12px, 3.5vw, 14px);height:clamp(12px, 3.5vw, 14px);}
+
+/* Hide title on very small phones to avoid topbar overflow */
+@media(max-width:359px){.topbar-title{display:none;}}
+
+/* ── MAIN CONTENT AREA ── */
+.main{
+  flex:1;
+  padding:14px 14px calc(var(--sab) + 40px);
+  display:flex;flex-direction:column;gap:14px;
+}
+
+/* ── HERO STRIP ── */
+.hero-strip{
+  background:var(--hero);border-radius:var(--r);
+  padding:16px 14px;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:10px;position:relative;overflow:hidden;box-shadow:var(--sh);
+}
+.hero-strip::before{
+  content:'';position:absolute;top:-30px;right:-30px;
+  width:100px;height:100px;border-radius:50%;
+  background:rgba(255,255,255,0.05);
+}
+.hero-left{flex:1;min-width:0;}
+.hero-en{font-size:18px;font-weight:700;color:#fff;letter-spacing:-0.4px;line-height:1.2;}
+.hero-sub{font-size:11px;color:rgba(255,255,255,0.65);margin-top:4px;line-height:1.4;}
+.hero-ar{
+  font-family:'Amiri',serif;font-size:18px;color:rgba(255,255,255,0.9);
+  direction:rtl;flex-shrink:0;line-height:1.3;
+  padding-left:8px;
+}
+
+/* ── STATS ROW ── */
+.stats{display:flex;gap:8px;}
+.stat{
+  flex:1;background:var(--surf);border:1px solid var(--bd);
+  border-radius:12px;padding:10px 4px;text-align:center;
+  box-shadow:var(--sh);transition:background var(--tr),border-color var(--tr);
+  min-width:0;
+}
+.stat-n{font-size:17px;font-weight:700;color:var(--teal);}
+.stat-l{font-size:8px;color:var(--t2);text-transform:uppercase;letter-spacing:0.3px;margin-top:3px;line-height:1.3;word-break:break-word;padding:0 2px;}
+
+/* ── SEARCH BAR ── */
+.search-wrap{position:relative;}
+.search-input{
+  width:100%;background:var(--surf);border:1px solid var(--bd);
+  border-radius:var(--rp);padding:11px 16px 11px 42px;
+  color:var(--t1);font-family:inherit;font-size:14px;
+  box-shadow:var(--sh);outline:none;transition:border-color var(--tr),box-shadow var(--tr);
+  -webkit-appearance:none;
+}
+.search-input::placeholder{color:var(--t3);}
+.search-input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(0,137,123,0.15);}
+.search-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--t3);font-size:17px;pointer-events:none;}
+
+/* ── SECTION LABELS ── */
+.sec-label{font-size:14px;font-weight:700;color:var(--t1);letter-spacing:-0.2px;}
+
+/* ── PILLARS — horizontal scroll ── */
+.pillars-wrap{
+  overflow:visible;
+}
+.pillars{
+  display:flex;gap:10px;
+  overflow-x:auto;
+  overflow-y:visible;
+  padding-bottom:6px;
+  margin:0 -14px;
+  padding-left:14px;
+  padding-right:14px;
+  scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
+}
+.pillars::-webkit-scrollbar{display:none;}
+.pillar{
+  flex:0 0 clamp(70px, 22vw, 80px);
+  background:var(--surf);border:1px solid var(--bd);
+  border-radius:12px;padding:clamp(8px, 3vw, 12px) 6px;text-align:center;
+  box-shadow:var(--sh);transition:transform 0.18s,box-shadow 0.18s;
+  min-width:clamp(70px, 22vw, 80px);
+}
+.pillar:active{transform:scale(0.93);}
+.pillar-ico{font-size:clamp(18px, 6vw, 22px);display:block;margin-bottom:5px;}
+.pillar-name{font-size:clamp(10px, 3.2vw, 11.5px);font-weight:600;color:var(--t1);white-space:nowrap;}
+.pillar-ar{font-family:'Amiri',serif;font-size:clamp(9.5px, 3vw, 11px);color:var(--t3);margin-top:2px;white-space:nowrap;}
+
+/* ── QUICK ESSENTIALS GRID ── */
+.topics{display:grid;grid-template-columns:repeat(auto-fit, minmax(min(100%, 135px), 1fr));gap:clamp(6px, 2vw, 8px);}
+.topic-card{
+  display:flex;align-items:flex-start;gap:clamp(6px, 2vw, 8px);
+  background:var(--surf);border:1px solid var(--bd);border-radius:12px;padding:clamp(7px, 2.5vw, 9px) clamp(8px, 3vw, 10px);
+  box-shadow:var(--sh);transition:transform 0.18s;
+}
+.topic-card:active{transform:scale(0.95);}
+.topic-ico{
+  font-size:clamp(13px, 4vw, 15px);flex-shrink:0;background:var(--pill);
+  width:clamp(24px, 7vw, 28px);height:clamp(24px, 7vw, 28px);display:flex;align-items:center;
+  justify-content:center;border-radius:8px;
+}
+.topic-body{flex:1;min-width:0;}
+.topic-name{font-size:clamp(10.5px, 3.2vw, 11.5px);font-weight:600;color:var(--t1);line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.topic-desc{font-size:clamp(8.5px, 2.8vw, 9.5px);color:var(--t2);margin-top:2px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.topic-tag{
+  display:inline-block;font-size:clamp(8px, 2.5vw, 9px);font-weight:700;color:var(--teal);
+  background:var(--pill);padding:2px 5px;border-radius:4px;margin-top:5px;
+}
+
+/* ── EXPLORE CATEGORIES LIST ── */
+.cats{display:flex;flex-direction:column;gap:clamp(5px, 1.5vw, 7px);}
+.cat{
+  display:flex;align-items:center;gap:clamp(8px, 3vw, 12px);background:var(--surf);
+  border:1px solid var(--bd);border-radius:12px;padding:clamp(9px, 3vw, 11px) clamp(10px, 3.5vw, 13px);
+  box-shadow:var(--sh);transition:transform 0.18s;
+}
+.cat:active{transform:scale(0.975);}
+.cat-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.cat-info{flex:1;min-width:0;}
+.cat-name{font-size:clamp(12px, 3.8vw, 13.5px);font-weight:600;color:var(--t1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cat-sub{font-size:clamp(9.5px, 3vw, 10.5px);color:var(--t2);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.cat-arr{color:var(--t3);font-size:16px;flex-shrink:0;}
+
+/* ── TOAST NOTIFICATION ── */
+#toast {
+  position: fixed;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%) translateY(100px);
+  background: var(--surf);
+  color: var(--t1);
+  padding: 14px 24px;
+  border-radius: 50px;
+  box-shadow: var(--sh);
+  font-size: 14px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--bd);
+  opacity: 0;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 1000;
+  pointer-events: none;
+  white-space: nowrap;
+}
+#toast.show {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+#toast i {
+  color: var(--teal);
+  font-size: 18px;
+}
+
+/* ── IFRAME MODAL (CANVAS) ── */
+.iframe-modal {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background: var(--bg); z-index: 9999; display: flex; flex-direction: column;
+  transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+  pointer-events: none;
+}
+.iframe-modal.show { transform: translateY(0); pointer-events: auto; }
+.iframe-header {
+  display: flex; align-items: center; padding: 16px; padding-top: calc(16px + var(--sat));
+  background: var(--surf); border-bottom: 1px solid var(--bd); box-shadow: var(--sh);
+}
+.iframe-close {
+  width: clamp(28px, 7vw, 34px); height: clamp(28px, 7vw, 34px); border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--pill); color: var(--t1); margin-right: 12px; flex-shrink: 0; cursor: pointer;
+}
+.iframe-close svg { width: 16px; height: 16px; }
+.iframe-title {
+  font-weight: 600; color: var(--t1); font-size: 15px; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+}
+.iframe-content { flex: 1; width: 100%; background: var(--surf2); }
+.iframe-content iframe { width: 100%; height: 100%; border: none; }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.page-anim{animation:fadeIn 0.35s ease both;}
+
+/* ── TABLET ── */
+@media(min-width:600px){
+  #app{box-shadow:0 0 48px rgba(0,0,0,0.08);}
+  .main{padding:18px 22px calc(var(--sab) + 48px);gap:18px;}
+  .topbar{padding-left:22px;padding-right:22px;}
+  .hero-en{font-size:20px;}
+  .hero-sub{font-size:12px;}
+  .hero-ar{font-size:20px;}
+  .stat-n{font-size:20px;}
+  .stat-l{font-size:9px;}
+  .pillar{flex:0 0 90px;min-width:90px;}
+  .pillar-ico{font-size:24px;}
+  .pillar-name{font-size:12px;}
+  .topics{grid-template-columns:repeat(3,1fr);}
+  .topic-name{font-size:13px;}
+  .topic-desc{font-size:11px;}
+  .cat-name{font-size:14px;}
+  .cat-sub{font-size:11px;}
+  .sec-label{font-size:15px;}
+}
+
+/* ── DESKTOP ── */
+@media(min-width:1024px){
+  #app{max-width:760px;}
+  .main{padding:24px 28px 64px;gap:22px;}
+  .hero-en{font-size:22px;}
+  .topics{grid-template-columns:repeat(4,1fr);}
+  .pillar{flex:0 0 100px;min-width:100px;}
+}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <header class="topbar">
+    <div class="tb-left">
+      <button class="tb-back" onclick="window.location.href='../index.html'" aria-label="Go back">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+        </svg>
+      </button>
+    </div>
+    <div class="tb-right">
+      <button class="tb-theme-btn" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span id="themeIcon"></span>
+      </button>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <div class="hero-strip page-anim">
+      <div class="hero-left">
+        <h2 class="hero-en">Muslim Knowledge</h2>
+        <div class="hero-sub">A comprehensive reference for faith, worship, and daily life.</div>
+      </div>
+      <div class="hero-ar" aria-hidden="true">بِسْمِ اللَّهِ</div>
+    </div>
+
+    <div class="stats page-anim">
+      <div class="stat"><div class="stat-n">5</div><div class="stat-l">Pillars of Islam</div></div>
+      <div class="stat"><div class="stat-n">6</div><div class="stat-l">Pillars of Faith</div></div>
+      <div class="stat"><div class="stat-n">25+</div><div class="stat-l">Topics</div></div>
+      <div class="stat"><div class="stat-n">114</div><div class="stat-l">Surahs</div></div>
+    </div>
+
+    <div class="search-wrap page-anim">
+      <i class="ti ti-search search-icon"></i>
+      <input id="si" class="search-input" placeholder="Search Wudu, Zakat, Nikah…" autocomplete="off"/>
+    </div>
+
+    <div class="sec-label page-anim">Five Pillars of Islam</div>
+    <!-- pillars-wrap is the animated element; .pillars handles overflow-x scroll -->
+    <div class="pillars-wrap page-anim">
+      <div class="pillars" id="pillarsContainer">
+        <span style="font-size:12px; color:var(--t3); padding:10px;">Loading data...</span>
+      </div>
+    </div>
+
+    <div class="sec-label page-anim">Quick Essentials</div>
+    <div class="topics page-anim" id="topicsContainer">
+      <span style="font-size:12px; color:var(--t3); padding:10px;">Loading data...</span>
+    </div>
+
+    <div class="sec-label page-anim">Explore Categories</div>
+    <div class="cats page-anim" id="catsContainer">
+      <span style="font-size:12px; color:var(--t3); padding:10px;">Loading data...</span>
+    </div>
+
+  </main>
+</div>
+
+<div id="toast"><i class="fas fa-heart"></i> <span>Coming soon In sha Allah. Support us!</span></div>
+
+<!-- IFRAME MODAL OVERLAY -->
+<div id="iframeModal" class="iframe-modal">
+  <div class="iframe-header">
+    <button class="iframe-close" id="closeIframe" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+    <span class="iframe-title" id="iframeTitle">Loading...</span>
+  </div>
+  <div class="iframe-content">
+    <iframe id="contentIframe" src="" frameborder="0"></iframe>
+  </div>
+</div>
+
+<script type="module">
+const sunIcon=`<i class="fas fa-sun" style="font-size: clamp(12px, 3.5vw, 14px);"></i>`;
+const moonIcon=`<i class="fas fa-moon" style="font-size: clamp(12px, 3.5vw, 14px);"></i>`;
+
+let isDark=window.matchMedia('(prefers-color-scheme:dark)').matches;
+(()=>{
+  try {
+    const g = localStorage.getItem('globalTheme');
+    if (g) isDark = g === 'dark';
+    else {
+      const q = localStorage.getItem('quranNightMode');
+      if (q) isDark = q !== 'true';
+    }
+  } catch(e) {}
+  applyTheme();
+})();
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme',isDark?'dark':'light');
+  document.getElementById('themeIcon').innerHTML=isDark?sunIcon:moonIcon;
+}
+function toggleTheme(){
+  isDark=!isDark;
+  applyTheme();
+  localStorage.setItem('globalTheme', isDark ? 'dark' : 'light');
+  localStorage.setItem('quranNightMode', (!isDark).toString());
+}
+window.toggleTheme = toggleTheme;
+
+// ── SEARCH FUNCTIONALITY ──
+document.getElementById('si').addEventListener('input', function(e) {
+  const term = e.target.value.toLowerCase().trim();
+  const items = document.querySelectorAll('.pillar, .topic-card, .cat');
+  
+  items.forEach(item => {
+    const text = item.innerText.toLowerCase();
+    item.style.display = text.includes(term) ? '' : 'none';
+  });
+
+  const sections = [
+    { label: document.querySelectorAll('.sec-label')[0], wrap: document.querySelector('.pillars-wrap'), container: document.querySelector('.pillars') },
+    { label: document.querySelectorAll('.sec-label')[1], wrap: document.querySelector('.topics'), container: document.querySelector('.topics') },
+    { label: document.querySelectorAll('.sec-label')[2], wrap: document.querySelector('.cats'), container: document.querySelector('.cats') }
+  ];
+
+  sections.forEach(sec => {
+    if (sec.label && sec.container && sec.wrap) {
+      const allHidden = Array.from(sec.container.children).every(child => child.style.display === 'none');
+      const shouldHide = allHidden && term !== '';
+      sec.label.style.display = shouldHide ? 'none' : '';
+      sec.wrap.style.display = shouldHide ? 'none' : '';
+    }
+  });
+});
+
+// ── TOAST FOR "#" LINKS ──
+const toast = document.getElementById('toast');
+let toastTimeout;
+
+// ── IFRAME MODAL LOGIC ──
+const iframeModal = document.getElementById('iframeModal');
+const contentIframe = document.getElementById('contentIframe');
+const closeIframeBtn = document.getElementById('closeIframe');
+const iframeTitle = document.getElementById('iframeTitle');
+
+function bindInteractions() {
+  document.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', function(e) {
+      const targetUrl = this.getAttribute('href');
+      
+      if (!targetUrl || targetUrl === '#') {
+        e.preventDefault();
+        toast.classList.add('show');
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+          toast.classList.remove('show');
+        }, 3000);
+        return;
+      }
+
+      if (targetUrl.startsWith('http')) {
+        e.preventDefault();
+        const titleElement = this.querySelector('.topic-name, .pillar-name, .cat-name');
+        iframeTitle.innerText = titleElement ? titleElement.innerText : 'Guide';
+        contentIframe.src = targetUrl;
+        iframeModal.classList.add('show');
+      }
+    });
+  });
+}
+
+closeIframeBtn.addEventListener('click', () => {
+  iframeModal.classList.remove('show');
+  setTimeout(() => {
+    contentIframe.src = '';
+    iframeTitle.innerText = 'Loading...';
+  }, 350); 
+});
+
+// ── FIREBASE FETCH LOGIC ──
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyB6juW4LLMyLSWf8nFcStatpaIKEMAv7m4",
+  authDomain: "jee-dahr.firebaseapp.com",
+  databaseURL: "https://jee-dahr-default-rtdb.firebaseio.com",
+  projectId: "jee-dahr",
+  storageBucket: "jee-dahr.firebasestorage.app",
+  messagingSenderId: "766094664775",
+  appId: "1:766094664775:web:3d35b46d171cf9802dbd62",
+  
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+function renderData(data) {
+  if (data.pillars) {
+    document.getElementById('pillarsContainer').innerHTML = data.pillars.map(p => `
+      <a class="pillar" href="${p.url}">
+        <span class="pillar-ico">${p.icon}</span>
+        <div class="pillar-name">${p.name}</div>
+        <div class="pillar-ar">${p.ar}</div>
+      </a>
+    `).join('');
+  }
+
+  if (data.topics) {
+    document.getElementById('topicsContainer').innerHTML = data.topics.map(t => `
+      <a class="topic-card" href="${t.url}">
+        <span class="topic-ico">${t.icon}</span>
+        <div class="topic-body">
+          <div class="topic-name">${t.name}</div>
+          <div class="topic-desc">${t.desc}</div>
+          <div class="topic-tag">${t.tag}</div>
+        </div>
+      </a>
+    `).join('');
+  }
+
+  if (data.categories) {
+    document.getElementById('catsContainer').innerHTML = data.categories.map(c => `
+      <a class="cat" href="${c.url}">
+        <div class="cat-dot" style="background:${c.color || '#22b589'}"></div>
+        <div class="cat-info">
+          <div class="cat-name">${c.name}</div>
+          <div class="cat-sub">${c.sub}</div>
+        </div>
+        <i class="ti ti-chevron-right cat-arr"></i>
+      </a>
+    `).join('');
+  }
+
+  bindInteractions();
+}
+
+async function loadDynamicContent() {
+  // 1. Instantly load from local device storage (works fully offline)
+  const cachedData = localStorage.getItem('offlineGuideData');
+  if (cachedData) {
+    try {
+      renderData(JSON.parse(cachedData));
+    } catch(e) { console.error("Cache error", e); }
+  }
+
+  // 2. Silently fetch from Firebase in background to keep data fresh
+  try {
+    const snapshot = await get(ref(db, '/'));
+    if (snapshot.exists()) {
+      const data = snapshot.val();
+      const newDataStr = JSON.stringify(data);
+      
+      // If data is new or changed, update cache and refresh the screen
+      if (newDataStr !== cachedData) {
+        localStorage.setItem('offlineGuideData', newDataStr);
+        renderData(data);
+      }
+    }
+  } catch (error) {
+    console.error("Failed to fetch fresh data (probably offline):", error);
+    // If there is no cache and no internet, show error text
+    if (!cachedData) {
+      document.getElementById('pillarsContainer').innerHTML = '<span style="color:var(--t2); font-size:12px; padding:10px;">Connect to internet to load data for the first time.</span>';
+    }
+  }
+}
+
+// Initial fetch
+loadDynamicContent();
+</script>
+<script src="shared.js"></script>
+</body>
+</html>

@@ -1,0 +1,1076 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<title>Wudu Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{
+  font-family:'Inter',sans-serif;
+  -webkit-font-smoothing:antialiased;
+  overscroll-behavior:none;
+  user-select:none;-webkit-user-select:none;
+}
+/* Allow text selection inside the reference drawer */
+.drawer,.drawer-scroll,.ref-card,.ref-arabic,.ref-translation,.ref-note{
+  user-select:text;-webkit-user-select:text;
+}
+button{font-family:'Inter',sans-serif;cursor:pointer;border:none;outline:none;background:none;}
+
+/* Accessibility: Screen-reader only class */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+
+/* ── TOKENS ── */
+:root{
+  --teal:#00897b;--teal-d:#00564e;--teal-l:#4db6ac;
+  --gold:#ffb300;
+  --r:16px;--rp:100px;
+  --tr:0.28s cubic-bezier(0.4,0,0.2,1);
+  --sat:env(safe-area-inset-top,0px);
+  --sab:env(safe-area-inset-bottom,0px);
+}
+[data-theme="light"]{
+  --bg:#f0efea;--surf:#fff;--surf2:#f5f4ef;
+  --bd:rgba(0,0,0,0.07);--bd2:rgba(0,0,0,0.05);
+  --t1:#111;--t2:#555;--t3:#999;
+  --hero:linear-gradient(145deg,#00352c 0%,#00897b 60%,#26a69a 100%);
+  --nb:rgba(255,255,255,0.94);--nbl:blur(20px) saturate(1.8);
+  --sh:0 2px 16px rgba(0,86,78,0.10);
+  --pill:rgba(0,137,123,0.10);--pillt:#00564e;
+  --tip:#fffbeb;--tipb:#ffb300;--tipt:#92400e;
+  --dotbg:#e0dfd9;--dotd:#b2ece5;
+  --tgbg:#e0dfd9;
+  --abg:linear-gradient(150deg,#e0f7f4,#f0faf9);
+}
+[data-theme="dark"]{
+  --bg:#222;--surf:#2c2c2c;--surf2:#353535;
+  --bd:rgba(255,255,255,0.07);--bd2:rgba(255,255,255,0.04);
+  --t1:#f0f0f0;--t2:#a0a0a0;--t3:#606060;
+  --hero:linear-gradient(145deg,#181818 0%,#263532 60%,#1e2e2c 100%);
+  --nb:rgba(30,30,30,0.94);--nbl:blur(20px) saturate(1.4);
+  --sh:0 2px 16px rgba(0,0,0,0.40);
+  --pill:rgba(77,182,172,0.14);--pillt:#4db6ac;
+  --tip:rgba(255,179,0,0.07);--tipb:#ffb300;--tipt:#fcd34d;
+  --dotbg:#383838;--dotd:#1a3330;
+  --tgbg:#383838;
+  --abg:linear-gradient(150deg,#1c2c2b,#1a2220);
+}
+
+/* ── APP SHELL ── */
+#app{
+  position:fixed;inset:0;
+  display:flex;flex-direction:column;
+  background:var(--bg);color:var(--t1);
+  transition:background var(--tr),color var(--tr);
+}
+
+/* ── TOPBAR — 3-Column Mobile Safe Layout ── */
+.topbar{
+  flex-shrink:0;
+  padding:calc(var(--sat) + 8px) 14px 8px;
+  background:var(--nb);
+  backdrop-filter:var(--nbl);-webkit-backdrop-filter:var(--nbl);
+  border-bottom:1px solid var(--bd);
+  display:flex;align-items:center;justify-content:space-between;
+  gap:8px;
+  z-index:200;
+  transition:background var(--tr),border-color var(--tr);
+}
+
+.tb-left, .tb-right { display:flex; align-items:center; flex:1; }
+.tb-left { gap:10px; justify-content:flex-start; }
+.tb-right { justify-content:flex-end; }
+.tb-center { display:flex; justify-content:center; flex:2; }
+
+/* Back Arrow Button (No backgrounds or hover effects) */
+.tb-back {
+  width:clamp(26px, 6vw, 32px); height:clamp(26px, 6vw, 32px); border-radius:50%;
+  background:transparent; border:none;
+  color:var(--t1);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; outline: none;
+}
+.tb-back svg { width:clamp(12px, 3.5vw, 14px); height:clamp(12px, 3.5vw, 14px); }
+
+/* left: step dots */
+.step-dots{display:flex;gap:4px;align-items:center;}
+.step-dot{
+  width:22px;height:22px;border-radius:50%;
+  font-size:10px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.22s;color:var(--t3);
+  background:var(--dotbg);
+  flex-shrink:0;
+}
+.step-dot.done{background:var(--dotd);color:var(--teal);}
+.step-dot.active{
+  background:var(--teal);color:#fff;
+  transform:scale(1.2);
+  box-shadow:0 2px 8px rgba(0,137,123,0.40);
+}
+
+/* title */
+.topbar-title{
+  font-size:15px;font-weight:700;letter-spacing:-0.3px;
+  color:var(--t1);white-space:nowrap;
+  transition:color var(--tr);
+}
+
+/* right: theme toggle (Quran.html style) */
+.tb-theme-btn {
+  width:clamp(26px, 6vw, 32px); height:clamp(26px, 6vw, 32px); border-radius:50%;
+  background:transparent; border:none;
+  color:var(--t1);
+  display:flex; align-items:center; justify-content:center;
+  transition:color var(--tr); flex-shrink:0;
+}
+.tb-theme-btn svg { width:clamp(12px, 3.5vw, 14px); height:clamp(12px, 3.5vw, 14px); }
+
+/* Mobile safe hide for title */
+@media (max-width: 400px) {
+  .topbar-title { display: none; }
+  .step-dot { width: 20px; height: 20px; font-size: 9px; }
+  .tb-center { flex: 3; }
+}
+
+/* progress bar — ultra-thin under topbar */
+.prog-track{
+  flex-shrink:0;height:3px;background:var(--dotbg);
+  transition:background var(--tr);
+}
+.prog-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--teal),var(--gold));
+  transition:width 0.45s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ── MAIN CONTENT — no scroll, fills space ── */
+.main{
+  flex:1;display:flex;flex-direction:column;
+  overflow:hidden;padding:10px 14px 0;
+  gap:8px;
+  min-height:0; /* prevent flex overflow on some browsers */
+}
+
+/* Hero strip — compact horizontal bar */
+.hero-strip{
+  flex-shrink:0;
+  background:var(--hero);
+  border-radius:14px;
+  padding:10px 14px;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:10px;
+  position:relative;overflow:hidden;
+  box-shadow:var(--sh);
+}
+.hero-strip::before{
+  content:'';position:absolute;
+  top:-30px;right:-30px;width:100px;height:100px;
+  border-radius:50%;background:rgba(255,255,255,0.05);
+}
+.hero-en{font-size:18px;font-weight:700;color:#fff;letter-spacing:-0.4px;line-height:1.1;}
+.hero-sub{font-size:11px;color:rgba(255,255,255,0.55);font-style:italic;margin-top:2px;}
+.hero-ar{font-family:'Amiri',serif;font-size:17px;color:rgba(255,255,255,0.85);direction:rtl;line-height:1.3;flex-shrink:0;}
+.hero-chips{display:flex;gap:6px;margin-top:5px;flex-wrap:wrap;}
+.hero-chip{
+  background:rgba(255,255,255,0.14);
+  border-radius:var(--rp);padding:3px 9px;
+  font-size:10px;font-weight:600;color:rgba(255,255,255,0.88);
+  white-space:nowrap;
+}
+
+/* ── ANIMATION BOX ── */
+.anim-box{
+  flex:0 0 140px; /* fixed height so it never collapses or grows */
+  height:140px;
+  min-height:140px;
+  max-height:140px;
+  background:var(--abg);
+  border-radius:14px;
+  border:1px solid var(--bd);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+  box-shadow:var(--sh);
+}
+.anim-box::before{
+  content:'';position:absolute;
+  width:160px;height:160px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,137,123,0.10),transparent 70%);
+  top:50%;left:50%;transform:translate(-50%,-50%);
+}
+.anim-box svg{position:relative;z-index:1;filter:drop-shadow(0 3px 10px rgba(0,137,123,0.18));}
+.water-bars{
+  position:absolute;bottom:10px;left:50%;transform:translateX(-50%);
+  display:flex;gap:4px;align-items:flex-end;z-index:2;
+}
+.wb{width:3px;background:linear-gradient(0deg,var(--teal-l),var(--teal));border-radius:2px;opacity:0.5;animation:wbar 1.3s ease-in-out infinite;}
+.wb:nth-child(1){height:6px;animation-delay:0s;}
+.wb:nth-child(2){height:11px;animation-delay:0.15s;}
+.wb:nth-child(3){height:16px;animation-delay:0.3s;}
+.wb:nth-child(4){height:11px;animation-delay:0.45s;}
+.wb:nth-child(5){height:6px;animation-delay:0.6s;}
+@keyframes wbar{0%,100%{transform:scaleY(0.5)}50%{transform:scaleY(1.3)}}
+
+/* ── INFO PANEL ── */
+.info-panel{
+  flex:1;display:flex;flex-direction:column;
+  background:var(--surf);
+  border-radius:14px;border:1px solid var(--bd);
+  overflow:hidden;
+  box-shadow:var(--sh);
+  min-height:0; /* critical: allows flex child to shrink below content size */
+}
+.info-scroll{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  padding:12px 14px;
+  display:flex;flex-direction:column;gap:10px;
+  min-height:0;
+  overscroll-behavior:contain; /* prevents scroll chaining to parent */
+}
+.info-scroll::-webkit-scrollbar{width:3px;}
+.info-scroll::-webkit-scrollbar-thumb{background:var(--dotbg);border-radius:3px;}
+
+.desc-text{font-size:13.5px;line-height:1.72;color:var(--t2);transition:color var(--tr);}
+.desc-text strong { color:var(--teal); font-weight:600; }
+.tip-box{
+  background:var(--tip);
+  border-left:3px solid var(--tipb);
+  border-radius:0 9px 9px 0;
+  padding:9px 12px;
+  font-size:12.5px;line-height:1.62;
+  color:var(--tipt);
+  transition:background var(--tr),color var(--tr);
+  flex-shrink:0;
+}
+.tip-box strong{font-weight:700;}
+
+/* ── REFS BUTTON ── */
+.refs-btn{
+  display:flex;align-items:center;gap:7px;
+  background:linear-gradient(135deg,rgba(0,137,123,0.13),rgba(77,182,172,0.08));
+  border:1px solid rgba(0,137,123,0.22);
+  border-radius:10px;
+  padding:9px 13px;
+  color:var(--teal);font-size:12.5px;font-weight:600;
+  cursor:pointer;transition:all 0.2s;
+  flex-shrink:0;
+  backdrop-filter:blur(6px);
+}
+.refs-btn:hover{background:rgba(0,137,123,0.2);transform:translateY(-1px);}
+.refs-btn:active{transform:scale(0.97);}
+.refs-btn svg{width:15px;height:15px;flex-shrink:0;}
+
+/* ── SIDEBAR DRAWER ── */
+.drawer-overlay{
+  position:fixed;inset:0;z-index:600; /* above bottom-nav (z-index default) */
+  background:rgba(0,0,0,0.42);
+  backdrop-filter:blur(3px);
+  opacity:0;pointer-events:none;
+  transition:opacity 0.32s cubic-bezier(0.4,0,0.2,1);
+}
+.drawer-overlay.open{opacity:1;pointer-events:auto;}
+
+.drawer{
+  position:fixed;top:0;right:0;bottom:0;
+  width:min(88vw,360px);z-index:601; /* above overlay */
+  background:var(--surf);
+  border-left:1px solid var(--bd);
+  display:flex;flex-direction:column;
+  transform:translateX(100%);
+  transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);
+  box-shadow:-8px 0 40px rgba(0,0,0,0.18);
+}
+.drawer.open{transform:translateX(0);}
+
+.drawer-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:calc(var(--sat) + 14px) 16px 12px;
+  border-bottom:1px solid var(--bd);
+  flex-shrink:0;
+  background:var(--nb);
+  backdrop-filter:var(--nbl);-webkit-backdrop-filter:var(--nbl);
+}
+.drawer-title{
+  font-size:15px;font-weight:700;color:var(--t1);
+  display:flex;align-items:center;gap:8px;
+}
+.drawer-title-icon{
+  width:28px;height:28px;border-radius:8px;
+  background:linear-gradient(135deg,var(--teal-d),var(--teal));
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;
+}
+.drawer-close{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--surf2);border:1px solid var(--bd);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--t2);cursor:pointer;font-size:16px;
+  transition:all 0.18s;
+}
+.drawer-close:hover{background:rgba(0,137,123,0.12);color:var(--teal);}
+
+.drawer-scroll{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  padding:14px;
+  display:flex;flex-direction:column;gap:12px;
+  min-height:0;
+  overscroll-behavior:contain; /* stop scroll chaining out of drawer */
+}
+.drawer-scroll::-webkit-scrollbar{width:3px;}
+.drawer-scroll::-webkit-scrollbar-thumb{background:var(--dotbg);border-radius:3px;}
+
+/* Glass Reference Cards */
+.ref-card{
+  border-radius:14px;
+  border:1px solid var(--bd);
+  overflow:hidden;
+  backdrop-filter:blur(12px);
+  box-shadow:0 4px 20px rgba(0,0,0,0.06),0 1px 4px rgba(0,0,0,0.04);
+  transition:transform 0.2s,box-shadow 0.2s;
+  animation:fadeUp 0.4s cubic-bezier(0.4,0,0.2,1) both;
+}
+.ref-card:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,137,123,0.14);}
+.ref-card.quran{
+  background:linear-gradient(145deg,rgba(0,137,123,0.08),rgba(77,182,172,0.04));
+  border-color:rgba(0,137,123,0.2);
+}
+.ref-card.hadith{
+  background:linear-gradient(145deg,rgba(255,179,0,0.07),rgba(255,195,50,0.03));
+  border-color:rgba(255,179,0,0.2);
+}
+.ref-card-header{
+  display:flex;align-items:center;gap:8px;
+  padding:10px 12px 6px;
+}
+.ref-type-badge{
+  font-size:9.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 8px;border-radius:30px;
+}
+.ref-type-badge.quran{background:rgba(0,137,123,0.14);color:var(--teal);}
+.ref-type-badge.hadith{background:rgba(255,179,0,0.16);color:#a86a00;}
+[data-theme="dark"] .ref-type-badge.hadith{color:#ffcf5c;}
+.ref-source{
+  font-size:11px;font-weight:600;color:var(--t3);margin-left:auto;
+}
+.ref-arabic{
+  font-family:'Amiri',serif;
+  font-size:18px;line-height:1.8;
+  color:var(--t1);direction:rtl;text-align:right;
+  padding:6px 14px 10px;
+  border-bottom:1px solid var(--bd2);
+}
+.ref-translation{
+  font-size:12px;line-height:1.68;color:var(--t2);
+  padding:9px 12px;
+  font-style:italic;
+}
+.ref-note{
+  font-size:11px;color:var(--t3);padding:0 12px 10px;
+  line-height:1.55;
+}
+.refs-empty{
+  text-align:center;padding:30px 20px;
+  color:var(--t3);font-size:13px;
+}
+
+/* ── BOTTOM NAV — arrow circles only ── */
+.bottom-nav{
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 20px calc(var(--sab) + 12px);
+}
+.arrow-btn{
+  width:52px;height:52px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;
+  flex-shrink:0;
+}
+.arrow-btn svg{width:22px;height:22px;}
+.btn-back{
+  background:var(--surf);
+  border:1.5px solid var(--bd);
+  box-shadow:var(--sh);
+  color:var(--t2);
+}
+.btn-back:active{transform:scale(0.92);}
+.btn-back:disabled{opacity:0.28;pointer-events:none;}
+.btn-fwd{
+  background:linear-gradient(135deg,var(--teal-d),var(--teal));
+  color:#fff;
+  box-shadow:0 4px 16px rgba(0,137,123,0.42);
+}
+.btn-fwd:active{transform:scale(0.92);}
+.btn-fwd.final{background:linear-gradient(135deg,#b34500,var(--gold));box-shadow:0 4px 16px rgba(255,179,0,0.42);}
+
+/* step counter in center */
+.step-counter{
+  font-size:13px;font-weight:600;color:var(--t3);
+  letter-spacing:0.04em;
+  transition:color var(--tr);
+}
+
+/* ── COMPLETE SCREEN ── */
+.complete-scr{
+  display:none;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;
+  gap:16px;padding:20px;
+  flex:1;
+}
+.complete-scr.show{display:flex;}
+.c-icon{
+  width:84px;height:84px;border-radius:50%;
+  background:linear-gradient(135deg,var(--teal-d),var(--teal));
+  display:flex;align-items:center;justify-content:center;
+  font-size:36px;
+  box-shadow:0 6px 24px rgba(0,137,123,0.40);
+  animation:bounceIn 0.6s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+.c-h{font-family:'Amiri',serif;font-size:1.7rem;font-weight:700;color:var(--teal); animation:fadeUp 0.4s ease 0.1s both;}
+.c-dua {
+  background: var(--pill); padding: 16px; border-radius: 12px;
+  border: 1px solid var(--bd); animation:fadeUp 0.5s ease 0.2s both;
+}
+.c-ar{font-family:'Amiri',serif;font-size:1.4rem;color:var(--t1);direction:rtl; margin-bottom: 8px;}
+.c-en{font-size:13px;line-height:1.6;color:var(--t2);font-style: italic;}
+.c-p{font-size:14px;line-height:1.7;color:var(--t2);max-width:300px; animation:fadeUp 0.6s ease 0.3s both;}
+.btn-restart{
+  padding:13px 32px;border-radius:var(--r);
+  background:linear-gradient(135deg,var(--teal-d),var(--teal));
+  color:#fff;font-size:15px;font-weight:600;
+  box-shadow:0 4px 14px rgba(0,137,123,0.38);
+  animation:fadeUp 0.7s ease 0.4s both;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes stepFade{from{opacity:0;transform:scale(0.98)}to{opacity:1;transform:scale(1)}}
+@keyframes bounceIn{0%{transform:scale(0)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+.page-anim{animation:stepFade 0.35s cubic-bezier(0.4,0,0.2,1) both;}
+
+/* SVG keyframes */
+@keyframes pourWater{0%,100%{transform:translateY(0)}50%{transform:translateY(7px)}}
+@keyframes handWash{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(10deg)}}
+@keyframes ripple{0%{transform:scale(0.5);opacity:0.8}100%{transform:scale(2);opacity:0}}
+@keyframes dropFall{0%{transform:translateY(-6px);opacity:1}100%{transform:translateY(28px);opacity:0}}
+@keyframes wipeAnim{0%,100%{transform:translateX(-13px)}50%{transform:translateX(13px)}}
+@keyframes pulse{0%,100%{transform:scale(1);opacity:0.6}50%{transform:scale(1.07);opacity:1}}
+@keyframes feetBob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@keyframes earGlow{0%,100%{opacity:0.45}50%{opacity:1}}
+@keyframes heartbeat{0%,100%{transform:scale(1)}14%{transform:scale(1.18)}28%{transform:scale(1)}42%{transform:scale(1.1)}70%{transform:scale(1)}}
+@keyframes mouthRinse{0%,100%{transform:scaleX(1)}50%{transform:scaleX(1.18)}}
+@keyframes nosePulse{0%,100%{transform:scale(1)}50%{transform:scale(1.07)}}
+@keyframes faceWash{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div id="a11y-announcer" aria-live="polite" class="sr-only"></div>
+
+  <header class="topbar">
+    <div class="tb-left">
+      <button class="tb-back" onclick="window.location.href='./index.html'" aria-label="Go back">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+      </button>
+      <div class="topbar-title">Wudu Guide</div>
+    </div>
+
+    <div class="tb-center">
+      <div class="step-dots" id="stepDots"></div>
+    </div>
+
+    <div class="tb-right">
+      <button class="tb-theme-btn" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span id="themeIcon"></span>
+      </button>
+    </div>
+  </header>
+
+  <div class="prog-track">
+    <div class="prog-fill" id="progFill"></div>
+  </div>
+
+  <main class="main" id="mainArea">
+
+    <div id="pageContent" style="display:flex;flex-direction:column;gap:8px;flex:1;overflow:hidden;"></div>
+
+    <div class="complete-scr" id="completeScr">
+      <div class="c-icon" aria-hidden="true">🤲</div>
+      <div class="c-h">Wudu Complete!</div>
+      <div class="c-dua">
+        <div class="c-ar">أَشْهَدُ أَنْ لَا إِلَٰهَ إِلَّا ٱللَّٰهُ وَحْدَهُ لَا شَرِيكَ لَهُ، وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ</div>
+        <div class="c-en">"I bear witness that there is no deity but Allah alone, without partner, and I bear witness that Muhammad is His servant and messenger."</div>
+      </div>
+      <p class="c-p">You are now in a state of physical and spiritual purity <strong>(طَهَارَة)</strong> and ready for Salah.</p>
+      <button class="btn-restart" onclick="restart()">↺ Start Again</button>
+    </div>
+  </main>
+
+  <footer class="bottom-nav">
+    <button class="arrow-btn btn-back" id="btnBack" onclick="go(-1)" aria-label="Previous step">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </button>
+
+    <div class="step-counter" id="stepCounter">1 of 9</div>
+
+    <button class="arrow-btn btn-fwd" id="btnFwd" onclick="go(1)" aria-label="Next step">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6"/>
+      </svg>
+    </button>
+  </footer>
+
+</div>
+<script>
+/* ── DATA ── */
+const steps = [
+  {
+    title:"Intention & Basmalah",arabic:"نِيَّة وَبَسْمَلَة",trans:"Niyyah & Bismillah",
+    times:"Once (silent)",hand:"Heart & Tongue",
+    desc:"Make a sincere intention in your heart to perform wudu solely for the sake of Allah ﷻ. Then, say <strong>Bismillah</strong> (In the name of Allah) before you begin washing.",
+    tip:"Misconception: You do not need to say your intention aloud. The niyyah is an action of the heart. Saying Bismillah, however, is a highly recommended Sunnah.",
+    svgFn:svgNiyyah
+  },
+  {
+    title:"Wash Hands",arabic:"غَسْلُ الْيَدَيْن",trans:"Ghasl al-Yadayn",
+    times:"3× each",hand:"Right first",
+    desc:"Wash both hands up to and including the wrists three times each. Begin with the right hand. Interlace fingers to let water reach between them and cover every surface evenly.",
+    tip:"Ensure no dry spots remain. Remove watches or tight bracelets. Misconception: More water does not mean a better Wudu. Do not waste water (Israf).",
+    svgFn:svgHands
+  },
+  {
+    title:"Rinse Mouth",arabic:"الْمَضْمَضَة",trans:"Al-Madmadah",
+    times:"3× rinse",hand:"Right hand",
+    desc:"Take water with the right hand, swirl it vigorously around the teeth, gums and inner cheeks, then spit it out completely. Repeat three times.",
+    tip:"Using a Miswak (tooth stick) before or during this step brings immense reward and is a strong Sunnah of the Prophet ﷺ.",
+    svgFn:svgMouth
+  },
+  {
+    title:"Rinse Nostrils",arabic:"الاِسْتِنْشَاق",trans:"Al-Istinshaq",
+    times:"3× each",hand:"Right inhales · Left blows",
+    desc:"Sniff water into both nostrils with the right hand, then use the left hand to blow it out firmly. Repeat three times to clean the inside of the nose completely.",
+    tip:"If you are fasting, avoid sniffing the water deeply to ensure it does not accidentally reach the back of the throat.",
+    svgFn:svgNose
+  },
+  {
+    title:"Wash Face",arabic:"غَسْلُ الْوَجْه",trans:"Ghasl al-Wajh",
+    times:"3×",hand:"Both hands",
+    desc:"Wash the entire face three times — from the hairline at the forehead down to the chin, and horizontally from ear to ear. Water must reach every part of the face.",
+    tip:"Misconception: Waterproof makeup, sunscreen, and false eyelashes prevent water from reaching the skin, making Wudu invalid. They must be removed first.",
+    svgFn:svgFace
+  },
+  {
+    title:"Wash Arms",arabic:"غَسْلُ الذِّرَاعَيْن",trans:"Ghasl adh-Dhira'ayn",
+    times:"3× each",hand:"Right first",
+    desc:"Wash the right arm from the fingertips to just above the elbow three times. Then wash the left arm the same way. The entire elbow joint must be washed.",
+    tip:"Misconception: Nail polish creates a physical barrier over the nail. Because water cannot reach the nail bed, Wudu is incomplete. Use breathable/halal polish if necessary.",
+    svgFn:svgArms
+  },
+  {
+    title:"Wipe Head",arabic:"مَسْحُ الرَّأْس",trans:"Mash ar-Ra's",
+    times:"Once",hand:"Both hands",
+    desc:"With wet hands, wipe over the head once. Move from the front hairline to the back of the neck, then return both hands to the front. This is a wipe, not a wash.",
+    tip:"Women do not need to undo braids or wet the full length of long hair. Wiping from the front hairline to the nape of the neck is sufficient.",
+    svgFn:svgHead
+  },
+  {
+    title:"Wipe Ears",arabic:"مَسْحُ الأُذُنَيْن",trans:"Mash al-Udhunain",
+    times:"Once",hand:"Index fingers & thumbs",
+    desc:"Using the wetness remaining from wiping the head, insert your index fingers into the inner ear opening and use your thumbs to wipe the back of the ears simultaneously.",
+    tip:"You do not need to take fresh water for the ears. Use the remaining moisture left on your hands from wiping your head.",
+    svgFn:svgEars
+  },
+  {
+    title:"Wash Feet",arabic:"غَسْلُ الْقَدَمَيْن",trans:"Ghasl al-Qadamayn",
+    times:"3× each",hand:"Right first",
+    desc:"Wash the right foot including the ankle three times, passing the little finger of the left hand between each toe. Then wash the left foot the same way.",
+    tip:"If you put on leather socks (Khuffayn) or thick cotton socks while you already had Wudu, you may simply wipe over the top of them instead of washing your feet.",
+    svgFn:svgFeet
+  }
+];
+
+/* ── SVG ILLUSTRATIONS (Added aria-hidden="true") ── */
+function svgNiyyah(){return`
+<svg aria-hidden="true" width="150" height="150" viewBox="0 0 160 160" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="80" rx="72" ry="72" fill="rgba(0,137,123,0.07)"/>
+  <g style="transform-origin:80px 76px;animation:heartbeat 2.6s ease-in-out infinite">
+    <path d="M80 118C44 95 30 68 30 54c0-16 12-27 25-27 10 0 21 7 25 18 4-11 15-18 25-18 13 0 25 11 25 27 0 14-14 41-50 64z" fill="#00897b" opacity="0.9"/>
+    <path d="M62 72l10 12 26-24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
+  </g>
+  <circle cx="80" cy="80" r="68" fill="none" stroke="#4db6ac" stroke-width="1.5" opacity="0" style="animation:ripple 2.3s ease-out infinite;transform-origin:80px 80px"/>
+  <circle cx="80" cy="80" r="68" fill="none" stroke="#4db6ac" stroke-width="1"   opacity="0" style="animation:ripple 2.3s ease-out 0.9s infinite;transform-origin:80px 80px"/>
+  <text x="80" y="146" text-anchor="middle" font-family="Amiri,serif" font-size="11" fill="#00897b">بِسْمِ ٱللَّٰهِ</text>
+</svg>`;}
+
+function svgHands(){return`
+<svg aria-hidden="true" width="150" height="150" viewBox="0 0 160 155" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="148" rx="60" ry="8" fill="#4db6ac" opacity="0.2" style="animation:pulse 1.5s ease-in-out infinite"/>
+  <g style="transform-origin:56px 105px;animation:handWash 1.3s ease-in-out infinite">
+    <rect x="36" y="96" width="40" height="50" rx="12" fill="#f5c4b3" stroke="#d48060" stroke-width="1"/>
+    <rect x="41" y="78" width="9" height="28" rx="4.5" fill="#f5c4b3" stroke="#d48060" stroke-width="1"/>
+    <rect x="52" y="73" width="9" height="32" rx="4.5" fill="#f5c4b3" stroke="#d48060" stroke-width="1"/>
+    <rect x="63" y="76" width="9" height="29" rx="4.5" fill="#f5c4b3" stroke="#d48060" stroke-width="1"/>
+    <rect x="30" y="86" width="9" height="24" rx="4.5" fill="#f5c4b3" stroke="#d48060" stroke-width="1"/>
+    <g style="animation:dropFall 1s ease-in infinite"><ellipse cx="48" cy="140" rx="3" ry="5" fill="#00897b" opacity="0.75"/></g>
+    <g style="animation:dropFall 1s ease-in 0.38s infinite"><ellipse cx="62" cy="143" rx="2.5" ry="4" fill="#00897b" opacity="0.6"/></g>
+  </g>
+  <g style="transform-origin:104px 105px;animation:handWash 1.3s ease-in-out 0.65s infinite">
+    <rect x="84" y="96" width="40" height="50" rx="12" fill="#f0997b" stroke="#c0673a" stroke-width="1"/>
+    <rect x="88" y="78" width="9" height="28" rx="4.5" fill="#f0997b" stroke="#c0673a" stroke-width="1"/>
+    <rect x="99" y="73" width="9" height="32" rx="4.5" fill="#f0997b" stroke="#c0673a" stroke-width="1"/>
+    <rect x="110" y="76" width="9" height="29" rx="4.5" fill="#f0997b" stroke="#c0673a" stroke-width="1"/>
+    <rect x="121" y="86" width="9" height="24" rx="4.5" fill="#f0997b" stroke="#c0673a" stroke-width="1"/>
+    <g style="animation:dropFall 1s ease-in 0.2s infinite"><ellipse cx="96" cy="140" rx="3" ry="5" fill="#00897b" opacity="0.75"/></g>
+    <g style="animation:dropFall 1s ease-in 0.55s infinite"><ellipse cx="110" cy="143" rx="2.5" ry="4" fill="#00897b" opacity="0.6"/></g>
+  </g>
+</svg>`;}
+
+function svgMouth(){return`
+<svg aria-hidden="true" width="150" height="150" viewBox="0 0 160 158" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="80" rx="46" ry="56" fill="#fde8c8" stroke="#d4a055" stroke-width="1.2"/>
+  <path d="M38 60Q40 22 80 20Q120 22 122 60L122 44Q120 8 80 6Q40 8 38 44Z" fill="#6b3e1e" opacity="0.82"/>
+  <ellipse cx="65" cy="64" rx="7" ry="7.5" fill="white" stroke="#444" stroke-width="1"/>
+  <circle cx="66" cy="65" r="3.8" fill="#222"/>
+  <ellipse cx="95" cy="64" rx="7" ry="7.5" fill="white" stroke="#444" stroke-width="1"/>
+  <circle cx="96" cy="65" r="3.8" fill="#222"/>
+  <ellipse cx="80" cy="86" rx="7" ry="5" fill="#e8a07a"/>
+  <g style="transform-origin:80px 100px;animation:mouthRinse 1s ease-in-out infinite">
+    <path d="M66 100Q80 114 94 100" fill="#c97050" stroke="#a04a28" stroke-width="1.5" stroke-linecap="round"/>
+    <path d="M66 100Q80 92 94 100" fill="#e8a07a"/>
+  </g>
+  <g style="animation:dropFall 1.2s ease-in infinite">
+    <path d="M78 120Q80 110 82 120Q82 129 80 130Q78 129 78 120Z" fill="#00897b" opacity="0.82"/>
+  </g>
+  <g style="animation:dropFall 1.2s ease-in 0.42s infinite"><ellipse cx="70" cy="124" rx="2.5" ry="4" fill="#00897b" opacity="0.6"/></g>
+  <g style="animation:pourWater 1.5s ease-in-out infinite">
+    <rect x="106" y="52" width="28" height="12" rx="6" fill="#f0997b" stroke="#c0673a" stroke-width="1"/>
+    <rect x="112" y="42" width="8" height="16" rx="4" fill="#f0997b" stroke="#c0673a" stroke-width="1"/>
+    <rect x="122" y="40" width="8" height="18" rx="4" fill="#f0997b" stroke="#c0673a" stroke-width="1"/>
+  </g>
+</svg>`;}
+
+function svgNose(){return`
+<svg aria-hidden="true" width="150" height="150" viewBox="0 0 160 155" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="78" rx="46" ry="55" fill="#d4edda" stroke="#639922" stroke-width="1.2"/>
+  <path d="M38 58Q40 20 80 18Q120 20 122 58L122 42Q120 6 80 4Q40 6 38 42Z" fill="#2a5a1a" opacity="0.7"/>
+  <ellipse cx="65" cy="62" rx="6.5" ry="7" fill="white" stroke="#444" stroke-width="1"/>
+  <circle cx="66" cy="63" r="3.5" fill="#222"/>
+  <ellipse cx="95" cy="62" rx="6.5" ry="7" fill="white" stroke="#444" stroke-width="1"/>
+  <circle cx="96" cy="63" r="3.5" fill="#222"/>
+  <g style="transform-origin:80px 92px;animation:nosePulse 1.4s ease-in-out infinite">
+    <ellipse cx="80" cy="92" rx="14" ry="12" fill="#aad88a" stroke="#639922" stroke-width="1.2"/>
+    <ellipse cx="73" cy="95" rx="5" ry="6" fill="#27500a" opacity="0.75"/>
+    <ellipse cx="87" cy="95" rx="5" ry="6" fill="#27500a" opacity="0.75"/>
+  </g>
+  <g style="animation:dropFall 1.4s ease-in infinite"><ellipse cx="74" cy="114" rx="3" ry="4.5" fill="#00897b" opacity="0.82"/></g>
+  <g style="animation:dropFall 1.4s ease-in 0.48s infinite"><ellipse cx="86" cy="118" rx="2.5" ry="4" fill="#00897b" opacity="0.65"/></g>
+</svg>`;}
+
+function svgFace(){return`
+<svg aria-hidden="true" width="150" height="150" viewBox="0 0 160 158" xmlns="http://www.w3.org/2000/svg">
+  <g style="animation:pourWater 1.4s ease-in-out infinite">
+    <rect x="18" y="14" width="3.5" height="74" rx="2" fill="#00897b" opacity="0.5"/>
+    <rect x="30" y="8"  width="3.5" height="80" rx="2" fill="#00897b" opacity="0.65"/>
+    <rect x="54" y="4"  width="3"   height="60" rx="2" fill="#00897b" opacity="0.6"/>
+    <rect x="66" y="2"  width="3"   height="66" rx="2" fill="#00897b" opacity="0.72"/>
+    <rect x="78" y="0"  width="3"   height="70" rx="2" fill="#00897b" opacity="0.8"/>
+    <rect x="90" y="2"  width="3"   height="66" rx="2" fill="#00897b" opacity="0.72"/>
+    <rect x="102" y="4" width="3"   height="60" rx="2" fill="#00897b" opacity="0.6"/>
+    <rect x="126" y="8" width="3.5" height="80" rx="2" fill="#00897b" opacity="0.65"/>
+    <rect x="138" y="14" width="3.5" height="74" rx="2" fill="#00897b" opacity="0.5"/>
+  </g>
+  <g style="transform-origin:80px 92px;animation:faceWash 1.6s ease-in-out infinite">
+    <ellipse cx="80" cy="92" rx="48" ry="58" fill="#fde8c8" stroke="#d4a055" stroke-width="1.3"/>
+    <path d="M36 68Q38 30 80 28Q122 30 124 68L124 50Q122 14 80 12Q38 14 36 50Z" fill="#6b3e1e" opacity="0.82"/>
+    <ellipse cx="64" cy="78" rx="7" ry="8" fill="white" stroke="#444" stroke-width="1"/>
+    <circle cx="65" cy="79" r="4" fill="#222"/>
+    <ellipse cx="96" cy="78" rx="7" ry="8" fill="white" stroke="#444" stroke-width="1"/>
+    <circle cx="97" cy="79" r="4" fill="#222"/>
+    <path d="M58 68Q65 62 72 67" stroke="#4a2a0a" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <path d="M88 67Q95 62 102 68" stroke="#4a2a0a" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+    <ellipse cx="80" cy="95" rx="7" ry="5" fill="#e8a07a"/>
+    <path d="M68 116Q80 126 92 116" fill="none" stroke="#a04a28" stroke-width="2" stroke-linecap="round"/>
+  </g>
+</svg>`;}
+
+function svgArms(){return`
+<svg aria-hidden="true" width="150" height="150" viewBox="0 0 160 158" xmlns="http://www.w3.org/2000/svg">
+  <g style="animation:pourWater 1.3s ease-in-out infinite">
+    <rect x="14" y="42" width="58" height="100" rx="16" fill="#f5c4b3" stroke="#d48060" stroke-width="1.2"/>
+    <ellipse cx="14" cy="112" rx="12" ry="16" fill="#f5c4b3" stroke="#d48060" stroke-width="1"/>
+    <rect x="20" y="24" width="10" height="30" rx="5" fill="#f5c4b3" stroke="#d48060" stroke-width="1"/>
+    <rect x="32" y="18" width="10" height="34" rx="5" fill="#f5c4b3" stroke="#d48060" stroke-width="1"/>
+    <rect x="44" y="21" width="10" height="31" rx="5" fill="#f5c4b3" stroke="#d48060" stroke-width="1"/>
+    <rect x="10" y="30" width="10" height="26" rx="5" fill="#f5c4b3" stroke="#d48060" stroke-width="1"/>
+    <g style="animation:dropFall 1.1s ease-in infinite"><ellipse cx="30" cy="148" rx="3.5" ry="5.5" fill="#00897b" opacity="0.8"/></g>
+    <g style="animation:dropFall 1.1s ease-in 0.4s infinite"><ellipse cx="48" cy="152" rx="3" ry="4.5" fill="#00897b" opacity="0.65"/></g>
+  </g>
+  <g style="animation:pourWater 1.3s ease-in-out 0.65s infinite">
+    <rect x="88" y="42" width="58" height="100" rx="16" fill="#f0997b" stroke="#c0673a" stroke-width="1.2"/>
+    <ellipse cx="146" cy="112" rx="12" ry="16" fill="#f0997b" stroke="#c0673a" stroke-width="1"/>
+    <rect x="92" y="24" width="10" height="30" rx="5" fill="#f0997b" stroke="#c0673a" stroke-width="1"/>
+    <rect x="104" y="18" width="10" height="34" rx="5" fill="#f0997b" stroke="#c0673a" stroke-width="1"/>
+    <rect x="116" y="21" width="10" height="31" rx="5" fill="#f0997b" stroke="#c0673a" stroke-width="1"/>
+    <rect x="128" y="30" width="10" height="26" rx="5" fill="#f0997b" stroke="#c0673a" stroke-width="1"/>
+    <g style="animation:dropFall 1.1s ease-in 0.22s infinite"><ellipse cx="102" cy="148" rx="3.5" ry="5.5" fill="#00897b" opacity="0.8"/></g>
+    <g style="animation:dropFall 1.1s ease-in 0.6s infinite"><ellipse cx="120" cy="152" rx="3" ry="4.5" fill="#00897b" opacity="0.65"/></g>
+  </g>
+</svg>`;}
+
+function svgHead(){return`
+<svg aria-hidden="true" width="150" height="150" viewBox="0 0 160 155" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="96" rx="50" ry="60" fill="#fde8c8" stroke="#d4a055" stroke-width="1.3"/>
+  <path d="M34 72Q36 30 80 28Q124 30 126 72L126 54Q124 16 80 14Q36 16 34 54Z" fill="#5a3010" opacity="0.85"/>
+  <ellipse cx="64" cy="84" rx="6.5" ry="7.5" fill="white" stroke="#444" stroke-width="1"/>
+  <circle cx="65" cy="85" r="3.8" fill="#222"/>
+  <ellipse cx="96" cy="84" rx="6.5" ry="7.5" fill="white" stroke="#444" stroke-width="1"/>
+  <circle cx="97" cy="85" r="3.8" fill="#222"/>
+  <ellipse cx="80" cy="102" rx="6" ry="5" fill="#e8a07a"/>
+  <path d="M70 120Q80 129 90 120" fill="none" stroke="#a04a28" stroke-width="1.8" stroke-linecap="round"/>
+  <g style="animation:wipeAnim 1.45s ease-in-out infinite;transform-origin:80px 42px">
+    <rect x="22" y="34" width="116" height="16" rx="8" fill="#00897b" opacity="0.72"/>
+    <rect x="6" y="36" width="28" height="12" rx="6" fill="#f5c4b3" stroke="#d48060" stroke-width="1"/>
+    <rect x="126" y="36" width="28" height="12" rx="6" fill="#f5c4b3" stroke="#d48060" stroke-width="1"/>
+  </g>
+</svg>`;}
+
+function svgEars(){return`
+<svg aria-hidden="true" width="150" height="150" viewBox="0 0 160 152" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="86" rx="46" ry="56" fill="#fde8c8" stroke="#d4a055" stroke-width="1.3"/>
+  <path d="M38 64Q40 24 80 22Q120 24 122 64L122 48Q120 10 80 8Q40 10 38 48Z" fill="#5a3010" opacity="0.82"/>
+  <ellipse cx="66" cy="74" rx="6" ry="6.5" fill="white" stroke="#444" stroke-width="1"/>
+  <circle cx="67" cy="75" r="3.4" fill="#222"/>
+  <ellipse cx="94" cy="74" rx="6" ry="6.5" fill="white" stroke="#444" stroke-width="1"/>
+  <circle cx="95" cy="75" r="3.4" fill="#222"/>
+  <ellipse cx="80" cy="92" rx="6" ry="4.5" fill="#e8a07a"/>
+  <path d="M72 108Q80 115 88 108" fill="none" stroke="#a04a28" stroke-width="1.7" stroke-linecap="round"/>
+  <ellipse cx="26" cy="88" rx="13" ry="18" fill="#f5d5a0" stroke="#d4a055" stroke-width="1.4" style="animation:earGlow 1.6s ease-in-out infinite"/>
+  <path d="M28 76Q36 84 36 90Q36 98 28 104" fill="none" stroke="#d4a055" stroke-width="1.8" stroke-linecap="round"/>
+  <ellipse cx="134" cy="88" rx="13" ry="18" fill="#f5d5a0" stroke="#d4a055" stroke-width="1.4" style="animation:earGlow 1.6s ease-in-out 0.8s infinite"/>
+  <path d="M132 76Q124 84 124 90Q124 98 132 104" fill="none" stroke="#d4a055" stroke-width="1.8" stroke-linecap="round"/>
+  <g style="animation:wipeAnim 1.5s ease-in-out infinite;transform-origin:26px 86px">
+    <rect x="6" y="82" width="34" height="10" rx="5" fill="#f0997b" stroke="#c0673a" stroke-width="1" opacity="0.88"/>
+  </g>
+  <g style="animation:wipeAnim 1.5s ease-in-out infinite;transform-origin:134px 86px">
+    <rect x="120" y="82" width="34" height="10" rx="5" fill="#f0997b" stroke="#c0673a" stroke-width="1" opacity="0.88"/>
+  </g>
+</svg>`;}
+
+function svgFeet(){return`
+<svg aria-hidden="true" width="150" height="150" viewBox="0 0 160 155" xmlns="http://www.w3.org/2000/svg">
+  <ellipse cx="80" cy="150" rx="72" ry="7" fill="#4db6ac" opacity="0.22" style="animation:pulse 1.5s ease-in-out infinite"/>
+  <g style="animation:feetBob 1.25s ease-in-out infinite">
+    <rect x="18" y="76" width="24" height="48" rx="10" fill="#f5c4b3" stroke="#d48060" stroke-width="1"/>
+    <ellipse cx="18" cy="92" rx="8" ry="6" fill="#f5c4b3" stroke="#d48060" stroke-width="1"/>
+    <ellipse cx="40" cy="118" rx="34" ry="20" fill="#f5c4b3" stroke="#d48060" stroke-width="1"/>
+    <ellipse cx="10" cy="122" rx="7" ry="9"   fill="#f5c4b3" stroke="#d48060" stroke-width="1"/>
+    <ellipse cx="21" cy="116" rx="6.5" ry="8" fill="#f5c4b3" stroke="#d48060" stroke-width="1"/>
+    <ellipse cx="31" cy="113" rx="6" ry="7.5" fill="#f5c4b3" stroke="#d48060" stroke-width="1"/>
+    <ellipse cx="41" cy="114" rx="5.5" ry="7" fill="#f5c4b3" stroke="#d48060" stroke-width="1"/>
+    <ellipse cx="51" cy="118" rx="5" ry="6"   fill="#f5c4b3" stroke="#d48060" stroke-width="1"/>
+    <g style="animation:dropFall 1.1s ease-in infinite"><ellipse cx="30" cy="143" rx="3.5" ry="5.5" fill="#00897b" opacity="0.8"/></g>
+    <g style="animation:dropFall 1.1s ease-in 0.4s infinite"><ellipse cx="46" cy="147" rx="2.8" ry="4.5" fill="#00897b" opacity="0.65"/></g>
+  </g>
+  <g style="animation:feetBob 1.25s ease-in-out 0.62s infinite">
+    <rect x="118" y="76" width="24" height="48" rx="10" fill="#f0997b" stroke="#c0673a" stroke-width="1"/>
+    <ellipse cx="142" cy="92" rx="8" ry="6" fill="#f0997b" stroke="#c0673a" stroke-width="1"/>
+    <ellipse cx="120" cy="118" rx="34" ry="20" fill="#f0997b" stroke="#c0673a" stroke-width="1"/>
+    <ellipse cx="150" cy="122" rx="7" ry="9"   fill="#f0997b" stroke="#c0673a" stroke-width="1"/>
+    <ellipse cx="139" cy="116" rx="6.5" ry="8" fill="#f0997b" stroke="#c0673a" stroke-width="1"/>
+    <ellipse cx="129" cy="113" rx="6" ry="7.5" fill="#f0997b" stroke="#c0673a" stroke-width="1"/>
+    <ellipse cx="119" cy="114" rx="5.5" ry="7" fill="#f0997b" stroke="#c0673a" stroke-width="1"/>
+    <ellipse cx="109" cy="118" rx="5" ry="6"   fill="#f0997b" stroke="#c0673a" stroke-width="1"/>
+    <g style="animation:dropFall 1.1s ease-in 0.22s infinite"><ellipse cx="122" cy="143" rx="3.5" ry="5.5" fill="#00897b" opacity="0.8"/></g>
+    <g style="animation:dropFall 1.1s ease-in 0.62s infinite"><ellipse cx="138" cy="147" rx="2.8" ry="4.5" fill="#00897b" opacity="0.65"/></g>
+  </g>
+</svg>`;}
+
+/* ── THEME SVG ICONS ── */
+const sunIcon = `<i class="fas fa-sun" style="font-size: clamp(12px, 3.5vw, 14px);"></i>`;
+const moonIcon = `<i class="fas fa-moon" style="font-size: clamp(12px, 3.5vw, 14px);"></i>`;
+
+/* ── THEME ── */
+let isDark = window.matchMedia('(prefers-color-scheme:dark)').matches;
+(()=>{
+  try {
+    const g = localStorage.getItem('globalTheme');
+    if (g) isDark = g === 'dark';
+    else {
+      const q = localStorage.getItem('quranNightMode');
+      if (q) isDark = q !== 'true';
+    }
+  } catch(e) {}
+  applyTheme();
+})();
+
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme', isDark?'dark':'light');
+  document.getElementById('themeIcon').innerHTML = isDark ? sunIcon : moonIcon;
+}
+function toggleTheme(){
+  isDark=!isDark; applyTheme();
+  localStorage.setItem('globalTheme', isDark ? 'dark' : 'light');
+  localStorage.setItem('quranNightMode', (!isDark).toString());
+}
+
+/* ── STATE ── */
+let current = 0;
+
+function buildDots(){
+  const wrap = document.getElementById('stepDots');
+  wrap.innerHTML='';
+  steps.forEach((s,i)=>{
+    const b=document.createElement('button');
+    b.className='step-dot'+(i<current?' done':(i===current?' active':''));
+    b.textContent=i+1;
+    b.setAttribute('aria-label',`Go to step ${i+1}: ${s.title}`);
+    b.onclick=()=>{current=i;render();};
+    wrap.appendChild(b);
+  });
+}
+
+function render(){
+  const s=steps[current];
+  const pct=((current+1)/steps.length)*100;
+  
+  // Accessibility Update
+  document.getElementById('a11y-announcer').textContent = `Step ${current + 1}: ${s.title}. ${s.desc}`;
+
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('stepCounter').textContent=`${current+1} of ${steps.length}`;
+  buildDots();
+
+  // show/hide complete
+  document.getElementById('completeScr').classList.remove('show');
+  
+  const contentDiv = document.getElementById('pageContent');
+  contentDiv.style.display = 'flex';
+
+  // Force reflow to trigger CSS crossfade animation on every step
+  contentDiv.classList.remove('page-anim');
+  void contentDiv.offsetWidth; 
+  contentDiv.classList.add('page-anim');
+
+  // back arrow
+  const back=document.getElementById('btnBack');
+  back.disabled=current===0;
+
+  // fwd arrow
+  const fwd=document.getElementById('btnFwd');
+  const isLast=current===steps.length-1;
+  fwd.className='arrow-btn btn-fwd'+(isLast?' final':'');
+  fwd.onclick=isLast?showComplete:()=>go(1);
+  fwd.setAttribute('aria-label', isLast?'Complete':'Next step');
+  fwd.innerHTML = isLast
+    ? `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`
+    : `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>`;
+
+  const showWater = current!==0;
+
+  contentDiv.innerHTML=`
+    <div style="display:flex;flex-direction:column;gap:8px;flex:1;overflow:hidden;min-height:0;">
+      <div class="hero-strip">
+        <div>
+          <h2 class="hero-en">${s.title}</h2>
+          <div class="hero-sub">${s.trans}</div>
+          <div class="hero-chips">
+            <span class="hero-chip">⟳ ${s.times}</span>
+            <span class="hero-chip">✋ ${s.hand}</span>
+          </div>
+        </div>
+        <div class="hero-ar" aria-hidden="true">${s.arabic}</div>
+      </div>
+
+      <div class="anim-box" id="animBox" aria-hidden="true">
+        ${s.svgFn()}
+        ${showWater?`<div class="water-bars"><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div><div class="wb"></div></div>`:''}
+      </div>
+
+      <div class="info-panel">
+        <div class="info-scroll">
+          <p class="desc-text">${s.desc}</p>
+          <div class="tip-box"><strong>💡 </strong>${s.tip}</div>
+          <button class="refs-btn" onclick="openDrawer()" aria-label="View Quran and Hadith references">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            Qur’an &amp; Hadith References
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function go(dir){
+  const next=current+dir;
+  if(next<0||next>=steps.length) return;
+  current=next;
+  render();
+}
+
+function showComplete(){
+  document.getElementById('pageContent').style.display='none';
+  document.getElementById('completeScr').classList.add('show');
+  document.getElementById('progFill').style.width='100%';
+  document.getElementById('stepCounter').textContent='Done!';
+  document.getElementById('a11y-announcer').textContent = 'Wudu Complete. You are now in a state of purity and ready for Salah.';
+  buildDots();
+  const fwd=document.getElementById('btnFwd');
+  fwd.className='arrow-btn btn-fwd';
+  fwd.setAttribute('aria-label','Restart');
+  fwd.innerHTML=`<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>`;
+  fwd.onclick=restart;
+}
+
+function restart(){
+  current=0;
+  render();
+}
+
+/* swipe — blocked when drawer is open */
+let tx=0;
+function isDrawerOpen(){return document.getElementById('drawer').classList.contains('open');}
+document.getElementById('mainArea').addEventListener('touchstart',e=>{
+  if(isDrawerOpen()) return;
+  tx=e.touches[0].clientX;
+},{passive:true});
+document.getElementById('mainArea').addEventListener('touchend',e=>{
+  if(isDrawerOpen()) return;
+  const dx=e.changedTouches[0].clientX-tx;
+  if(Math.abs(dx)>65){dx<0?go(1):go(-1);}
+},{passive:true});
+
+/* keyboard */
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown') go(1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp') go(-1);
+  if(e.key==='Escape') closeDrawer();
+});
+
+/* ── REFERENCE DATA (Quran + Hadith per step) ── */
+const stepRefs = [
+  /* 0 – Intention & Basmalah */
+  [
+    { type:'quran', source:'Al-Bayyinah 98:5', arabic:'وَمَا أُمِرُوا إِلَّا لِيَعْبُدُوا اللَّهَ مُخْلِصِينَ لَهُ الدِّينَ', translation:'And they were not commanded except to worship Allah, sincere to Him in religion.', note:'Scholars derive the necessity of sincere niyyah from this verse — every act of worship must be done solely for Allah.' },
+    { type:'hadith', source:'Bukhari & Muslim', arabic:'إِنَّمَا الأْعْمَالُ بِالنِّيَّاتِ وَإِنَّمَا لِكُلِّ امْرِئْ مَا نَوَى', translation:'"Actions are only by intentions, and every person shall have only what they intended."', note:'Hadith of ʿ̲Umar ibn al-Khaṭṭāb ڬ. One of the foundational principles of Islamic jurisprudence.' },
+    { type:'hadith', source:'Abu Dawud | Hasan', arabic:'لَا وُضُوءَ لِمَنْ لَمْ يَذْكُرِ اسْمَ اللَّهِ عَلَيْهِ', translation:'"There is no wudu for one who does not mention the name of Allah over it."', note:'Saying Bismillah before wudu is a Sunnah; Imam Ahmad considers it obligatory.' }
+  ],
+  /* 1 – Wash Hands */
+  [
+    { type:'quran', source:'Al-Maidah 5:6', arabic:'يَٰãأَيُّهَا Āلَّذِينَ ءَامَنُوãاْ إِذَا قُمْتُمْ إِلَى Āلصَّلَوٰةِ فَآْغْسِلُوãْ وُجُوهَكُمْ وَأَيْدِيَكُمْ إِلَى Āلْمَرَافِقِ', translation:'O you who believe! When you rise to perform prayer, wash your faces and your hands to the elbows.', note:'The primary Quranic verse commanding wudu — washing hands is an explicit obligation.' },
+    { type:'hadith', source:'Muslim', arabic:'إِذَا اسْتَيْقَظَ أَحَدُكُمْ مِنْ نَوْمِهِ فَلا يَغْمِسْ يَدَهُ فِي الإِنَاءِ حَتَّى يَغْسِلَهَا ثَلَاثًا', translation:'"When one of you wakes from sleep, do not dip your hand into the vessel until you have washed it three times."', note:'The Prophet ‬﻿‬‬‬ﹰ‬‬ taught that hands are washed first to prevent impurity from entering the water.' }
+  ],
+  /* 2 – Rinse Mouth */
+  [
+    { type:'hadith', source:'Bukhari', arabic:'السِّوَاكُ مَطْهَرَةٌ لِلْفَمِ مَرْضَاةٌ لِلرَّبِّ', translation:'"The miswak is a purification for the mouth and a pleasure for the Lord."', note:'Using miswak during madmadah is a strong Sunnah of the Prophet ✗ carrying immense spiritual reward.' },
+    { type:'quran', source:'Al-Tawbah 9:108', arabic:'فِيهِ رِجَالٌ يُحِبُّونَ أَن يَتَطَهَّرُوãْ ڪّ وَاللَّهُ يُحِبُّ الْمُطَّهِّرِينَ', translation:'In it are men who love to purify themselves, and Allah loves those who purify themselves.', note:'Allah   praised the people of Quba for their thoroughness in taharah.' },
+    { type:'hadith', source:'Abu Dawud | Sahih', arabic:'لَوْلَا أَنْ أَشُقَّ عَلَى أُمَّتِي لَأَمَرْتُهُمْ بِالسِّوَاكِ عِنْدَ كُلِّ وُضُوءَ', translation:'"If it were not a hardship on my Ummah, I would have commanded them to use the miswak at every wudu."', note:'This shows how highly the Prophet ✗ regarded oral cleanliness — only sparing the Ummah from an extra obligation out of mercy.' }
+  ],
+  /* 3 – Rinse Nostrils */
+  [
+    { type:'hadith', source:'Bukhari & Muslim', arabic:'بَالِغْ فِي الاِسْتِنْشَاقِ إِلَّا أَنْ تَكُونَ صَائِمًا', translation:'"Sniff water up the nostrils deeply, unless you are fasting."', note:'The Prophet ‬﻿‬﻿ commanded thorough rinsing of the nostrils, with a specific exception during fasting.' },
+    { type:'hadith', source:'Muslim', arabic:'مَنْ تَوَضَّأَ فَأَحْسَنَ الْوُضُوءَ خَرَجَتْ خَطَايَاهُ مِنْ جَسَدِهِ', translation:'"Whoever performs wudu and does it well, his sins will leave his body even from under his nails."', note:'This hadith encourages performing every step of wudu with care and precision, including the nostrils.' }
+  ],
+  /* 4 – Wash Face */
+  [
+    { type:'quran', source:'Al-Maidah 5:6', arabic:'فَاغْسِلُوãْ وُجُوهَكُمْ وَأَيْدِيَكُمْ إِلَى Āلْمَرَافِقِ وَآمْسَحُوãْ بِرُءُوسِكُمْ وَأَرْجُلَكُمْ إِلَى Āلْكَعْبَيْنِ', translation:'Wash your faces and your hands to the elbows, and wipe your heads and wash your feet to the ankles.', note:'The Quranic command lists washing the face as the first of the four obligatory acts of wudu.' },
+    { type:'hadith', source:'Muslim', arabic:'إِذَا تَوَضَّأَ الْعَبْدُ الْمُسْلِمُ فغَسَلَ وَجْهَهُ خَرَجَ مِنْ وَجْهِهِ كُلُّ خَطِيئَةٍ', translation:'"When a Muslim servant performs wudu and washes his face, every sin he committed with his face is washed away."', note:'Hadith narrated by Abu Hurayrah ڬ — washing the face brings a profound spiritual cleansing of sins.' }
+  ],
+  /* 5 – Wash Arms */
+  [
+    { type:'quran', source:'Al-Maidah 5:6', arabic:'وَأَيْدِيَكُمْ إِلَى Āلْمَرَافِقِ', translation:'...and your hands to the elbows.', note:'Washing the arms up to and including the elbows is explicitly mandated in the Quran — the elbow itself must be covered.' },
+    { type:'hadith', source:'Muslim', arabic:'إِنَّ أُمَّتِي يُدْعَوْنَ يَوْمَ الْقِيَامَةِ غُرًّا مُحَجَّلِينَ مِنْ آثَارِ الْوُضُوءِ', translation:'"My nation will be called on the Day of Judgement with bright faces and bright limbs from the traces of wudu."', note:'The arms washed in wudu will shine as a mark of honour on the Day of Resurrection — a beautiful reward for this act.' }
+  ],
+  /* 6 – Wipe Head */
+  [
+    { type:'quran', source:'Al-Maidah 5:6', arabic:'وَآمْسَحُوãْ بِرُءُوسِكُمْ', translation:'...and wipe your heads.', note:'The word "masḥ" (wipe) is linguistically distinct from "ghasl" (wash), indicating only a light pass with wet hands, not a full wash.' },
+    { type:'hadith', source:'Bukhari', arabic:'رَأَيْتُ النَّبِيَّ ‪ﹰ‬ تَوَضَّأَ فَمَسَحَ رَأْسَهُ مَرَّةً وَاحِدَةً', translation:'"I saw the Prophet ‪ﹰ‬ perform wudu and wipe his head once."', note:'ʿAbd Allah ibn Zayd ڬ described the Prophet ‪ﹰ‬ wiping once — making a single wipe the authentic Sunnah.' },
+    { type:'hadith', source:'Abu Dawud | Sahih', arabic:'مَسَحَ رَأْسَهُ كُلَّهُ مِنْ مُقَدَّمِ رَأْسِهِ إِلَى قَفَاهِ ثُمَّ رَدَّهُمَا إِلَى الْمَكَانِ الَّذِي بَدَأَ مِنْهُ', translation:'"He wiped his entire head from the front to the nape, then returned his hands to where he began."', note:'The complete method: front to back, then back to front in one continuous motion using both hands together.' }
+  ],
+  /* 7 – Wipe Ears */
+  [
+    { type:'hadith', source:'Abu Dawud | Sahih', arabic:'الأُذُنَانِ مِنَ الرَّأْسِ', translation:'"The ears are part of the head."', note:'This statement of the Prophet ‪ﹰ‬ establishes that the ears are included in the head-wipe and do not require separate fresh water.' },
+    { type:'hadith', source:'Tirmidhi | Sahih', arabic:'مَسَحَ رَأْسَهُ وَأُذُنَيْهِ ظَاهِرَهُمَا وَبَاطِنَهُمَا', translation:'"He wiped his head and both ears — their outer and inner surfaces."', note:'ʿAbd Allah ibn ʿUmar ڬ described the Prophet ‪ﹰ‬ wiping the inner (with index fingers) and outer (with thumbs) surfaces simultaneously.' }
+  ],
+  /* 8 – Wash Feet */
+  [
+    { type:'quran', source:'Al-Maidah 5:6', arabic:'وَأَرْجُلَكُمْ إِلَى Āلْكَعْبَيْنِ', translation:'...and wash your feet to the ankles.', note:'The ankle bones are included in the obligatory wash. Scholars agree "to the ankles" means the ankles must themselves be covered.' },
+    { type:'hadith', source:'Bukhari & Muslim', arabic:'وَيْلٌ لِلْأَعْقَابِ مِنَ النَّارِ', translation:'"Woe to the heels from the Fire!"', note:'The Prophet ‪ﹰ‬ warned those who left their heels dry during wudu. Completeness in every wash is essential.' },
+    { type:'hadith', source:'Muslim', arabic:'إِذَا تَوَضَّأَ فغَسَلَ رِجْلَيْهِ خَرَجَتْ خَطَايَاهُ مِنْ رِجْلَيْهِ', translation:'"When he performs wudu and washes his feet, his sins leave through his feet."', note:'Every limb washed in wudu becomes a vehicle of spiritual purification — a divine mercy for the believer.' }
+  ]
+];
+
+/* ── DRAWER LOGIC ── */
+function openDrawer(){
+  document.getElementById('drawerOverlay').classList.add('open');
+  document.getElementById('drawer').classList.add('open');
+  renderDrawerContent();
+}
+function closeDrawer(){
+  document.getElementById('drawerOverlay').classList.remove('open');
+  document.getElementById('drawer').classList.remove('open');
+}
+function renderDrawerContent(){
+  const refs = stepRefs[current] || [];
+  const s = steps[current];
+  document.getElementById('drawerStepTitle').textContent = s.title;
+  const scroll = document.getElementById('drawerScroll');
+  if(!refs.length){
+    scroll.innerHTML = '<div class="refs-empty">📖 No specific references for this step.</div>';
+    return;
+  }
+  scroll.innerHTML = refs.map((r, i) => `
+    <div class="ref-card ${r.type}" style="animation-delay:${i*0.08}s">
+      <div class="ref-card-header">
+        <span class="ref-type-badge ${r.type}">${r.type === 'quran' ? '📖 Qur\'an' : '📜 Hadith'}</span>
+        <span class="ref-source">${r.source}</span>
+      </div>
+      <div class="ref-arabic">${r.arabic}</div>
+      <div class="ref-translation">“${r.translation}”</div>
+      ${r.note ? `<div class="ref-note">ℹ️ ${r.note}</div>` : ''}
+    </div>
+  `).join('');
+}
+
+render();
+</script>
+
+<!-- Drawer Overlay -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()" aria-hidden="true"></div>
+<aside class="drawer" id="drawer" role="complementary" aria-label="Quran and Hadith references">
+  <div class="drawer-header">
+    <div class="drawer-title">
+      <div class="drawer-title-icon">📖</div>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--t1)" id="drawerStepTitle">References</div>
+        <div style="font-size:10.5px;color:var(--t3);font-weight:500">Qur’an &amp; Hadith</div>
+      </div>
+    </div>
+    <button class="drawer-close" onclick="closeDrawer()" aria-label="Close references">✕</button>
+  </div>
+  <div class="drawer-scroll" id="drawerScroll"></div>
+</aside>
+</body>
+</html>

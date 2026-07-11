@@ -1,0 +1,1234 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<title>Salah Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Amiri+Quran&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{
+  font-family:'Inter',sans-serif;
+  -webkit-font-smoothing:antialiased;
+  overscroll-behavior:none;
+  user-select:none;-webkit-user-select:none;
+}
+.drawer,.drawer-scroll,.ref-card,.ref-arabic,.ref-translation,.ref-note,.quote-card,.quote-ar,.quote-translit,.quote-meaning{
+  user-select:text;-webkit-user-select:text;
+}
+button{font-family:'Inter',sans-serif;cursor:pointer;border:none;outline:none;background:none;}
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;
+}
+
+/* ── TOKENS (matches Wudu & Ghusl Guides for a consistent app suite) ── */
+:root{
+  --teal:#00897b;--teal-d:#00564e;--teal-l:#4db6ac;
+  --gold:#ffb300;
+  --r:16px;--rp:100px;
+  --tr:0.28s cubic-bezier(0.4,0,0.2,1);
+  --sat:env(safe-area-inset-top,0px);
+  --sab:env(safe-area-inset-bottom,0px);
+}
+[data-theme="light"]{
+  --bg:#f0efea;--surf:#fff;--surf2:#f5f4ef;
+  --bd:rgba(0,0,0,0.07);--bd2:rgba(0,0,0,0.05);
+  --t1:#111;--t2:#555;--t3:#999;
+  --hero:linear-gradient(145deg,#00352c 0%,#00897b 60%,#26a69a 100%);
+  --nb:rgba(255,255,255,0.94);--nbl:blur(20px) saturate(1.8);
+  --sh:0 2px 16px rgba(0,86,78,0.10);
+  --pill:rgba(0,137,123,0.10);--pillt:#00564e;
+  --tip:#fffbeb;--tipb:#ffb300;--tipt:#92400e;
+  --dotbg:#e0dfd9;--dotd:#b2ece5;
+  --tgbg:#e0dfd9;
+  --abg:linear-gradient(150deg,#e0f7f4,#f0faf9);
+  --muted-fig:#e3e1da;
+}
+[data-theme="dark"]{
+  --bg:#222;--surf:#2c2c2c;--surf2:#353535;
+  --bd:rgba(255,255,255,0.07);--bd2:rgba(255,255,255,0.04);
+  --t1:#f0f0f0;--t2:#a0a0a0;--t3:#606060;
+  --hero:linear-gradient(145deg,#181818 0%,#263532 60%,#1e2e2c 100%);
+  --nb:rgba(30,30,30,0.94);--nbl:blur(20px) saturate(1.4);
+  --sh:0 2px 16px rgba(0,0,0,0.40);
+  --pill:rgba(77,182,172,0.14);--pillt:#4db6ac;
+  --tip:rgba(255,179,0,0.07);--tipb:#ffb300;--tipt:#fcd34d;
+  --dotbg:#383838;--dotd:#1a3330;
+  --tgbg:#383838;
+  --abg:linear-gradient(150deg,#1c2c2b,#1a2220);
+  --muted-fig:#4a4a4a;
+}
+
+/* ── APP SHELL ── */
+#app{
+  position:fixed;inset:0;
+  display:flex;flex-direction:column;
+  background:var(--bg);color:var(--t1);
+  transition:background var(--tr),color var(--tr);
+}
+
+/* ── TOPBAR ── */
+.topbar{
+  flex-shrink:0;
+  padding:calc(var(--sat) + 8px) 14px 8px;
+  background:var(--nb);
+  backdrop-filter:var(--nbl);-webkit-backdrop-filter:var(--nbl);
+  border-bottom:1px solid var(--bd);
+  display:flex;align-items:center;justify-content:space-between;
+  gap:8px;
+  z-index:200;
+  transition:background var(--tr),border-color var(--tr);
+}
+
+.tb-left, .tb-right { display:flex; align-items:center; flex:1; }
+.tb-left { gap:10px; justify-content:flex-start; }
+.tb-right { justify-content:flex-end; }
+.tb-center { display:flex; justify-content:center; flex:2; overflow:hidden; }
+
+.tb-back {
+  width:clamp(26px, 6vw, 32px); height:clamp(26px, 6vw, 32px); border-radius:50%;
+  background:transparent; border:none;
+  color:var(--t1);
+  display:flex; align-items:center; justify-content:center;
+  flex-shrink:0; outline: none;
+}
+.tb-back svg { width:clamp(12px, 3.5vw, 14px); height:clamp(12px, 3.5vw, 14px); }
+
+.step-dots{
+  display:flex;gap:4px;align-items:center;
+  overflow-x:auto; scrollbar-width:none; -ms-overflow-style:none;
+  max-width:100%;
+}
+.step-dots::-webkit-scrollbar{display:none;}
+.step-dot{
+  width:20px;height:20px;border-radius:50%;
+  font-size:9px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.22s;color:var(--t3);
+  background:var(--dotbg);
+  flex-shrink:0;
+}
+.step-dot.done{background:var(--dotd);color:var(--teal);}
+.step-dot.active{
+  background:var(--teal);color:#fff;
+  transform:scale(1.2);
+  box-shadow:0 2px 8px rgba(0,137,123,0.40);
+}
+
+.topbar-title{
+  font-size:15px;font-weight:700;letter-spacing:-0.3px;
+  color:var(--t1);white-space:nowrap;
+  transition:color var(--tr);
+}
+
+.tb-theme-btn {
+  width:clamp(26px, 6vw, 32px); height:clamp(26px, 6vw, 32px); border-radius:50%;
+  background:transparent; border:none;
+  color:var(--t1);
+  display:flex; align-items:center; justify-content:center;
+  transition:color var(--tr); flex-shrink:0;
+}
+.tb-theme-btn svg { width:clamp(12px, 3.5vw, 14px); height:clamp(12px, 3.5vw, 14px); }
+
+@media (max-width: 400px) {
+  .topbar-title { display: none; }
+  .step-dot { width: 18px; height: 18px; font-size: 8px; }
+  .tb-center { flex: 3; }
+}
+
+.prog-track{
+  flex-shrink:0;height:3px;background:var(--dotbg);
+  transition:background var(--tr);
+}
+.prog-fill{
+  height:100%;
+  background:linear-gradient(90deg,var(--teal),var(--gold));
+  transition:width 0.45s cubic-bezier(0.4,0,0.2,1);
+}
+
+/* ── MAIN CONTENT ── */
+.main{
+  flex:1;display:flex;flex-direction:column;
+  overflow:hidden;padding:10px 14px 0;
+  gap:8px;
+  min-height:0;
+}
+
+.hero-strip{
+  flex-shrink:0;
+  background:var(--hero);
+  border-radius:14px;
+  padding:10px 14px;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:10px;
+  position:relative;overflow:hidden;
+  box-shadow:var(--sh);
+}
+.hero-strip::before{
+  content:'';position:absolute;
+  top:-30px;right:-30px;width:100px;height:100px;
+  border-radius:50%;background:rgba(255,255,255,0.05);
+}
+.hero-en{font-size:18px;font-weight:700;color:#fff;letter-spacing:-0.4px;line-height:1.1;}
+.hero-sub{font-size:11px;color:rgba(255,255,255,0.55);font-style:italic;margin-top:2px;}
+.hero-ar{font-family:'Amiri',serif;font-size:17px;color:rgba(255,255,255,0.85);direction:rtl;line-height:1.3;flex-shrink:0;text-align:right;max-width:40%;}
+.hero-chips{display:flex;gap:6px;margin-top:5px;flex-wrap:wrap;}
+.hero-chip{
+  background:rgba(255,255,255,0.14);
+  border-radius:var(--rp);padding:3px 9px;
+  font-size:10px;font-weight:600;color:rgba(255,255,255,0.88);
+  white-space:nowrap;
+}
+
+/* ── ANIMATION BOX ── */
+.anim-box{
+  flex:0 0 132px;
+  height:132px;
+  min-height:132px;
+  max-height:132px;
+  background:var(--abg);
+  border-radius:14px;
+  border:1px solid var(--bd);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+  box-shadow:var(--sh);
+}
+.anim-box::before{
+  content:'';position:absolute;
+  width:160px;height:160px;border-radius:50%;
+  background:radial-gradient(circle,rgba(0,137,123,0.10),transparent 70%);
+  top:50%;left:50%;transform:translate(-50%,-50%);
+}
+.anim-box svg{position:relative;z-index:1;filter:drop-shadow(0 3px 10px rgba(0,137,123,0.18));width:132px;height:132px;}
+
+/* ── INFO PANEL ── */
+.info-panel{
+  flex:1;display:flex;flex-direction:column;
+  background:var(--surf);
+  border-radius:14px;border:1px solid var(--bd);
+  overflow:hidden;
+  box-shadow:var(--sh);
+  min-height:0;
+}
+.info-scroll{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  padding:12px 14px;
+  display:flex;flex-direction:column;gap:10px;
+  min-height:0;
+  overscroll-behavior:contain;
+}
+.info-scroll::-webkit-scrollbar{width:3px;}
+.info-scroll::-webkit-scrollbar-thumb{background:var(--dotbg);border-radius:3px;}
+
+.desc-text{font-size:13.5px;line-height:1.72;color:var(--t2);transition:color var(--tr);}
+.desc-text strong { color:var(--teal); font-weight:600; }
+.tip-box{
+  background:var(--tip);
+  border-left:3px solid var(--tipb);
+  border-radius:0 9px 9px 0;
+  padding:9px 12px;
+  font-size:12.5px;line-height:1.62;
+  color:var(--tipt);
+  transition:background var(--tr),color var(--tr);
+  flex-shrink:0;
+}
+.tip-box strong{font-weight:700;}
+.badge-row{display:flex;gap:6px;flex-wrap:wrap;}
+.fiqh-badge{
+  font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+  padding:3px 9px;border-radius:var(--rp);
+  background:var(--pill);color:var(--pillt);
+  flex-shrink:0;
+}
+.fiqh-badge.gold{background:rgba(255,179,0,0.14);color:#a86a00;}
+[data-theme="dark"] .fiqh-badge.gold{color:#ffcf5c;}
+
+/* ── RECITATION QUOTE CARD ── */
+.quote-card{
+  background:var(--pill);border-left:3px solid var(--teal);
+  border-radius:0 10px 10px 0;padding:11px 14px;flex-shrink:0;
+}
+.quote-tag{font-size:9.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--pillt);display:block;margin-bottom:5px;}
+.quote-ar{font-family:'Amiri Quran','Amiri',serif;font-size:1.14rem;line-height:2.05;color:var(--t1);direction:rtl;text-align:right;}
+.quote-translit{font-style:italic;color:var(--t2);font-size:11.5px;margin-top:7px;line-height:1.5;}
+.quote-meaning{font-size:12px;color:var(--t2);margin-top:7px;line-height:1.62;}
+
+/* ── MINI INFO GRID (pillars, conditions, times, beyond-five) ── */
+.igrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(92px,1fr));gap:7px;}
+.icard{background:var(--surf2);border:1px solid var(--bd);border-radius:11px;padding:9px 10px;text-align:center;transition:border-color .2s,background .2s;}
+.icard.current{border-color:var(--gold);background:rgba(255,179,0,0.09);}
+.icard .ic-ar{font-family:'Amiri',serif;color:var(--teal);font-size:14px;direction:rtl;}
+.icard .ic-name{font-size:11px;font-weight:700;color:var(--t1);margin-top:2px;}
+.icard .ic-sub{font-size:9.5px;color:var(--t3);margin-top:2px;line-height:1.4;}
+
+/* ── MINI TABLE (adhan lines, rakat ledger) ── */
+.itable{width:100%;border-collapse:collapse;font-size:11.5px;}
+.itable th,.itable td{padding:7px 6px;text-align:center;border-bottom:1px solid var(--bd);}
+.itable th{background:var(--pill);color:var(--pillt);font-size:9px;text-transform:uppercase;letter-spacing:.05em;}
+.itable td:first-child,.itable th:first-child{text-align:left;font-weight:700;color:var(--t1);}
+.itable td.ar{font-family:'Amiri',serif;direction:rtl;text-align:right;font-size:13px;color:var(--t1);}
+.itable td.fard{color:#b34500;font-weight:700;}
+[data-theme="dark"] .itable td.fard{color:#ffb37a;}
+.itable tr:last-child td{border-bottom:none;}
+
+/* ── MISTAKES / REMINDERS LIST ── */
+.rlist{list-style:none;display:flex;flex-direction:column;gap:8px;}
+.rlist li{display:flex;gap:9px;align-items:flex-start;background:var(--surf2);border:1px solid var(--bd);border-radius:10px;padding:9px 11px;}
+.rlist .rx{flex-shrink:0;width:20px;height:20px;border-radius:50%;background:rgba(179,69,0,0.12);color:#b34500;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;margin-top:1px;}
+[data-theme="dark"] .rlist .rx{color:#ffb37a;}
+.rlist b{display:block;font-size:12px;color:var(--t1);margin-bottom:1px;}
+.rlist span{font-size:11.5px;color:var(--t2);line-height:1.5;}
+
+/* ── REFS BUTTON ── */
+.refs-btn{
+  display:flex;align-items:center;gap:7px;
+  background:linear-gradient(135deg,rgba(0,137,123,0.13),rgba(77,182,172,0.08));
+  border:1px solid rgba(0,137,123,0.22);
+  border-radius:10px;
+  padding:9px 13px;
+  color:var(--teal);font-size:12.5px;font-weight:600;
+  cursor:pointer;transition:all 0.2s;
+  flex-shrink:0;
+  backdrop-filter:blur(6px);
+}
+.refs-btn:hover{background:rgba(0,137,123,0.2);transform:translateY(-1px);}
+.refs-btn:active{transform:scale(0.97);}
+.refs-btn svg{width:15px;height:15px;flex-shrink:0;}
+
+/* ── SIDEBAR DRAWER ── */
+.drawer-overlay{
+  position:fixed;inset:0;z-index:600;
+  background:rgba(0,0,0,0.42);
+  backdrop-filter:blur(3px);
+  opacity:0;pointer-events:none;
+  transition:opacity 0.32s cubic-bezier(0.4,0,0.2,1);
+}
+.drawer-overlay.open{opacity:1;pointer-events:auto;}
+.drawer{
+  position:fixed;top:0;right:0;bottom:0;
+  width:min(88vw,360px);z-index:601;
+  background:var(--surf);
+  border-left:1px solid var(--bd);
+  display:flex;flex-direction:column;
+  transform:translateX(100%);
+  transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);
+  box-shadow:-8px 0 40px rgba(0,0,0,0.18);
+}
+.drawer.open{transform:translateX(0);}
+.drawer-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:calc(var(--sat) + 14px) 16px 12px;
+  border-bottom:1px solid var(--bd);
+  flex-shrink:0;
+  background:var(--nb);
+  backdrop-filter:var(--nbl);-webkit-backdrop-filter:var(--nbl);
+}
+.drawer-title{font-size:15px;font-weight:700;color:var(--t1);display:flex;align-items:center;gap:8px;}
+.drawer-title-icon{
+  width:28px;height:28px;border-radius:8px;
+  background:linear-gradient(135deg,var(--teal-d),var(--teal));
+  display:flex;align-items:center;justify-content:center;font-size:14px;
+}
+.drawer-close{
+  width:32px;height:32px;border-radius:50%;
+  background:var(--surf2);border:1px solid var(--bd);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--t2);cursor:pointer;font-size:16px;transition:all 0.18s;
+}
+.drawer-close:hover{background:rgba(0,137,123,0.12);color:var(--teal);}
+.drawer-scroll{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  padding:14px;display:flex;flex-direction:column;gap:12px;
+  min-height:0;
+  overscroll-behavior:contain;
+}
+.drawer-scroll::-webkit-scrollbar{width:3px;}
+.drawer-scroll::-webkit-scrollbar-thumb{background:var(--dotbg);border-radius:3px;}
+.ref-card{
+  border-radius:14px;border:1px solid var(--bd);overflow:hidden;
+  backdrop-filter:blur(12px);
+  box-shadow:0 4px 20px rgba(0,0,0,0.06),0 1px 4px rgba(0,0,0,0.04);
+  transition:transform 0.2s,box-shadow 0.2s;
+  animation:fadeUp 0.4s cubic-bezier(0.4,0,0.2,1) both;
+}
+.ref-card:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,137,123,0.14);}
+.ref-card.quran{
+  background:linear-gradient(145deg,rgba(0,137,123,0.08),rgba(77,182,172,0.04));
+  border-color:rgba(0,137,123,0.2);
+}
+.ref-card.hadith{
+  background:linear-gradient(145deg,rgba(255,179,0,0.07),rgba(255,195,50,0.03));
+  border-color:rgba(255,179,0,0.2);
+}
+.ref-card-header{display:flex;align-items:center;gap:8px;padding:10px 12px 6px;}
+.ref-type-badge{
+  font-size:9.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 8px;border-radius:30px;
+}
+.ref-type-badge.quran{background:rgba(0,137,123,0.14);color:var(--teal);}
+.ref-type-badge.hadith{background:rgba(255,179,0,0.16);color:#a86a00;}
+[data-theme="dark"] .ref-type-badge.hadith{color:#ffcf5c;}
+.ref-source{font-size:11px;font-weight:600;color:var(--t3);margin-left:auto;}
+.ref-arabic{
+  font-family:'Amiri',serif;font-size:18px;line-height:1.8;
+  color:var(--t1);direction:rtl;text-align:right;
+  padding:6px 14px 10px;border-bottom:1px solid var(--bd2);
+}
+.ref-translation{font-size:12px;line-height:1.68;color:var(--t2);padding:9px 12px;font-style:italic;}
+.ref-note{font-size:11px;color:var(--t3);padding:0 12px 10px;line-height:1.55;}
+.refs-empty{text-align:center;padding:30px 20px;color:var(--t3);font-size:13px;}
+
+/* ── BOTTOM NAV ── */
+.bottom-nav{
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:10px 20px calc(var(--sab) + 12px);
+}
+.arrow-btn{
+  width:52px;height:52px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.2s;
+  flex-shrink:0;
+}
+.arrow-btn svg{width:22px;height:22px;}
+.btn-back{
+  background:var(--surf);
+  border:1.5px solid var(--bd);
+  box-shadow:var(--sh);
+  color:var(--t2);
+}
+.btn-back:active{transform:scale(0.92);}
+.btn-back:disabled{opacity:0.28;pointer-events:none;}
+.btn-fwd{
+  background:linear-gradient(135deg,var(--teal-d),var(--teal));
+  color:#fff;
+  box-shadow:0 4px 16px rgba(0,137,123,0.42);
+}
+.btn-fwd:active{transform:scale(0.92);}
+.btn-fwd.final{background:linear-gradient(135deg,#b34500,var(--gold));box-shadow:0 4px 16px rgba(255,179,0,0.42);}
+
+.step-counter{
+  font-size:13px;font-weight:600;color:var(--t3);
+  letter-spacing:0.04em;
+  transition:color var(--tr);
+}
+
+/* ── COMPLETE SCREEN ── */
+.complete-scr{
+  display:none;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;
+  gap:16px;padding:20px;
+  flex:1;
+}
+.complete-scr.show{display:flex;}
+.c-icon{
+  width:84px;height:84px;border-radius:50%;
+  background:linear-gradient(135deg,var(--teal-d),var(--teal));
+  display:flex;align-items:center;justify-content:center;
+  font-size:36px;
+  box-shadow:0 6px 24px rgba(0,137,123,0.40);
+  animation:bounceIn 0.6s cubic-bezier(0.34,1.56,0.64,1) both;
+}
+.c-h{font-family:'Amiri',serif;font-size:1.6rem;font-weight:700;color:var(--teal); animation:fadeUp 0.4s ease 0.1s both;}
+.c-dua {
+  background: var(--pill); padding: 16px; border-radius: 12px;
+  border: 1px solid var(--bd); animation:fadeUp 0.5s ease 0.2s both;
+}
+.c-ar{font-family:'Amiri Quran','Amiri',serif;font-size:1.4rem;color:var(--t1);direction:rtl; margin-bottom: 8px;}
+.c-en{font-size:13px;line-height:1.6;color:var(--t2);font-style: italic;}
+.c-note{font-size:11px;line-height:1.5;color:var(--t3);margin-top:8px;}
+.c-p{font-size:14px;line-height:1.7;color:var(--t2);max-width:300px; animation:fadeUp 0.6s ease 0.3s both;}
+.btn-restart{
+  padding:13px 32px;border-radius:var(--r);
+  background:linear-gradient(135deg,var(--teal-d),var(--teal));
+  color:#fff;font-size:15px;font-weight:600;
+  box-shadow:0 4px 14px rgba(0,137,123,0.38);
+  animation:fadeUp 0.7s ease 0.4s both;
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes stepFade{from{opacity:0;transform:scale(0.98)}to{opacity:1;transform:scale(1)}}
+@keyframes bounceIn{0%{transform:scale(0)}60%{transform:scale(1.2)}100%{transform:scale(1)}}
+.page-anim{animation:stepFade 0.35s cubic-bezier(0.4,0,0.2,1) both;}
+
+@keyframes pulse{0%,100%{transform:scale(1);opacity:0.6}50%{transform:scale(1.07);opacity:1}}
+@keyframes ripple{0%{transform:scale(0.6);opacity:0.8}100%{transform:scale(1.9);opacity:0}}
+@keyframes heartbeat{0%,100%{transform:scale(1)}14%{transform:scale(1.18)}28%{transform:scale(1)}42%{transform:scale(1.1)}70%{transform:scale(1)}}
+@keyframes crescentGlow{0%,100%{opacity:0.5}50%{opacity:1}}
+@keyframes earGlow{0%,100%{opacity:0.4}50%{opacity:1}}
+@keyframes sideFlow{0%,100%{opacity:0.7;transform:translateX(0)}50%{opacity:1;transform:translateX(2px)}}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <div id="a11y-announcer" aria-live="polite" class="sr-only"></div>
+
+  <header class="topbar">
+    <div class="tb-left">
+      <button class="tb-back" onclick="window.location.href='./index.html'" aria-label="Go back">
+        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+      </button>
+      <div class="topbar-title">Salah Guide</div>
+    </div>
+
+    <div class="tb-center">
+      <div class="step-dots" id="stepDots"></div>
+    </div>
+
+    <div class="tb-right">
+      <button class="tb-theme-btn" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Toggle theme">
+        <span id="themeIcon"></span>
+      </button>
+    </div>
+  </header>
+
+  <div class="prog-track">
+    <div class="prog-fill" id="progFill"></div>
+  </div>
+
+  <main class="main" id="mainArea">
+
+    <div id="pageContent" style="display:flex;flex-direction:column;gap:8px;flex:1;overflow:hidden;"></div>
+
+    <div class="complete-scr" id="completeScr">
+      <div class="c-icon" aria-hidden="true">🕌</div>
+      <div class="c-h">You've Walked Through Salah</div>
+      <div class="c-dua">
+        <div class="c-ar">رَبَّنَا تَقَبَّلْ مِنَّا إِنَّكَ أَنْتَ السَّمِيعُ الْعَلِيمُ</div>
+        <div class="c-en">"Our Lord, accept this from us. You are the All-Hearing, the All-Knowing."</div>
+        <div class="c-note">This is the same dua used to close an act of worship — fitting to end this guide with it too.</div>
+      </div>
+      <p class="c-p">Five prayers, spread through every kind of day — dawn, midday, afternoon, sunset, night — regardless of what the day held. Go slowly at first; understanding grows with repetition.</p>
+      <button class="btn-restart" onclick="restart()">↺ Start Again</button>
+    </div>
+  </main>
+
+  <footer class="bottom-nav">
+    <button class="arrow-btn btn-back" id="btnBack" onclick="go(-1)" aria-label="Previous step">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="15 18 9 12 15 6"/>
+      </svg>
+    </button>
+
+    <div class="step-counter" id="stepCounter">1 of 19</div>
+
+    <button class="arrow-btn btn-fwd" id="btnFwd" onclick="go(1)" aria-label="Next step">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6"/>
+      </svg>
+    </button>
+  </footer>
+
+</div>
+
+<!-- Drawer Overlay -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()" aria-hidden="true"></div>
+<aside class="drawer" id="drawer" role="complementary" aria-label="Quran and Hadith references">
+  <div class="drawer-header">
+    <div class="drawer-title">
+      <div class="drawer-title-icon">📖</div>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:var(--t1)" id="drawerStepTitle">References</div>
+        <div style="font-size:10.5px;color:var(--t3);font-weight:500">Qur'an &amp; Hadith</div>
+      </div>
+    </div>
+    <button class="drawer-close" onclick="closeDrawer()" aria-label="Close references">✕</button>
+  </div>
+  <div class="drawer-scroll" id="drawerScroll"></div>
+</aside>
+
+<script>
+/* ── SVG ICONS (abstract only — no human figures, in keeping with how this guide presents the body in prayer) ── */
+const svgNS='http://www.w3.org/2000/svg';
+
+function svgIntro(){
+  const dots=[0,72,144,216,288].map((a,i)=>{
+    const r=58, rad=(a-90)*Math.PI/180, x=(80+r*Math.cos(rad)).toFixed(1), y=(80+r*Math.sin(rad)).toFixed(1);
+    return `<circle cx="${x}" cy="${y}" r="${i===1?5:3.4}" fill="${i===1?'#ffb300':'#4db6ac'}" opacity="${i===1?1:0.75}"/>`;
+  }).join('');
+  return `
+  <svg aria-hidden="true" viewBox="0 0 160 160" xmlns="${svgNS}">
+    <circle cx="80" cy="80" r="70" fill="rgba(0,137,123,0.07)"/>
+    <circle cx="80" cy="80" r="58" fill="none" stroke="#00897b" stroke-width="1.3" stroke-dasharray="3,5" opacity="0.5" style="animation:crescentGlow 5s linear infinite"/>
+    <rect x="52" y="56" width="56" height="56" rx="4" fill="#0f473b" style="animation:pulse 3.2s ease-in-out infinite;transform-origin:80px 84px"/>
+    <rect x="52" y="82" width="56" height="12" fill="#ffb300" opacity="0.92"/>
+    <g>${dots}</g>
+    <text x="80" y="150" text-anchor="middle" font-family="Amiri,serif" font-size="12" fill="#00897b">الصَّلَاة</text>
+  </svg>`;
+}
+
+function svgConditions(){return `
+<svg aria-hidden="true" viewBox="0 0 160 160" xmlns="${svgNS}">
+  <circle cx="80" cy="80" r="70" fill="rgba(0,137,123,0.07)"/>
+  <path d="M80 26 L118 40 V78 C118 108 100 128 80 138 C60 128 42 108 42 78 V40 Z" fill="#eaf6f3" stroke="#00897b" stroke-width="2" style="animation:pulse 2.6s ease-in-out infinite;transform-origin:80px 84px"/>
+  <path d="M62 82l13 13 24-26" fill="none" stroke="#00897b" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="80" cy="80" r="66" fill="none" stroke="#ffb300" stroke-width="1" opacity="0.4" style="animation:crescentGlow 2.4s ease-in-out infinite"/>
+</svg>`;}
+
+function svgTimes(){
+  const pts=[[14,110,'#4db6ac',5],[47,52,'#4db6ac',5],[80,38,'#ffb300',7],[113,52,'#4db6ac',5],[146,110,'#4db6ac',5]];
+  const circles=pts.map((p,i)=>`<circle cx="${p[0]}" cy="${p[1]}" r="${p[3]}" fill="${p[2]}" style="animation:pulse ${1.4+i*0.15}s ease-in-out infinite"/>`).join('');
+  return `
+  <svg aria-hidden="true" viewBox="0 0 160 140" xmlns="${svgNS}">
+    <path d="M14 110 A66 66 0 0 1 146 110" fill="none" stroke="#00897b" stroke-width="2" opacity="0.35"/>
+    <line x1="10" y1="112" x2="150" y2="112" stroke="#00897b" stroke-width="1.4" opacity="0.3"/>
+    ${circles}
+    <circle cx="80" cy="38" r="13" fill="none" stroke="#ffb300" stroke-width="1.4" opacity="0.6" style="animation:ripple 2.2s ease-out infinite;transform-origin:80px 38px"/>
+  </svg>`;
+}
+
+function svgAdhan(){return `
+<svg aria-hidden="true" viewBox="0 0 160 160" xmlns="${svgNS}">
+  <rect x="70" y="60" width="20" height="80" fill="#0f473b"/>
+  <polygon points="80,30 96,60 64,60" fill="#0f473b"/>
+  <circle cx="80" cy="24" r="5" fill="#ffb300"/>
+  <rect x="66" y="140" width="28" height="8" fill="#0f473b" opacity="0.85"/>
+  <g style="animation:ripple 2s ease-out infinite;transform-origin:112px 70px"><path d="M104 55 Q120 70 104 90" fill="none" stroke="#00897b" stroke-width="2.4" stroke-linecap="round"/></g>
+  <g style="animation:ripple 2s ease-out 0.5s infinite;transform-origin:122px 70px"><path d="M112 45 Q136 70 112 100" fill="none" stroke="#4db6ac" stroke-width="2" stroke-linecap="round" opacity="0.7"/></g>
+  <g style="animation:ripple 2s ease-out infinite;transform-origin:48px 70px"><path d="M56 55 Q40 70 56 90" fill="none" stroke="#00897b" stroke-width="2.4" stroke-linecap="round"/></g>
+</svg>`;}
+
+function svgNiyyah(){return `
+<svg aria-hidden="true" viewBox="0 0 160 160" xmlns="${svgNS}">
+  <ellipse cx="80" cy="80" rx="72" ry="72" fill="rgba(0,137,123,0.07)"/>
+  <g style="transform-origin:80px 76px;animation:heartbeat 2.6s ease-in-out infinite">
+    <path d="M80 118C44 95 30 68 30 54c0-16 12-27 25-27 10 0 21 7 25 18 4-11 15-18 25-18 13 0 25 11 25 27 0 14-14 41-50 64z" fill="#00897b" opacity="0.9"/>
+    <path d="M62 72l10 12 26-24" fill="none" stroke="#fff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" opacity="0.85"/>
+  </g>
+  <circle cx="80" cy="80" r="68" fill="none" stroke="#4db6ac" stroke-width="1.5" opacity="0" style="animation:ripple 2.3s ease-out infinite"/>
+  <text x="80" y="146" text-anchor="middle" font-family="Amiri,serif" font-size="12" fill="#00897b">اللَّهُ أَكْبَر</text>
+</svg>`;}
+
+/* Abstract posture glyph — an angle diagram, never a figure */
+function svgPosture(angle,accessory){
+  const baseX=70, baseY=115, len=76;
+  const rad=(angle-90)*Math.PI/180;
+  const tipX=(baseX+len*Math.cos(rad)).toFixed(1);
+  const tipY=(baseY+len*Math.sin(rad)).toFixed(1);
+  let arc='';
+  if(angle>4){
+    const arcR=30, largeArc=angle>180?1:0;
+    const a2x=(baseX+arcR*Math.cos(rad)).toFixed(1), a2y=(baseY+arcR*Math.sin(rad)).toFixed(1);
+    arc=`<path d="M ${baseX} ${baseY-arcR} A ${arcR} ${arcR} 0 ${largeArc} 1 ${a2x} ${a2y}" stroke="#4db6ac" stroke-width="1.6" fill="none" opacity="0.75"/>
+    <text x="${baseX+40}" y="${baseY-40}" text-anchor="middle" font-family="Inter,sans-serif" font-size="13" font-weight="700" fill="#00897b">${angle}°</text>`;
+  }
+  let acc='';
+  if(accessory==='book'){
+    acc=`<rect x="96" y="30" width="26" height="18" rx="2" fill="#eaf6f3" stroke="#00897b" stroke-width="1.4" style="animation:pulse 2.4s ease-in-out infinite"/><line x1="109" y1="30" x2="109" y2="48" stroke="#00897b" stroke-width="1" opacity="0.5"/>`;
+  } else if(accessory==='speech'){
+    acc=`<g style="animation:pulse 2s ease-in-out infinite"><rect x="98" y="26" width="34" height="20" rx="6" fill="#eaf6f3" stroke="#00897b" stroke-width="1.4"/><polygon points="106,46 106,54 114,46" fill="#eaf6f3" stroke="#00897b" stroke-width="1.2"/><line x1="104" y1="33" x2="126" y2="33" stroke="#00897b" stroke-width="1.6" opacity="0.6"/><line x1="104" y1="39" x2="120" y2="39" stroke="#00897b" stroke-width="1.6" opacity="0.4"/></g>`;
+  } else if(accessory==='up'){
+    acc=`<g style="animation:pulse 1.6s ease-in-out infinite"><line x1="132" y1="70" x2="132" y2="40" stroke="#ffb300" stroke-width="3" stroke-linecap="round"/><polygon points="132,32 126,44 138,44" fill="#ffb300"/></g>`;
+  }
+  return `
+  <svg aria-hidden="true" viewBox="0 0 160 160" xmlns="${svgNS}">
+    <ellipse cx="80" cy="135" rx="66" ry="8" fill="#4db6ac" opacity="0.16" style="animation:pulse 1.6s ease-in-out infinite"/>
+    <line x1="14" y1="${baseY}" x2="126" y2="${baseY}" stroke="#00897b" stroke-width="1.4" opacity="0.35"/>
+    <line x1="${baseX}" y1="${baseY}" x2="${baseX}" y2="${baseY-len}" stroke="#00897b" stroke-width="1" stroke-dasharray="3,3" opacity="0.3"/>
+    ${arc}
+    <line x1="${baseX}" y1="${baseY}" x2="${tipX}" y2="${tipY}" stroke="#ffb300" stroke-width="4.4" stroke-linecap="round" style="animation:pulse 2s ease-in-out infinite;transform-origin:${baseX}px ${baseY}px"/>
+    <circle cx="${baseX}" cy="${baseY}" r="5" fill="#00897b"/>
+    <circle cx="${tipX}" cy="${tipY}" r="6.5" fill="#ffb300" opacity="0.92"/>
+    ${acc}
+  </svg>`;
+}
+
+function svgCycle(){return `
+<svg aria-hidden="true" viewBox="0 0 160 160" xmlns="${svgNS}">
+  <circle cx="80" cy="80" r="70" fill="rgba(0,137,123,0.07)"/>
+  <path d="M50 50 A42 42 0 1 1 46 92" fill="none" stroke="#00897b" stroke-width="6" stroke-linecap="round" style="animation:crescentGlow 2.2s ease-in-out infinite"/>
+  <polygon points="46,92 34,84 40,102" fill="#00897b"/>
+  <text x="80" y="88" text-anchor="middle" font-family="Cormorant Garamond,Amiri,serif" font-weight="700" font-size="32" fill="#ffb300">17</text>
+  <text x="80" y="106" text-anchor="middle" font-family="Inter,sans-serif" font-size="8.5" letter-spacing="1" fill="#00897b">FARD RAKAT</text>
+</svg>`;}
+
+function svgBlessing(){
+  const rays=[0,45,90,135,180,225,270,315].map(a=>{
+    const rad=a*Math.PI/180, x1=(80+34*Math.cos(rad)).toFixed(1), y1=(50+34*Math.sin(rad)).toFixed(1), x2=(80+44*Math.cos(rad)).toFixed(1), y2=(50+44*Math.sin(rad)).toFixed(1);
+    return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#ffb300" stroke-width="2" stroke-linecap="round" opacity="0.7" style="animation:earGlow 1.8s ease-in-out infinite"/>`;
+  }).join('');
+  return `
+  <svg aria-hidden="true" viewBox="0 0 160 160" xmlns="${svgNS}">
+    <circle cx="80" cy="80" r="70" fill="rgba(255,179,0,0.07)"/>
+    <g style="animation:pulse 2.4s ease-in-out infinite;transform-origin:80px 92px">
+      <path d="M80 60 C64 54 46 56 40 62 V124 C46 118 64 116 80 122 C96 116 114 118 120 124 V62 C114 56 96 54 80 60 Z" fill="#eaf6f3" stroke="#00897b" stroke-width="2"/>
+      <line x1="80" y1="60" x2="80" y2="122" stroke="#00897b" stroke-width="1.4" opacity="0.4"/>
+    </g>
+    ${rays}
+  </svg>`;
+}
+
+function svgTaslim(){return `
+<svg aria-hidden="true" viewBox="0 0 160 160" xmlns="${svgNS}">
+  <circle cx="80" cy="80" r="70" fill="rgba(0,137,123,0.07)"/>
+  <circle cx="80" cy="66" r="16" fill="#f5d5a0" stroke="#d4a055" stroke-width="1.4"/>
+  <g style="animation:sideFlow 1.6s ease-in-out infinite">
+    <path d="M100 62 L128 62" stroke="#00897b" stroke-width="3" stroke-linecap="round"/>
+    <polygon points="128,62 120,56 120,68" fill="#00897b"/>
+  </g>
+  <g style="animation:sideFlow 1.6s ease-in-out 0.8s infinite">
+    <path d="M60 62 L32 62" stroke="#4db6ac" stroke-width="3" stroke-linecap="round"/>
+    <polygon points="32,62 40,56 40,68" fill="#4db6ac"/>
+  </g>
+  <text x="129" y="94" text-anchor="middle" font-family="Amiri,serif" font-size="13" fill="#00897b">سلام</text>
+  <text x="31" y="94" text-anchor="middle" font-family="Amiri,serif" font-size="13" fill="#4db6ac">سلام</text>
+</svg>`;}
+
+function svgBeyond(){
+  const sq=[[52,86],[76,86],[100,86],[52,106],[76,106],[100,106]].map((p,i)=>`<rect x="${p[0]-6}" y="${p[1]-6}" width="12" height="12" rx="3" fill="${i===2?'#ffb300':'#4db6ac'}" opacity="${i===2?1:0.55}" style="animation:pulse ${1.6+i*0.1}s ease-in-out infinite"/>`).join('');
+  return `
+  <svg aria-hidden="true" viewBox="0 0 160 160" xmlns="${svgNS}">
+    <circle cx="80" cy="80" r="70" fill="rgba(0,137,123,0.07)"/>
+    <rect x="34" y="46" width="92" height="80" rx="10" fill="#eaf6f3" stroke="#00897b" stroke-width="2"/>
+    <rect x="34" y="46" width="92" height="22" rx="10" fill="#00897b"/>
+    <line x1="56" y1="38" x2="56" y2="56" stroke="#00897b" stroke-width="3" stroke-linecap="round"/>
+    <line x1="104" y1="38" x2="104" y2="56" stroke="#00897b" stroke-width="3" stroke-linecap="round"/>
+    ${sq}
+  </svg>`;
+}
+
+function svgKhushu(){return `
+<svg aria-hidden="true" viewBox="0 0 160 160" xmlns="${svgNS}">
+  <circle cx="80" cy="80" r="70" fill="rgba(0,137,123,0.07)"/>
+  <g style="transform-origin:80px 84px;animation:heartbeat 2.4s ease-in-out infinite">
+    <path d="M80 122c-22-15-34-30-34-45 0-12 9-21 20-21c0 15-12 30-34 45z" fill="#00897b"/>
+  </g>
+  <path d="M40 84 L58 84 L66 68 L76 100 L86 76 L94 84 L120 84" fill="none" stroke="#ffb300" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>`;}
+
+/* ── STEP DATA ── */
+const steps = [
+{
+  title:`What Is Salah`,arabic:`الصَّلَاة`,trans:`Aṣ-Ṣalāh`,
+  chip1:`🕋 2nd Pillar of Islam`,chip2:`⟳ 5× Daily`,
+  desc:`Salah — Namaz — is a set of words and movements repeated five times a day: standing, bowing, prostrating, and sitting, always facing the Kaaba in Makkah. It is the second of the five pillars of Islam, and the one practiced most often — daily, whether life is calm or difficult.`,
+  tip:`The four major schools of law — Hanafi, Shafi'i, Maliki, Hanbali — agree on the core structure of Salah and differ mainly in small details. This guide follows the most widely taught form and notes the main points where practice commonly varies.`,
+  extra:`<div class="igrid">
+    <div class="icard"><div class="ic-ar">١</div><div class="ic-name">Shahādah</div><div class="ic-sub">Declaration of faith</div></div>
+    <div class="icard current"><div class="ic-ar">٢</div><div class="ic-name">Ṣalāh</div><div class="ic-sub">Five daily prayers</div></div>
+    <div class="icard"><div class="ic-ar">٣</div><div class="ic-name">Zakāh</div><div class="ic-sub">Obligatory charity</div></div>
+    <div class="icard"><div class="ic-ar">٤</div><div class="ic-name">Ṣawm</div><div class="ic-sub">Fasting in Ramadan</div></div>
+    <div class="icard"><div class="ic-ar">٥</div><div class="ic-name">Ḥajj</div><div class="ic-sub">Pilgrimage to Makkah</div></div>
+  </div>`,
+  svgFn:svgIntro
+},
+{
+  title:`Before You Begin`,arabic:`شُرُوطُ الصَّلَاة`,trans:`Shurūṭ aṣ-Ṣalāh`,
+  chip1:`✅ 6 Conditions`,chip2:`🧼 Purity First`,
+  desc:`Salah can't start casually. Before the first takbir, six things need to be true: a state of ritual purity, a clean body and clothing, a clean place to pray, the <strong>awrah</strong> covered, facing the <strong>Qibla</strong>, and praying within the fixed time window.`,
+  tip:`Need a refresher on purification? The Wudu Guide and Ghusl Guide in this same app cover the minor and major ablution step by step — come back here once that's done.`,
+  extra:`<div class="igrid">
+    <div class="icard"><div class="ic-name">١ Purity</div><div class="ic-sub">Wudu or Ghusl done</div></div>
+    <div class="icard"><div class="ic-name">٢ Clean Body</div><div class="ic-sub">&amp; clothing</div></div>
+    <div class="icard"><div class="ic-name">٣ Clean Place</div><div class="ic-sub">Where you pray</div></div>
+    <div class="icard"><div class="ic-name">٤ Awrah</div><div class="ic-sub">Covered per guidance</div></div>
+    <div class="icard"><div class="ic-name">٥ Qibla</div><div class="ic-sub">Facing the Kaaba</div></div>
+    <div class="icard"><div class="ic-name">٦ In Time</div><div class="ic-sub">Within the window</div></div>
+  </div>`,
+  svgFn:svgConditions
+},
+{
+  title:`The Five Prayers, and When They Fall`,arabic:`مَوَاقِيتُ الصَّلَاة`,trans:`Mawāqīt aṣ-Ṣalāh`,
+  chip1:`☀️ Tied to the Sun`,chip2:`🕔 5 Windows a Day`,
+  desc:`Each prayer is tied to the position of the sun, not the clock, so times shift slightly through the year: Fajr at true dawn, Dhuhr just after the sun's peak, Asr in the afternoon, Maghrib right after sunset, and Isha once twilight fully disappears.`,
+  tip:`Fajr is the only prayer recited aloud even when prayed alone, and the only one with an extra adhan line: "prayer is better than sleep."`,
+  extra:`<div class="igrid">
+    <div class="icard"><div class="ic-ar">الفجر</div><div class="ic-name">Fajr</div><div class="ic-sub">Dawn → sunrise · 2 fard</div></div>
+    <div class="icard"><div class="ic-ar">الظهر</div><div class="ic-name">Dhuhr</div><div class="ic-sub">Midday → afternoon · 4 fard</div></div>
+    <div class="icard"><div class="ic-ar">العصر</div><div class="ic-name">Asr</div><div class="ic-sub">Afternoon · 4 fard</div></div>
+    <div class="icard"><div class="ic-ar">المغرب</div><div class="ic-name">Maghrib</div><div class="ic-sub">Just after sunset · 3 fard</div></div>
+    <div class="icard"><div class="ic-ar">العشاء</div><div class="ic-name">Isha</div><div class="ic-sub">Twilight gone · 4 fard</div></div>
+  </div>`,
+  svgFn:svgTimes
+},
+{
+  title:`The Call to Prayer`,arabic:`الأَذَان`,trans:`Al-Adhān`,
+  chip1:`📢 Called Publicly`,chip2:`🔁 Iqāmah Follows`,
+  desc:`The Adhan is called out when a prayer's time begins, inviting anyone within earshot. Its lines move from declaring Allah's greatness, to testifying to His oneness and the Prophet's ﷺ message, to calling people to prayer and to success. The shorter Iqamah is said just before the prayer itself starts.`,
+  tip:`For Fajr only, one extra line is added: "aṣ-ṣalātu khayrun minan-nawm" — prayer is better than sleep.`,
+  extra:`<div style="overflow-x:auto;"><table class="itable">
+    <thead><tr><th>Arabic</th><th>Meaning</th></tr></thead>
+    <tbody>
+      <tr><td class="ar">اللَّهُ أَكْبَرُ <span style="font-size:9px;color:var(--t3)">(4×)</span></td><td>Allah is greatest</td></tr>
+      <tr><td class="ar">أَشْهَدُ أَنْ لَا إِلَٰهَ إِلَّا اللَّهُ <span style="font-size:9px;color:var(--t3)">(2×)</span></td><td>I bear witness there is no god but Allah</td></tr>
+      <tr><td class="ar">أَشْهَدُ أَنَّ مُحَمَّدًا رَسُولُ اللَّهِ <span style="font-size:9px;color:var(--t3)">(2×)</span></td><td>I bear witness Muhammad is Allah's messenger</td></tr>
+      <tr><td class="ar">حَيَّ عَلَى الصَّلَاةِ ۖ حَيَّ عَلَى الْفَلَاحِ <span style="font-size:9px;color:var(--t3)">(2×)</span></td><td>Come to prayer · Come to success</td></tr>
+      <tr><td class="ar">لَا إِلَٰهَ إِلَّا اللَّهُ</td><td>There is no god but Allah</td></tr>
+    </tbody>
+  </table></div>`,
+  svgFn:svgAdhan
+},
+{
+  title:`Entering the Prayer`,arabic:`تَكْبِيرَةُ الْإِحْرَام`,trans:`Takbīrat al-Iḥrām`,
+  chip1:`🤲 Silent Intention`,chip2:`1× Said`,
+  desc:`Face the Qibla, form the intention in your heart for which prayer you're performing, then raise the hands and say "Allāhu Akbar" — Allah is greatest. This single takbir opens the prayer and closes off ordinary talking and movement until it ends.`,
+  tip:`Niyyah doesn't need to be spoken aloud. It's a moment of clarity in the heart about what you're doing and for whom — not a phrase to recite.`,
+  recitation:{arabic:`اللَّهُ أَكْبَرُ`,translit:`Allāhu Akbar`,meaning:`Allah is greatest.`},
+  svgFn:svgNiyyah,
+  imgUrl:`images/qiyam.png`
+},
+{
+  title:`Opening Supplication — Thanā'`,arabic:`ثَنَاء`,trans:`Sanā`,
+  chip1:`🧍 Stand Folded`,chip2:`1st Rakah Only`,
+  desc:`Once you enter the prayer, fold your hands (right over left) on your chest/torso and recite the <strong>Sana</strong> (opening praise) silently. It is only recited once, at the very beginning of the first rakah.`,
+  tip:`Reciting the Sana is a recommended Sunnah. Once finished, you seek refuge in Allah (say "A'ūdhu billāhi min ash-shayṭānir-rajīm") and start the main Quranic recitation.`,
+  recitation:{
+    arabic:`سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ وَتَبَارَكَ اسْمُكَ وَتَعَالَى جَدُّكَ وَلَا إِلَهَ غَيْرُكَ`,
+    translit:`Subḥānakallāhumma wa biḥamdika wa tabārakasmuka wa ta'ālā jadduka wa lā ilāha ghayruk`,
+    meaning:`Glory be to You, O Allah, and praise. Blessed is Your name, and exalted is Your majesty. There is no deity besides You.`
+  },
+  svgFn:function(){return svgPosture(0,'speech');},
+  imgUrl:`images/qiyam.png`
+},
+{
+  title:`Standing — Qiyām`,arabic:`قِيَام`,trans:`Qiyām`,
+  chip1:`🧍 Every Rakah`,chip2:`📖 Al-Fātiḥah Required`,
+  desc:`Hands rest on the chest, right over left. Recite <strong>Al-Fātiḥah</strong> — required in every single rakah of every prayer — then follow it with another portion or surah of the Quran in the first two rakahs.`,
+  tip:`"There is no prayer for the one who does not recite the Opening of the Book" — it's the one piece of Quran repeated in every rakah, every prayer, every day.`,
+  recitation:{arabic:`بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ ﴿١﴾<br>الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ ﴿٢﴾<br>الرَّحْمَٰنِ الرَّحِيمِ ﴿٣﴾<br>مَالِكِ يَوْمِ الدِّينِ ﴿٤﴾<br>إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ ﴿٥﴾<br>اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ ﴿٦﴾<br>صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ ﴿٧﴾`,
+    translit:`Bismillāhir-Raḥmānir-Raḥīm · Al-ḥamdu lillāhi Rabbil-'ālamīn · Ar-Raḥmānir-Raḥīm · Māliki yawmid-dīn · Iyyāka na'budu wa iyyāka nasta'īn · Ihdinaṣ-ṣirāṭal-mustaqīm · Ṣirāṭal-ladhīna an'amta 'alayhim, ghayril-maghḍūbi 'alayhim wa laḍ-ḍāllīn`,
+    meaning:`In the name of Allah, the Most Compassionate, the Most Merciful. All praise belongs to Allah, Lord of all worlds. You alone we worship, and You alone we ask for help. Guide us on the straight path — the path of those You have blessed, not of those who earned Your anger, nor of those who went astray.`},
+  extra:`<p style="font-size:12px;color:var(--t2);margin-top:8px;">In the first two rakahs, follow Al-Fātiḥah with a short Surah. An example is <strong>Surah Al-Ikhlāṣ</strong>:</p>
+  <div class="quote-card" style="margin-top:6px;">
+    <span class="quote-tag">Example Surah</span>
+    <div class="quote-ar" style="font-size:1.05rem;">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ<br>قُلْ هُوَ اللَّهُ أَحَدٌ ﴿١﴾ اللَّهُ الصَّمَدُ ﴿٢﴾ لَمْ يَلِدْ وَلَمْ يُولَدْ ﴿٣﴾ وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ ﴿٤﴾</div>
+    <div class="quote-translit" style="font-size:10.5px;">Bismillāhir-Raḥmānir-Raḥīm · Qul huwallāhu aḥad · Allāhuṣ-ṣamad · Lam yalid wa lam yūlad · Wa lam yakullahū kufuwan aḥad</div>
+    <div class="quote-meaning" style="font-size:11px;">"Say, 'He is Allah, [who is] One. Allah, the Eternal Refuge. He neither begets nor is born. Nor is there to Him any equivalent.'" (Surah Al-Ikhlāṣ 112:1-4)</div>
+  </div>`,
+  svgFn:function(){return svgPosture(0,'book');},
+  imgUrl:`images/qiyam.png`
+},
+{
+  title:`Bowing — Rukū'`,arabic:`رُكُوع`,trans:`Rukū'`,
+  chip1:`🙇 Bend from the Waist`,chip2:`3× Recited`,
+  desc:`Say "Allāhu Akbar" and bend forward from the waist, back flat, hands resting on the knees. While bowed, say the tasbih of ruku three times.`,
+  tip:`A man once prayed too quickly and the Prophet ﷺ told him to go back and pray again: "bow until you are at ease in bowing." Stillness in each posture isn't optional.`,
+  recitation:{arabic:`سُبْحَانَ رَبِّيَ الْعَظِيمِ`,translit:`Subḥāna Rabbiyal-'Aẓīm`,meaning:`Glory be to my Lord, the Magnificent. (said three times)`},
+  svgFn:function(){return svgPosture(90);},
+  imgUrl:`images/ruku.png`
+},
+{
+  title:`Rising — I'tidāl`,arabic:`اِعْتِدَال`,trans:`I'tidāl`,
+  chip1:`⬆️ Stand Fully Upright`,chip2:`1× Recited`,
+  desc:`Rise from bowing back to a full standing position. It's a brief upright pause — with its own short recitation — before going down to prostrate.`,
+  tip:`Like every posture in Salah, this stand needs a real moment of stillness, not a bounce on the way down to sujud.`,
+  recitation:{arabic:`سَمِعَ اللَّهُ لِمَنْ حَمِدَهُ، رَبَّنَا لَكَ الْحَمْدُ`,translit:`Sami'a-llāhu liman ḥamidah, Rabbanā lakal-ḥamd`,meaning:`Allah hears whoever praises Him. Our Lord, all praise belongs to You.`},
+  svgFn:function(){return svgPosture(0,'up');},
+  imgUrl:`images/qiyam.png`
+},
+{
+  title:`Prostration — Sujūd`,arabic:`سُجُود`,trans:`Sujūd`,
+  chip1:`🙏 Forehead to Ground`,chip2:`3× Recited`,
+  desc:`Say "Allāhu Akbar" and lower to the ground — knees, then hands, then forehead and nose touching it. Say the tasbih of sujud three times.`,
+  tip:`The Prophet ﷺ said a servant is closest to their Lord while prostrating — this is the posture worth lingering in, not rushing through.`,
+  recitation:{arabic:`سُبْحَانَ رَبِّيَ الْأَعْلَى`,translit:`Subḥāna Rabbiyal-A'lā`,meaning:`Glory be to my Lord, the Most High. (said three times)`},
+  svgFn:function(){return svgPosture(165);},
+  imgUrl:`images/sujud.png`
+},
+{
+  title:`Between Two Prostrations`,arabic:`جَلْسَة`,trans:`Jalsah`,
+  chip1:`🧎 Brief Sitting`,chip2:`1× Recited`,
+  desc:`Rise to a seated position between the two prostrations and ask for forgiveness. It's a short pause, not a rush, before going back down for the second prostration.`,
+  tip:`This is one of the few moments in the prayer that's purely a personal request — short and private, between two acts of physical submission.`,
+  recitation:{arabic:`رَبِّ اغْفِرْ لِي`,translit:`Rabbighfir lī`,meaning:`My Lord, forgive me.`},
+  svgFn:function(){return svgPosture(120);},
+  imgUrl:`images/jalsah.png`
+},
+{
+  title:`Prostrate Again`,arabic:`سُجُودٌ ثَانٍ`,trans:`Sujūd (second)`,
+  chip1:`🙏 Completes the Rakah`,chip2:`3× Recited`,
+  desc:`Repeat the prostration exactly as before. Once you rise from this second prostration, one full rakah — one unit of the prayer — is complete.`,
+  tip:`A short prayer like Fajr, with just two rakahs, is nearly finished at this point. Longer prayers stand back up and begin the cycle again.`,
+  svgFn:function(){return svgPosture(165);},
+  imgUrl:`images/sujud.png`
+},
+{
+  title:`Completing the Rakah`,arabic:`تَكْرَارُ الرَّكَعَات`,trans:`Cycle &amp; Rakat Counts`,
+  chip1:`⟳ Repeats per Prayer`,chip2:`17 Fard Total`,
+  desc:`Each prayer repeats this standing-bowing-prostrating cycle a set number of times: 2 rakahs for Fajr, 4 for Dhuhr, Asr, and Isha, 3 for Maghrib — 17 fard rakahs a day in total. Extra sunnah rakahs sit around them and are where schools of thought differ most.`,
+  tip:`"Pray as you have seen me praying," the Prophet ﷺ said — the fard count is fixed everywhere; the sunnah counts are the recommended layer around it.`,
+  badges:`<span class="fiqh-badge">Fard — obligatory</span><span class="fiqh-badge gold">Sunnah — recommended</span>`,
+  extra:`<div style="overflow-x:auto;"><table class="itable">
+    <thead><tr><th>Prayer</th><th>Before</th><th>Fard</th><th>After</th><th>Witr</th></tr></thead>
+    <tbody>
+      <tr><td>Fajr</td><td>2</td><td class="fard">2</td><td>—</td><td>—</td></tr>
+      <tr><td>Dhuhr</td><td>4</td><td class="fard">4</td><td>2</td><td>—</td></tr>
+      <tr><td>Asr</td><td>4*</td><td class="fard">4</td><td>—</td><td>—</td></tr>
+      <tr><td>Maghrib</td><td>—</td><td class="fard">3</td><td>2</td><td>—</td></tr>
+      <tr><td>Isha</td><td>4*</td><td class="fard">4</td><td>2</td><td>3</td></tr>
+    </tbody>
+  </table></div>
+  <p style="font-size:10.5px;color:var(--t3);">* optional sunnah — counts vary by school of thought.</p>`,
+  svgFn:svgCycle
+},
+{
+  title:`The Testimony — Tashahhud`,arabic:`تَشَهُّد`,trans:`At-Taḥiyyāt`,
+  chip1:`🧎 After Every 2 Rakahs`,chip2:`1× Each Sitting`,
+  desc:`After every two rakahs, sit and recite At-Taḥiyyāt — testifying that all praise belongs to Allah, greeting the Prophet ﷺ, and renewing the declaration of faith. In a prayer of more than two rakahs, you stand back up afterward and continue; in the final sitting, you remain seated and continue further.`,
+  tip:`Many schools of thought recommend raising the index finger of the right hand slightly during the testimony ("ash-hadu al-lā ilāha...") as a physical sign of declaring Allah's oneness.`,
+  recitation:{arabic:`التَّحِيَّاتُ لِلَّهِ وَالصَّلَوَاتُ وَالطَّيِّبَاتُ، السَّلَامُ عَلَيْكَ أَيُّهَا النَّبِيُّ وَرَحْمَةُ اللَّهِ وَبَرَكَاتُهُ، السَّلَامُ عَلَيْنَا وَعَلَى عِبَادِ اللَّهِ الصَّالِحِينَ، أَشْهَدُ أَنْ لَا إِلَٰهَ إِلَّا اللَّهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا عَبْدُهُ وَرَسُولُهُ`,
+    translit:`At-taḥiyyātu lillāhi waṣ-ṣalawātu waṭ-ṭayyibāt, as-salāmu 'alayka ayyuhan-nabiyyu wa raḥmatullāhi wa barakātuh, as-salāmu 'alaynā wa 'alā 'ibādillāhiṣ-ṣāliḥīn, ash-hadu al-lā ilāha illa-llāh, wa ash-hadu anna Muḥammadan 'abduhu wa rasūluh`,
+    meaning:`All greetings, prayers, and good things belong to Allah. Peace be upon you, O Prophet, and Allah's mercy and blessings. Peace be upon us and upon the righteous servants of Allah. I bear witness there is no god but Allah, and I bear witness Muhammad is His servant and messenger.`},
+  svgFn:function(){return svgPosture(120,'speech');},
+  imgUrl:`images/jalsah.png`
+},
+{
+  title:`Blessings — Durūd Ibrāhīm`,arabic:`الصَّلَاةُ الْإِبْرَاهِيمِيَّة`,trans:`Durūd Ibrāhīm`,
+  chip1:`🕌 Final Rakah Only`,chip2:`After At-Taḥiyyāt`,
+  desc:`In the very last sitting only, continue after At-Taḥiyyāt by reciting Durūd Ibrāhīm — sending blessings on the Prophet Muhammad ﷺ and his family as Allah blessed Ibrahim and his family.`,
+  tip:`A companion, Ka'b ibn Ujrah, once asked the Prophet ﷺ exactly how to send blessings on him — this wording is the answer he was given.`,
+  recitation:{arabic:`اللَّهُمَّ صَلِّ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ كَمَا صَلَّيْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ. اللَّهُمَّ بَارِكْ عَلَى مُحَمَّدٍ وَعَلَى آلِ مُحَمَّدٍ كَمَا بَارَكْتَ عَلَى إِبْرَاهِيمَ وَعَلَى آلِ إِبْرَاهِيمَ إِنَّكَ حَمِيدٌ مَجِيدٌ`,
+    translit:`Allāhumma ṣalli 'alā Muḥammadin wa 'alā āli Muḥammad, kamā ṣallayta 'alā Ibrāhīma wa 'alā āli Ibrāhīm, innaka Ḥamīdum Majīd. Allāhumma bārik 'alā Muḥammadin wa 'alā āli Muḥammad, kamā bārakta 'alā Ibrāhīma wa 'alā āli Ibrāhīm, innaka Ḥamīdum Majīd.`,
+    meaning:`O Allah, send blessings upon Muhammad and the family of Muhammad, as You sent blessings upon Ibrahim and the family of Ibrahim. Indeed, You are Praiseworthy and Glorious. O Allah, send bounty upon Muhammad and the family of Muhammad, as You sent bounty upon Ibrahim and the family of Ibrahim. Indeed, You are Praiseworthy and Glorious.`},
+  svgFn:svgBlessing
+},
+{
+  title:`Closing Supplication`,arabic:`الدُّعَاءُ الْمَأْثُور`,trans:`Du'ā' Ma'thūr`,
+  chip1:`🕌 Before the Salam`,chip2:`Personal Requests`,
+  desc:`After Durūd Ibrāhīm, and before saying the final Taslīm, it is highly recommended to recite a closing supplication (Du'ā' Ma'thūr) taught by the Prophet ﷺ, seeking protection and forgiveness.`,
+  tip:`You can recite any authentic supplication here. One of the most famous is the one taught by the Prophet ﷺ to Abu Bakr, asking for forgiveness for wrongdoing.`,
+  recitation:{
+    arabic:`اللَّهُمَّ إِنِّي ظَلَمْتُ نَفْسِي ظُلْمًا كَثِيرًا وَلَا يَغْفِرُ الذُّنُوبَ إِلَّا أَنْتَ، فَاغْفِرْ لِي مَغْفِرَةً مِنْ عِنْدِكَ وَارْحَمْنِي، إِنَّكَ أَنْتَ الْغَفُورُ الرَّحِيمُ`,
+    translit:`Allāhumma innī ẓalamtu nafsī ẓulman kathīran wa lā yaghfirudh-dhunūba illā Anta, faghfir lī maghfiratan min 'indika warḥamnī, innaka Antal-Ghafūrur-Raḥīm.`,
+    meaning:`O Allah, I have greatly wronged myself, and no one forgives sins except You. So grant me forgiveness from You and have mercy on me. Indeed, You are the Forgiving, the Merciful.`
+  },
+  extra:`<p style="font-size:12px;color:var(--t2);margin-top:8px;">Another very common Qur'an supplication used here is:</p>
+  <div class="quote-card" style="margin-top:6px; border-left-color: var(--gold);">
+    <div class="quote-ar" style="font-size:1.05rem;">رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ</div>
+    <div class="quote-translit" style="font-size:10.5px;">Rabbanā ātinā fid-dunyā ḥasanatan wa fil-ākhirati ḥasanatan wa qinā 'adhāban-nār</div>
+    <div class="quote-meaning" style="font-size:11px;">"Our Lord, give us in this world that which is good and in the Hereafter that which is good and protect us from the punishment of the Fire." (Surah Al-Baqarah 2:201)</div>
+  </div>`,
+  svgFn:function(){return svgPosture(120,'speech');},
+  imgUrl:`images/jalsah.png`
+},
+{
+  title:`Closing — Taslīm`,arabic:`تَسْلِيم`,trans:`Taslīm`,
+  chip1:`↩️ Right, Then Left`,chip2:`Ends the Prayer`,
+  desc:`Turn your head to the right, saying the salam, then to the left, repeating it. This closes the prayer — peace and Allah's mercy upon those around you, seen and unseen.`,
+  tip:`"The key to prayer is purification, its opening is the takbir, and its closing is the taslim" — a hadith that frames the whole structure you've just walked through.`,
+  recitation:{arabic:`السَّلَامُ عَلَيْكُمْ وَرَحْمَةُ اللَّهِ`,translit:`As-salāmu 'alaykum wa raḥmatullāh`,meaning:`Peace and the mercy of Allah be upon you. (said turning right, then left)`},
+  svgFn:svgTaslim,
+  imgUrl:`images/taslim.png`
+},
+{
+  title:`Beyond the Five Daily Prayers`,arabic:`نَوَافِلُ وَصَلَوَاتٌ أُخْرَى`,trans:`Other Forms of Salah`,
+  chip1:`🌙 Special Days`,chip2:`6+ Variations`,
+  desc:`Salah widens out beyond the five daily prayers: <strong>Jumu'ah</strong> replaces Dhuhr on Fridays with a sermon, <strong>Witr</strong> closes the night after Isha, <strong>Tahajjud</strong> is a voluntary night prayer, <strong>Eid</strong> marks the two annual festivals, <strong>Janazah</strong> is prayed for the deceased with no bowing or prostration at all, and while traveling, prayers may be shortened or combined.`,
+  tip:`Sujūd as-Sahw — two extra prostrations at the end of a prayer — is a built-in margin for error for when an honest mistake happens mid-prayer.`,
+  extra:`<div class="igrid">
+    <div class="icard"><div class="ic-name">Jumu'ah</div><div class="ic-sub">Friday, replaces Dhuhr</div></div>
+    <div class="icard"><div class="ic-name">Witr</div><div class="ic-sub">Closes the night</div></div>
+    <div class="icard"><div class="ic-name">Tahajjud</div><div class="ic-sub">Voluntary night prayer</div></div>
+    <div class="icard"><div class="ic-name">Eid</div><div class="ic-sub">Two annual festivals</div></div>
+    <div class="icard"><div class="ic-name">Janazah</div><div class="ic-sub">For the deceased</div></div>
+    <div class="icard"><div class="ic-name">Tarawih</div><div class="ic-sub">Ramadan night prayers</div></div>
+    <div class="icard"><div class="ic-name">Qaṣr &amp; Jam'</div><div class="ic-sub">Travel concessions</div></div>
+    <div class="icard"><div class="ic-name">Sujūd as-Sahw</div><div class="ic-sub">Fixes an honest mistake</div></div>
+  </div>`,
+  svgFn:svgBeyond
+},
+{
+  title:`Presence of Heart`,arabic:`خُشُوع`,trans:`Khushū'`,
+  chip1:`❤️ The Real Goal`,chip2:`5 Common Slips`,
+  desc:`The movements can be learned in an afternoon. What takes longer — and what Salah is really for — is <strong>khushu</strong>: praying with attention, not just correct form. The Quran describes successful believers as those who are humble in their prayer.`,
+  tip:`Reciting words without attending to their meaning is common for beginners — even slowing down to understand what's being said changes the experience.`,
+  extra:`<ul class="rlist">
+    <li><span class="rx">✕</span><div><b>Rushing the postures</b><span>Each posture calls for real stillness before moving to the next.</span></div></li>
+    <li><span class="rx">✕</span><div><b>Praying on autopilot</b><span>Reciting words without attending to their meaning is common for beginners.</span></div></li>
+    <li><span class="rx">✕</span><div><b>Delaying without reason</b><span>Each prayer has a window — pushing it to the last minute erodes the habit.</span></div></li>
+    <li><span class="rx">✕</span><div><b>Skipping the intention</b><span>Niyyah is a moment of heart-clarity, not something to skip past.</span></div></li>
+    <li><span class="rx">✕</span><div><b>Ignoring the space</b><span>A cluttered or noisy prayer space makes khushu harder to hold onto.</span></div></li>
+  </ul>`,
+  svgFn:svgKhushu
+}
+];
+
+/* ── QURAN & HADITH REFERENCES PER STEP ── */
+const stepRefs = [
+  [ /* Welcome */
+    { type:'quran', source:'Al-Ankabut 29:45', arabic:'اتْلُ مَا أُوحِيَ إِلَيْكَ مِنَ الْكِتَابِ وَأَقِمِ الصَّلَاةَ ۖ إِنَّ الصَّلَاةَ تَنْهَىٰ عَنِ الْفَحْشَاءِ وَالْمُنكَرِ', translation:'"Recite what has been revealed to you of the Book and establish prayer. Indeed, prayer restrains from immorality and wrongdoing."', note:'Prayer\u2019s protective role in daily life is part of why it is prescribed five times a day rather than once.' },
+    { type:'hadith', source:'Bukhari & Muslim', arabic:'فَخَفَّفَ حَتَّى جُعِلَتْ خَمْسَ صَلَوَاتٍ فِي الْيَوْمِ وَاللَّيْلَةِ', translation:'"...so it was reduced, until it became five prayers each day and night."', note:'Part of the well-known account of Isra\u2019 and Mi\u2019raj, where the five daily prayers were established.' }
+  ],
+  [ /* Conditions */
+    { type:'quran', source:'Al-Ma\u2019idah 5:6', arabic:'يَا أَيُّهَا الَّذِينَ آمَنُوا إِذَا قُمْتُمْ إِلَى الصَّلَاةِ فَاغْسِلُوا وُجُوهَكُمْ', translation:'"O you who believe, when you rise for prayer, wash your faces..."', note:'The verse that ties ritual purification directly to the act of standing for Salah.' },
+    { type:'quran', source:'Al-Baqarah 2:238', arabic:'حَافِظُوا عَلَى الصَّلَوَاتِ وَالصَّلَاةِ الْوُسْطَىٰ وَقُومُوا لِلَّهِ قَانِتِينَ', translation:'"Guard strictly the prayers, and the middle prayer, and stand before Allah in devotion."', note:'Guarding the prayer is commonly understood to include guarding its preconditions.' }
+  ],
+  [ /* Prayer times */
+    { type:'quran', source:'An-Nisa 4:103', arabic:'إِنَّ الصَّلَاةَ كَانَتْ عَلَى الْمُؤْمِنِينَ كِتَابًا مَّوْقُوتًا', translation:'"Indeed, prayer has been decreed upon the believers a decree of specified times."', note:'The Quranic basis for Salah having fixed time windows rather than a single open period.' },
+    { type:'hadith', source:'Muslim', arabic:'الْوَقْتُ بَيْنَ هَذَيْنِ', translation:'"The time [for this prayer] is between these two [points]."', note:'From the well-known account of the angel Jibril leading the Prophet ﷺ in prayer on two consecutive days to mark the boundaries of each prayer\u2019s window.' }
+  ],
+  [ /* Adhan */
+    { type:'hadith', source:'Abu Dawud', arabic:'فَأُلْقِيَ عَلَيْهِ الْأَذَانُ', translation:'"...and the wording of the adhan was given to him [in the dream]."', note:'From the narration of Abdullah ibn Zayd, who described the wording of the adhan to the Prophet ﷺ after seeing it in a dream, which the Prophet ﷺ confirmed.' },
+    { type:'hadith', source:'Bukhari', arabic:'إِذَا حَضَرَتِ الصَّلَاةُ فَلْيُؤَذِّنْ لَكُمْ أَحَدُكُمْ', translation:'"When the time for prayer comes, let one of you call the adhan for you."', note:'The instruction establishing the adhan as the public announcement of each prayer\u2019s time.' }
+  ],
+  [ /* Niyyah & Takbir */
+    { type:'hadith', source:'Abu Dawud & Tirmidhi', arabic:'مِفْتَاحُ الصَّلَاةِ الطُّهُورُ، وَتَحْرِيمُهَا التَّكْبِيرُ، وَتَحْلِيلُهَا التَّسْلِيمُ', translation:'"The key to prayer is purification, its opening is the takbir, and its closing is the taslim."', note:'A single hadith that frames the entire shape of Salah, from the first condition to the final movement.' }
+  ],
+  [ /* Sana */
+    { type:'hadith', source:'Abu Dawud & Tirmidhi', arabic:'كَانَ إِذَا اسْتَفْتَحَ الصَّلَاةَ قَالَ: سُبْحَانَكَ اللَّهُمَّ وَبِحَمْدِكَ وَتَبَارَكَ اسْمُكَ وَتَعَالَى جَدُّكَ وَلَا إِلَهَ غَيْرُكَ', translation:'"When he [the Prophet ﷺ] opened the prayer, he would say: Glory be to You, O Allah, and praise. Blessed is Your name, and exalted is Your majesty. There is no god besides You."', note:'This opening supplication (Istiftah) is recited silently immediately after the starting Takbir.' }
+  ],
+  [ /* Qiyam / Fatiha */
+    { type:'hadith', source:'Muslim, Hadith Qudsi', arabic:'قَسَمْتُ الصَّلَاةَ بَيْنِي وَبَيْنَ عَبْدِي نِصْفَيْنِ', translation:'"I have divided the prayer between Myself and My servant into two halves..."', note:'Referring to Al-Fatiha, recited by the worshipper and answered, verse by verse, according to this hadith.' },
+    { type:'hadith', source:'Bukhari', arabic:'لَا صَلَاةَ لِمَنْ لَمْ يَقْرَأْ بِفَاتِحَةِ الْكِتَابِ', translation:'"There is no prayer for the one who does not recite the Opening of the Book."', note:'The basis for Al-Fatiha being required in every single rakah of every prayer.' }
+  ],
+  [ /* Ruku */
+    { type:'hadith', source:'Bukhari', arabic:'ارْجِعْ فَصَلِّ فَإِنَّكَ لَمْ تُصَلِّ... ثُمَّ ارْكَعْ حَتَّى تَطْمَئِنَّ رَاكِعًا', translation:'"Go back and pray, for you have not prayed... then bow until you are at ease in bowing."', note:'From the famous hadith of the man who prayed too quickly — stillness in each posture is part of the prayer itself, not optional polish.' },
+    { type:'quran', source:'Al-Hajj 22:77', arabic:'يَا أَيُّهَا الَّذِينَ آمَنُوا ارْكَعُوا وَاسْجُدُوا وَاعْبُدُوا رَبَّكُمْ', translation:'"O you who believe, bow and prostrate and worship your Lord."', note:'A direct Quranic instruction naming both bowing and prostration as acts of worship.' }
+  ],
+  [ /* I'tidal */
+    { type:'hadith', source:'Bukhari', arabic:'ثُمَّ ارْفَعْ حَتَّى تَعْتَدِلَ قَائِمًا', translation:'"...then rise until you stand up straight."', note:'The continuation of the same hadith describing the badly-prayed prayer — the standing pause after bowing is its own distinct posture, not a fast transition.' }
+  ],
+  [ /* Sujud */
+    { type:'hadith', source:'Muslim', arabic:'أَقْرَبُ مَا يَكُونُ الْعَبْدُ مِنْ رَبِّهِ وَهُوَ سَاجِدٌ', translation:'"The closest a servant is to his Lord is while he is prostrating."', note:'Often cited as the reason to linger in sujud rather than treat it as a brief formality.' },
+    { type:'quran', source:'Al-\u2018Alaq 96:19', arabic:'وَاسْجُدْ وَاقْتَرِبْ', translation:'"Prostrate, and draw near [to your Lord]."', note:'The closing verse of Surah Al-\u2018Alaq, directly linking prostration with nearness to Allah.' }
+  ],
+  [ /* Jalsah */
+    { type:'hadith', source:'Muslim (Hudhayfah\u2019s narration)', arabic:'ثُمَّ يَقُولُ: رَبِّ اغْفِرْ لِي، رَبِّ اغْفِرْ لِي', translation:'"...then he would say: My Lord, forgive me, my Lord, forgive me."', note:'Part of a companion\u2019s description of the Prophet\u2019s ﷺ prayer, including this brief seated dua.' }
+  ],
+  [ /* Sujud second */
+    { type:'hadith', source:'Muslim', arabic:'مَا مِنْ مُسْلِمٍ يَسْجُدُ لِلَّهِ سَجْدَةً إِلَّا رَفَعَهُ اللَّهُ بِهَا دَرَجَةً وَحَطَّ عَنْهُ بِهَا خَطِيئَةً', translation:'"No Muslim prostrates to Allah with a single prostration except that Allah raises him a degree by it and removes a sin from him by it."', note:'A general hadith on the reward of each prostration, including the second one in every rakah.' }
+  ],
+  [ /* Rakat counts */
+    { type:'hadith', source:'Bukhari', arabic:'صَلُّوا كَمَا رَأَيْتُمُونِي أُصَلِّي', translation:'"Pray as you have seen me praying."', note:'The general principle behind following the Prophet\u2019s ﷺ described method for the movements, order, and rakat counts of Salah.' },
+    { type:'hadith', source:'Bukhari & Muslim (\u2018Aisha)', arabic:'فُرِضَتِ الصَّلَاةُ رَكْعَتَيْنِ رَكْعَتَيْنِ، فَأُقِرَّتْ صَلَاةُ السَّفَرِ وَأُتِمَّتْ صَلَاةُ الْحَضَرِ', translation:'"Prayer was first made obligatory two rakahs at a time; travel prayer was left as it was, and resident prayer was made complete."', note:'\u2018Aisha\u2019s narration on the early history behind today\u2019s rakat counts, and why travel still permits a shortened count.' }
+  ],
+  [ /* Tashahhud */
+    { type:'hadith', source:'Bukhari (Ibn Mas\u2018ud)', arabic:'كَانَ يُعَلِّمُنَا التَّشَهُّدَ كَمَا يُعَلِّمُنَا السُّورَةَ مِنَ الْقُرْآنِ', translation:'"He ﷺ used to teach us the Tashahhud just as he taught us a surah of the Quran."', note:'Shows how carefully this exact wording was preserved and passed down from the earliest generation.' }
+  ],
+  [ /* Durud */
+    { type:'hadith', source:'Bukhari (Ka\u2018b ibn Ujrah)', arabic:'قُلْنَا: يَا رَسُولَ اللَّهِ، هَذَا التَّسْلِيمُ عَلَيْكَ قَدْ عَلِمْنَاهُ، فَكَيْفَ نُصَلِّي عَلَيْكَ؟', translation:'"We said: O Messenger of Allah, we already know how to greet you — but how do we send blessings upon you?"', note:'The Prophet ﷺ answered this question by teaching the exact wording of Durud Ibrahim used in the final sitting.' }
+  ],
+  [ /* Closing Supplication */
+    { type:'hadith', source:'Bukhari & Muslim', arabic:'اللَّهُمَّ إِنِّي ظَلَمْتُ نَفْسِي ظُلْمًا كَثِيرًا وَلا يَغْفِرُ الذُّنُوبَ إِلاَّ أَنْتَ فَاغْفِرْ لِي مَغْفِرَةً مِنْ عِنْدِكَ وَارْحَمْنِي إِنَّكَ أَنْتَ الْغَفُورُ الرَّحِيمُ', translation:'"O Allah, indeed I have wronged myself greatly, and none forgives sins except You, so forgive me with a forgiveness from You and have mercy on me. Indeed, You are the Forgiving, the Merciful."', note:'This supplication was taught by the Prophet ﷺ to Abu Bakr to be recited in his prayer.' },
+    { type:'quran', source:'Al-Baqarah 2:201', arabic:'رَبَّنَا آتِنَا فِي الدُّنْيَا حَسَنَةً وَفِي الْآخِرَةِ حَسَنَةً وَقِنَا عَذَابَ النَّارِ', translation:'"Our Lord, give us in this world that which is good and in the Hereafter that which is good and protect us from the punishment of the Fire."', note:'A comprehensive Quranic supplication that is also widely recited during the final sitting before the Taslim.' }
+  ],
+  [ /* Taslim */
+    { type:'hadith', source:'Abu Dawud & Tirmidhi (Ibn Mas\u2018ud)', arabic:'كَانَ يُسَلِّمُ عَنْ يَمِينِهِ وَعَنْ يَسَارِهِ', translation:'"He ﷺ would say the salam to his right and to his left."', note:'The basis for turning the head right, then left, to close the prayer.' }
+  ],
+  [ /* Beyond the five */
+    { type:'hadith', source:'Bukhari', arabic:'إِنَّ اللَّهَ وِتْرٌ يُحِبُّ الْوِتْرَ', translation:'"Indeed, Allah is Witr (One), and He loves the Witr."', note:'One basis for the emphasis placed on Witr as an odd-numbered closing prayer of the night.' },
+    { type:'quran', source:'Al-Jumu\u2018ah 62:9', arabic:'يَا أَيُّهَا الَّذِينَ آمَنُوا إِذَا نُودِيَ لِلصَّلَاةِ مِن يَوْمِ الْجُمُعَةِ فَاسْعَوْا إِلَىٰ ذِكْرِ اللَّهِ', translation:'"O you who believe, when the call is made for prayer on Friday, hasten to the remembrance of Allah."', note:'The Quranic basis for the Friday congregational prayer, Jumu\u2018ah.' }
+  ],
+  [ /* Khushu */
+    { type:'quran', source:'Al-Mu\u2019minun 23:1-2', arabic:'قَدْ أَفْلَحَ الْمُؤْمِنُونَ الَّذِينَ هُمْ فِي صَلَاتِهِمْ خَاشِعُونَ', translation:'"Successful indeed are the believers — those who are humbly submissive in their prayers."', note:'Khushu is presented here not as an optional extra but as part of what makes the prayer succeed.' },
+    { type:'hadith', source:'Ahmad', arabic:'إِنَّ الرَّجُلَ لَيَنْصَرِفُ وَمَا كُتِبَ لَهُ إِلَّا عُشْرُ صَلَاتِهِ', translation:'"Indeed, a man may finish his prayer with only a tenth of it recorded for him."', note:'Understood by scholars to describe the effect of praying without presence of heart — the reward is tied to attention, not just correct motion.' }
+  ]
+];
+
+/* ── THEME ICONS ── */
+const sunIcon = `<i class="fas fa-sun" style="font-size: clamp(12px, 3.5vw, 14px);"></i>`;
+const moonIcon = `<i class="fas fa-moon" style="font-size: clamp(12px, 3.5vw, 14px);"></i>`;
+
+/* ── THEME ── */
+let isDark = window.matchMedia('(prefers-color-scheme:dark)').matches;
+(()=>{
+  try {
+    const g = localStorage.getItem('globalTheme');
+    if (g) isDark = g === 'dark';
+    else {
+      const q = localStorage.getItem('quranNightMode');
+      if (q) isDark = q !== 'true';
+    }
+  } catch(e) {}
+  applyTheme();
+})();
+
+function applyTheme(){
+  document.documentElement.setAttribute('data-theme', isDark?'dark':'light');
+  document.getElementById('themeIcon').innerHTML = isDark ? sunIcon : moonIcon;
+}
+function toggleTheme(){
+  isDark=!isDark; applyTheme();
+  localStorage.setItem('globalTheme', isDark ? 'dark' : 'light');
+  localStorage.setItem('quranNightMode', (!isDark).toString());
+}
+
+/* ── STATE ── */
+let current = 0;
+
+function buildDots(){
+  const wrap = document.getElementById('stepDots');
+  wrap.innerHTML='';
+  steps.forEach((s,i)=>{
+    const b=document.createElement('button');
+    b.className='step-dot'+(i<current?' done':(i===current?' active':''));
+    b.textContent=i+1;
+    b.setAttribute('aria-label',`Go to step ${i+1}: ${s.title}`);
+    b.onclick=()=>{current=i;render();};
+    wrap.appendChild(b);
+  });
+  const activeDot = wrap.querySelector('.step-dot.active');
+  if(activeDot) activeDot.scrollIntoView({inline:'center', block:'nearest'});
+}
+
+function renderRecitation(r){
+  return `<div class="quote-card">
+    <span class="quote-tag">Recite</span>
+    <div class="quote-ar">${r.arabic}</div>
+    <div class="quote-translit">${r.translit}</div>
+    <div class="quote-meaning">${r.meaning}</div>
+  </div>`;
+}
+
+function render(){
+  const s=steps[current];
+  const pct=((current+1)/steps.length)*100;
+
+  document.getElementById('a11y-announcer').textContent = `Step ${current + 1}: ${s.title}. ${s.desc.replace(/<[^>]*>/g,'')}`;
+
+  document.getElementById('progFill').style.width=pct+'%';
+  document.getElementById('stepCounter').textContent=`${current+1} of ${steps.length}`;
+  buildDots();
+
+  document.getElementById('completeScr').classList.remove('show');
+
+  const contentDiv = document.getElementById('pageContent');
+  contentDiv.style.display = 'flex';
+
+  contentDiv.classList.remove('page-anim');
+  void contentDiv.offsetWidth;
+  contentDiv.classList.add('page-anim');
+
+  const back=document.getElementById('btnBack');
+  back.disabled=current===0;
+
+  const fwd=document.getElementById('btnFwd');
+  const isLast=current===steps.length-1;
+  fwd.className='arrow-btn btn-fwd'+(isLast?' final':'');
+  fwd.onclick=isLast?showComplete:()=>go(1);
+  fwd.setAttribute('aria-label', isLast?'Complete':'Next step');
+  fwd.innerHTML = isLast
+    ? `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>`
+    : `<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>`;
+
+  contentDiv.innerHTML=`
+    <div style="display:flex;flex-direction:column;gap:8px;flex:1;overflow:hidden;min-height:0;">
+      <div class="hero-strip">
+        <div>
+          <h2 class="hero-en">${s.title}</h2>
+          <div class="hero-sub">${s.trans}</div>
+          <div class="hero-chips">
+            <span class="hero-chip">${s.chip1}</span>
+            <span class="hero-chip">${s.chip2}</span>
+          </div>
+        </div>
+        <div class="hero-ar" aria-hidden="true">${s.arabic}</div>
+      </div>
+
+      <div class="anim-box" id="animBox" aria-hidden="true">
+        ${s.imgUrl ? `<img src="${s.imgUrl}" alt="${s.title}" style="height:100%; max-height:100%; object-fit:contain; border-radius:12px; filter:drop-shadow(0 2px 8px rgba(0,137,123,0.12));"/>` : s.svgFn()}
+      </div>
+
+      <div class="info-panel">
+        <div class="info-scroll">
+          ${s.recitation?renderRecitation(s.recitation):''}
+          <p class="desc-text">${s.desc}</p>
+          ${s.extra?s.extra:''}
+          ${s.badges?`<div class="badge-row">${s.badges}</div>`:''}
+          <div class="tip-box"><strong>💡 </strong>${s.tip}</div>
+          <button class="refs-btn" onclick="openDrawer()" aria-label="View Quran and Hadith references">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+            Qur'an &amp; Hadith References
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function go(dir){
+  const next=current+dir;
+  if(next<0||next>=steps.length) return;
+  current=next;
+  render();
+}
+
+function showComplete(){
+  document.getElementById('pageContent').style.display='none';
+  document.getElementById('completeScr').classList.add('show');
+  document.getElementById('progFill').style.width='100%';
+  document.getElementById('stepCounter').textContent='Done!';
+  document.getElementById('a11y-announcer').textContent = 'Guide complete. You have walked through the conditions, times, and full structure of Salah.';
+  buildDots();
+  const fwd=document.getElementById('btnFwd');
+  fwd.className='arrow-btn btn-fwd';
+  fwd.setAttribute('aria-label','Restart');
+  fwd.innerHTML=`<svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.51"/></svg>`;
+  fwd.onclick=restart;
+}
+
+function restart(){
+  current=0;
+  render();
+}
+
+/* swipe — blocked when drawer is open */
+let tx=0;
+function isDrawerOpen(){return document.getElementById('drawer').classList.contains('open');}
+document.getElementById('mainArea').addEventListener('touchstart',e=>{
+  if(isDrawerOpen()) return;
+  tx=e.touches[0].clientX;
+},{passive:true});
+document.getElementById('mainArea').addEventListener('touchend',e=>{
+  if(isDrawerOpen()) return;
+  const dx=e.changedTouches[0].clientX-tx;
+  if(Math.abs(dx)>65){dx<0?go(1):go(-1);}
+},{passive:true});
+
+/* keyboard */
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown') go(1);
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp') go(-1);
+  if(e.key==='Escape') closeDrawer();
+});
+
+/* ── DRAWER LOGIC ── */
+function openDrawer(){
+  document.getElementById('drawerOverlay').classList.add('open');
+  document.getElementById('drawer').classList.add('open');
+  renderDrawerContent();
+}
+function closeDrawer(){
+  document.getElementById('drawerOverlay').classList.remove('open');
+  document.getElementById('drawer').classList.remove('open');
+}
+function renderDrawerContent(){
+  const refs = stepRefs[current] || [];
+  const s = steps[current];
+  document.getElementById('drawerStepTitle').textContent = s.title;
+  const scroll = document.getElementById('drawerScroll');
+  if(!refs.length){
+    scroll.innerHTML = '<div class="refs-empty">📖 No specific references for this step.</div>';
+    return;
+  }
+  scroll.innerHTML = refs.map((r, i) => `
+    <div class="ref-card ${r.type}" style="animation-delay:${i*0.08}s">
+      <div class="ref-card-header">
+        <span class="ref-type-badge ${r.type}">${r.type === 'quran' ? '📖 Qur\'an' : '📜 Hadith'}</span>
+        <span class="ref-source">${r.source}</span>
+      </div>
+      <div class="ref-arabic">${r.arabic}</div>
+      <div class="ref-translation">"${r.translation}"</div>
+      ${r.note ? `<div class="ref-note">ℹ️ ${r.note}</div>` : ''}
+    </div>
+  `).join('');
+}
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,173 @@
+{
+  "pillars": [
+    {
+      "name": "Shahadah",
+      "ar": "الشهادة",
+      "icon": "📜",
+      "url": "https://en.wikipedia.org/wiki/Shahada"
+    },
+    {
+      "name": "Salah",
+      "ar": "الصلاة",
+      "icon": "🕌",
+      "url": "https://en.wikipedia.org/wiki/Salah"
+    },
+    {
+      "name": "Sawm",
+      "ar": "الصوم",
+      "icon": "🌙",
+      "url": "https://en.wikipedia.org/wiki/Sawm"
+    },
+    {
+      "name": "Zakat",
+      "ar": "الزكاة",
+      "icon": "💰",
+      "url": "https://en.wikipedia.org/wiki/Zakat"
+    },
+    {
+      "name": "Hajj",
+      "ar": "الحج",
+      "icon": "🕋",
+      "url": "https://en.wikipedia.org/wiki/Hajj"
+    }
+  ],
+  "topics": [
+    {
+      "name": "How to Take Shahada",
+      "desc": "Become Muslim — full guide",
+      "icon": "📜",
+      "tag": "Pillar 1",
+      "url": "https://en.wikipedia.org/wiki/Shahada"
+    },
+    {
+      "name": "How to do Wudu",
+      "desc": "Step-by-step ablution",
+      "icon": "💧",
+      "tag": "Essential",
+      "url": "https://en.wikipedia.org/wiki/Wudu"
+    },
+    {
+      "name": "How to do Ghusl",
+      "desc": "Ritual purification",
+      "icon": "🚿",
+      "tag": "Fard",
+      "url": "https://en.wikipedia.org/wiki/Ghusl"
+    },
+    {
+      "name": "Fajr Guide",
+      "desc": "2 rakat with method",
+      "icon": "🌅",
+      "tag": "Daily",
+      "url": "https://en.wikipedia.org/wiki/Fajr_prayer"
+    },
+    {
+      "name": "Complete Salah",
+      "desc": "All prayers full guide",
+      "icon": "📋",
+      "tag": "Pillar",
+      "url": "https://en.wikipedia.org/wiki/Salah"
+    },
+    {
+      "name": "Ramadan Guide",
+      "desc": "Suhoor · Iftar · Tarawih",
+      "icon": "🌟",
+      "tag": "Annual",
+      "url": "https://en.wikipedia.org/wiki/Ramadan"
+    },
+    {
+      "name": "Adhan & Iqamah",
+      "desc": "Words & responses",
+      "icon": "📢",
+      "tag": "Sunnah",
+      "url": "https://en.wikipedia.org/wiki/Adhan"
+    },
+    {
+      "name": "Tayammum",
+      "desc": "Dry purification",
+      "icon": "🌍",
+      "tag": "Rukhsah",
+      "url": "https://en.wikipedia.org/wiki/Tayammum"
+    },
+    {
+      "name": "Zakat Calculator",
+      "desc": "Nisab & rules",
+      "icon": "🧮",
+      "tag": "Tool",
+      "url": "https://en.wikipedia.org/wiki/Zakat"
+    }
+  ],
+  "categories": [
+    {
+      "name": "Quran Learning",
+      "sub": "Recitation · Tajweed · Hifz",
+      "color": "#22b589",
+      "url": "https://en.wikipedia.org/wiki/Quran"
+    },
+    {
+      "name": "Nikah (Marriage)",
+      "sub": "Contract · Mahr · Wali",
+      "color": "#4a9fd5",
+      "url": "https://en.wikipedia.org/wiki/Marriage_in_Islam"
+    },
+    {
+      "name": "Qurbani",
+      "sub": "Sacrifice · Rules · Distribution",
+      "color": "#c9992c",
+      "url": "https://en.wikipedia.org/wiki/Qurbani"
+    },
+    {
+      "name": "Aqeeqah",
+      "sub": "Newborn Rituals · Naming",
+      "color": "#c0614a",
+      "url": "https://en.wikipedia.org/wiki/Aqiqah"
+    },
+    {
+      "name": "Dua & Dhikr",
+      "sub": "Daily Supplications",
+      "color": "#8b82e0",
+      "url": "https://en.wikipedia.org/wiki/Dua"
+    },
+    {
+      "name": "Halal & Haram",
+      "sub": "Food · Finance · Conduct",
+      "color": "#5d9e30",
+      "url": "https://en.wikipedia.org/wiki/Halal"
+    },
+    {
+      "name": "Raising Muslim Kids",
+      "sub": "Education · Values · Adab",
+      "color": "#c05080",
+      "url": "https://en.wikipedia.org/wiki/Islamic_adab"
+    },
+    {
+      "name": "Taharah",
+      "sub": "Wudu · Ghusl · Tayammum",
+      "color": "#22b589",
+      "url": "https://en.wikipedia.org/wiki/Ritual_purification_in_Islam"
+    },
+    {
+      "name": "Akhlaq & Character",
+      "sub": "Honesty · Patience · Kindness",
+      "color": "#8a8680",
+      "url": "https://en.wikipedia.org/wiki/Islamic_ethics"
+    },
+    {
+      "name": "Janazah (Funeral)",
+      "sub": "Ghusl · Kafan · Burial",
+      "color": "#666462",
+      "url": "https://en.wikipedia.org/wiki/Islamic_funeral"
+    },
+    {
+      "name": "Aqeedah (Belief)",
+      "sub": "Six Pillars of Faith",
+      "color": "#8b82e0",
+      "url": "https://en.wikipedia.org/wiki/Aqidah"
+    },
+    {
+      "name": "Seerah of Prophet ﷺ",
+      "sub": "Life · Battles · Legacy",
+      "color": "#d06840",
+      "url": "https://en.wikipedia.org/wiki/Prophetic_biography"
+    }
+  ]
+}

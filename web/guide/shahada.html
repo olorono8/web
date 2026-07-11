@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=no"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<title>Shahada Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+/* ── RESET ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{
+  font-family:'Inter',sans-serif;
+  -webkit-font-smoothing:antialiased;
+  overscroll-behavior:none;
+  user-select:none;-webkit-user-select:none;
+}
+/* Allow text selection inside the reference drawer */
+.drawer,.drawer-scroll,.ref-card,.ref-arabic,.ref-translation,.ref-note,.mc-body,.cond-desc,.benefit-desc,.change-desc,.next-desc{
+  user-select:text;-webkit-user-select:text;
+}
+button{font-family:'Inter',sans-serif;cursor:pointer;border:none;outline:none;background:none;}
+
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0, 0, 0, 0); border: 0;
+}
+
+/* ── TOKENS ── */
+:root{
+  --teal:#00897b;--teal-d:#00564e;--teal-l:#4db6ac;
+  --gold:#ffb300;--gold-d:#c68200;
+  --r:14px;--rp:100px;
+  --sat:env(safe-area-inset-top,0px);
+  --sab:env(safe-area-inset-bottom,0px);
+}
+[data-theme="light"]{
+  --bg:#f0efea;--surf:#fff;--surf2:#f5f4ef;
+  --bd:rgba(0,0,0,0.07);--bd2:rgba(0,0,0,0.04);
+  --t1:#111;--t2:#555;--t3:#999;
+  --hero:linear-gradient(145deg,#00352c 0%,#00897b 60%,#26a69a 100%);
+  --nb:rgba(255,255,255,0.95);--nbl:blur(20px) saturate(1.8);
+  --sh:0 2px 16px rgba(0,86,78,0.06);
+  --pill:rgba(0,137,123,0.10);--pillt:#00564e;
+  --tip:#fffbeb;--tipb:#ffb300;--tipt:#92400e;
+  --dotbg:#e0dfd9;
+  --abg:linear-gradient(150deg,#e0f7f4,#f0faf9);
+  
+  /* Additional tokens for Shahada drawer */
+  --warn-bg:rgba(220,38,38,0.05);--warn-bd:rgba(220,38,38,0.18);--warn-t:#991b1b;
+  --check-bg:rgba(0,137,123,0.06);--check-bd:rgba(0,137,123,0.2);
+}
+[data-theme="dark"]{
+  --bg:#1e1e1e;--surf:#2c2c2c;--surf2:#353535;
+  --bd:rgba(255,255,255,0.07);--bd2:rgba(255,255,255,0.04);
+  --t1:#f0f0f0;--t2:#a0a0a0;--t3:#606060;
+  --hero:linear-gradient(145deg,#181818 0%,#263532 60%,#1e2e2c 100%);
+  --nb:rgba(28,28,28,0.95);--nbl:blur(20px) saturate(1.4);
+  --sh:0 2px 16px rgba(0,0,0,0.40);
+  --pill:rgba(77,182,172,0.14);--pillt:#4db6ac;
+  --tip:rgba(255,179,0,0.07);--tipb:#ffb300;--tipt:#fcd34d;
+  --dotbg:#444;
+  --abg:linear-gradient(150deg,#1c2c2b,#1a2220);
+
+  /* Additional tokens for Shahada drawer */
+  --warn-bg:rgba(220,38,38,0.10);--warn-bd:rgba(220,38,38,0.25);--warn-t:#fca5a5;
+  --check-bg:rgba(0,137,123,0.10);--check-bd:rgba(0,137,123,0.25);
+}
+
+html{background:var(--bg);}
+body{background:var(--bg);color:var(--t1);}
+
+/* ── APP SHELL ── */
+#app{
+  display:flex;flex-direction:column;
+  height:100%;max-width:680px;margin:0 auto;
+  position:relative;
+}
+
+/* ── TOPBAR ── */
+.topbar{
+  flex-shrink:0;padding:calc(var(--sat) + 8px) 14px 8px;
+  background:var(--nb);backdrop-filter:var(--nbl);-webkit-backdrop-filter:var(--nbl);
+  border-bottom:1px solid var(--bd);
+  display:flex;align-items:center;justify-content:space-between;
+}
+.tb-left{display:flex;align-items:center;gap:10px;}
+.tb-back{
+  width:32px;height:32px;border-radius:50%;background:transparent;
+  color:var(--t1);display:flex;align-items:center;justify-content:center;
+}
+.tb-back svg{width:14px;height:14px;}
+.topbar-title{font-size:15px;font-weight:700;color:var(--t1);}
+.tb-right{display:flex;align-items:center;gap:8px;}
+.tb-refs-btn{
+  font-size:11.5px;font-weight:700;letter-spacing:.03em;
+  color:var(--teal);background:var(--pill);
+  padding:6px 12px;border-radius:var(--rp);
+  display:flex;align-items:center;gap:4px;
+}
+.tb-refs-btn svg{width:12px;height:12px;stroke-width:2.5;}
+
+/* ── MAIN CONTENT ── */
+.main{
+  flex:1;display:flex;flex-direction:column;
+  overflow:hidden;padding:10px 14px 0;
+  gap:8px;
+  min-height:0;
+}
+
+.hero-strip{
+  background:var(--hero);border-radius:var(--r);
+  padding:14px;display:flex;align-items:center;justify-content:space-between;
+  position:relative;overflow:hidden;box-shadow:var(--sh);flex-shrink:0;
+}
+.hero-strip::before{
+  content:'';position:absolute;top:-30px;right:-30px;
+  width:100px;height:100px;border-radius:50%;
+  background:rgba(255,255,255,0.05);
+}
+.hero-en{font-size:16px;font-weight:700;color:#fff;letter-spacing:-0.4px;}
+.hero-sub{font-size:11px;color:rgba(255,255,255,0.65);margin-top:2px;}
+.hero-ar{font-family:'Amiri',serif;font-size:16px;color:rgba(255,255,255,0.9);direction:rtl;}
+
+/* ── AUDIO ANIMATIONS ── */
+.anim-box{
+  flex:0 0 140px;
+  height:140px;
+  min-height:140px;
+  max-height:140px;
+  background:var(--abg);
+  border-radius:14px;
+  border:1px solid var(--bd);
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+  box-shadow:var(--sh);
+}
+.soundwave {
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  height: 60px;
+}
+.soundwave .bar {
+  width: 6px; height: 12px; background: var(--teal); border-radius: 3px;
+  transition: height 0.2s ease;
+}
+.audio-playing-anim .soundwave .bar {
+  animation: wave 1s ease-in-out infinite;
+}
+.audio-playing-anim .soundwave .bar:nth-child(1) { animation-delay: 0.0s; }
+.audio-playing-anim .soundwave .bar:nth-child(2) { animation-delay: 0.15s; }
+.audio-playing-anim .soundwave .bar:nth-child(3) { animation-delay: 0.3s; }
+.audio-playing-anim .soundwave .bar:nth-child(4) { animation-delay: 0.45s; }
+.audio-playing-anim .soundwave .bar:nth-child(5) { animation-delay: 0.6s; }
+@keyframes wave {
+  0%, 100% { height: 12px; }
+  50% { height: 48px; background: var(--teal-l); }
+}
+
+.interactive-text {
+  cursor: pointer; position: relative; display: inline-flex; align-items: center; gap: 10px;
+  padding: 6px 12px; margin: -6px -12px; border-radius: 10px;
+  transition: background 0.2s, color 0.2s;
+}
+.interactive-text:active { background: var(--pill); }
+.interactive-text svg { width: 22px; height: 22px; stroke: var(--teal); fill: none; stroke-width: 2; opacity: 0.4; transition: opacity 0.2s; flex-shrink: 0; }
+.interactive-text:hover svg { opacity: 0.8; }
+.audio-playing-text { color: var(--teal) !important; background: var(--pill); }
+.audio-playing-text svg { opacity: 1 !important; stroke: var(--teal); stroke-width: 2.5; }
+
+/* ── INFO PANEL ── */
+.info-panel{
+  flex:1;display:flex;flex-direction:column;
+  background:var(--surf);
+  border-radius:14px;border:1px solid var(--bd);
+  overflow:hidden;
+  box-shadow:var(--sh);
+  min-height:0;
+}
+.info-scroll{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  padding:12px 14px;
+  display:flex;flex-direction:column;gap:10px;
+  min-height:0;
+  overscroll-behavior:contain;
+}
+.info-scroll::-webkit-scrollbar{width:3px;}
+.info-scroll::-webkit-scrollbar-thumb{background:var(--dotbg);border-radius:3px;}
+
+.step-ar{
+  font-family:'Amiri',serif;font-size:2rem;line-height:1.7;
+  color:var(--t1);direction:rtl;text-align:right;
+}
+.step-tr{
+  font-size:13.5px;font-style:italic;color:var(--teal);
+  font-weight:600;margin-top:2px;
+}
+.step-desc{font-size:12.5px;line-height:1.6;color:var(--t2);margin-top:2px;}
+.step-tip{
+  background:var(--tip);border-left:3px solid var(--tipb);
+  border-radius:0 8px 8px 0;padding:8px 12px;
+  font-size:11.5px;line-height:1.5;color:var(--tipt);margin-top:8px;
+}
+
+/* ── BOTTOM NAV ── */
+.bot-nav{
+  flex-shrink:0;display:flex;align-items:center;justify-content:space-between;
+  padding:12px 14px calc(var(--sab) + 12px);
+  background:var(--nb);backdrop-filter:var(--nbl);-webkit-backdrop-filter:var(--nbl);
+  border-top:1px solid var(--bd);
+}
+.nav-btn{
+  width:40px;height:40px;border-radius:50%;
+  background:var(--surf2);border:1px solid var(--bd);
+  display:flex;align-items:center;justify-content:center;
+  color:var(--t1);box-shadow:var(--sh);
+}
+.nav-btn:disabled{opacity:0.4;pointer-events:none;}
+.nav-btn svg{width:16px;height:16px;stroke-width:2.5;}
+.dots{display:flex;gap:4px;}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--dotbg);transition:background 0.3s,transform 0.3s;}
+.dot.active{background:var(--teal);transform:scale(1.3);}
+
+/* ── SIDEBAR DRAWER ── */
+.drawer-overlay{
+  position:fixed;inset:0;z-index:600;
+  background:rgba(0,0,0,0.42);
+  backdrop-filter:blur(3px);
+  opacity:0;pointer-events:none;
+  transition:opacity 0.32s cubic-bezier(0.4,0,0.2,1);
+}
+.drawer-overlay.open{opacity:1;pointer-events:auto;}
+.drawer{
+  position:fixed;top:0;right:0;bottom:0;
+  width:min(88vw,360px);z-index:601;
+  background:var(--surf);
+  border-left:1px solid var(--bd);
+  display:flex;flex-direction:column;
+  transform:translateX(100%);
+  transition:transform 0.35s cubic-bezier(0.4,0,0.2,1);
+  box-shadow:-8px 0 40px rgba(0,0,0,0.18);
+}
+.drawer.open{transform:translateX(0);}
+.drawer-header{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:calc(var(--sat) + 14px) 14px 14px;
+  border-bottom:1px solid var(--bd);
+  background:var(--surf);
+}
+.dh-title{font-size:15px;font-weight:700;color:var(--t1);}
+.dh-close{
+  width:30px;height:30px;border-radius:50%;background:var(--surf2);
+  display:flex;align-items:center;justify-content:center;color:var(--t2);
+}
+.dh-close svg{width:14px;height:14px;stroke-width:2.5;}
+.drawer-scroll{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  padding:14px;display:flex;flex-direction:column;gap:16px;
+  min-height:0;
+  overscroll-behavior:contain;
+}
+.drawer-scroll::-webkit-scrollbar{width:3px;}
+.drawer-scroll::-webkit-scrollbar-thumb{background:var(--dotbg);border-radius:3px;}
+
+/* ── DRAWER CONTENT STYLES ── */
+.sec-label{
+  font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;
+  color:var(--teal);margin-bottom:8px;display:flex;align-items:center;gap:8px;
+}
+.sec-label::after{content:'';flex:1;height:1px;background:var(--bd);}
+
+/* Conditions List */
+.cond-list{display:flex;flex-direction:column;gap:8px;}
+.cond-item{
+  display:flex;align-items:flex-start;gap:10px;
+  background:var(--check-bg);border:1px solid var(--check-bd);
+  border-radius:12px;padding:12px;
+}
+.cond-check{
+  width:24px;height:24px;border-radius:50%;flex-shrink:0;margin-top:1px;
+  background:linear-gradient(135deg,var(--teal-d),var(--teal));
+  display:flex;align-items:center;justify-content:center;
+}
+.cond-check svg{width:12px;height:12px;stroke:#fff;stroke-width:2.5;fill:none;}
+.cond-name{font-size:13px;font-weight:700;color:var(--t1);}
+.cond-desc{font-size:11.5px;color:var(--t2);line-height:1.55;margin-top:3px;}
+
+/* Misconceptions */
+.mc-list{display:flex;flex-direction:column;gap:10px;}
+.mc-card{
+  border-radius:14px;overflow:hidden;border:1px solid var(--bd);box-shadow:var(--sh);
+}
+.mc-myth{
+  display:flex;align-items:flex-start;gap:10px;
+  background:var(--warn-bg);border-bottom:1px solid var(--warn-bd);
+  padding:12px 14px;
+}
+.mc-myth-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
+.mc-myth-text{font-size:12.5px;font-weight:600;color:var(--warn-t);line-height:1.5;}
+.mc-truth{
+  background:var(--surf);padding:12px 14px;
+  display:flex;align-items:flex-start;gap:10px;
+}
+.mc-truth-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
+.mc-body{font-size:12px;color:var(--t2);line-height:1.65;}
+
+/* Ref Cards */
+.refs-list{display:flex;flex-direction:column;gap:10px;}
+.ref-card{
+  border-radius:14px;border:1px solid var(--bd);overflow:hidden;
+  box-shadow:var(--sh);
+}
+.ref-card.quran{background:linear-gradient(145deg,rgba(0,137,123,0.07),rgba(77,182,172,0.03));border-color:rgba(0,137,123,0.2);}
+.ref-card.hadith{background:linear-gradient(145deg,rgba(255,179,0,0.06),rgba(255,195,50,0.02));border-color:rgba(255,179,0,0.2);}
+.ref-header{display:flex;align-items:center;gap:8px;padding:10px 12px 6px;}
+.ref-badge{font-size:9.5px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:30px;}
+.ref-badge.quran{background:rgba(0,137,123,0.14);color:var(--teal);}
+.ref-badge.hadith{background:rgba(255,179,0,0.16);color:#a86a00;}
+[data-theme="dark"] .ref-badge.hadith{color:#ffcf5c;}
+.ref-source{font-size:11px;font-weight:600;color:var(--t3);margin-left:auto;}
+.ref-arabic{
+  font-family:'Amiri',serif;font-size:18px;line-height:1.8;
+  color:var(--t1);direction:rtl;text-align:right;
+  padding:6px 14px 10px;border-bottom:1px solid var(--bd2);
+}
+.ref-translation{font-size:12px;line-height:1.68;color:var(--t2);padding:9px 12px;font-style:italic;}
+
+/* Benefits Grid */
+.benefits-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.benefit-card{
+  background:var(--surf);border:1px solid var(--bd);border-radius:14px;
+  padding:14px 12px;text-align:center;box-shadow:var(--sh);
+  display:flex;flex-direction:column;align-items:center;gap:7px;
+}
+.benefit-icon{font-size:26px;}
+.benefit-title{font-size:12px;font-weight:700;color:var(--t1);}
+.benefit-desc{font-size:10.5px;color:var(--t2);line-height:1.5;}
+
+/* Next Steps */
+.next-steps{display:flex;flex-direction:column;gap:8px;}
+.next-item{
+  display:flex;align-items:center;gap:12px;
+  background:var(--surf);border:1px solid var(--bd);border-radius:12px;
+  padding:12px 14px;box-shadow:var(--sh);
+}
+.next-num{
+  width:32px;height:32px;border-radius:50%;flex-shrink:0;font-size:13px;font-weight:700;
+  background:linear-gradient(135deg,rgba(0,137,123,0.15),rgba(77,182,172,0.08));
+  border:1px solid rgba(0,137,123,0.25);
+  color:var(--teal);display:flex;align-items:center;justify-content:center;
+}
+.next-title{font-size:13px;font-weight:700;color:var(--t1);}
+.next-desc{font-size:11px;color:var(--t3);line-height:1.4;margin-top:2px;}
+
+/* Completion Banner */
+.complete-banner{
+  border-radius:14px;overflow:hidden;
+  background:var(--hero);box-shadow:0 6px 32px rgba(0,137,123,0.25);
+  padding:20px 14px;text-align:center;position:relative;
+}
+.cb-icon{font-size:44px;display:block;}
+.cb-title{font-family:'Amiri',serif;font-size:1.4rem;font-weight:700;color:#fff;margin:8px 0 4px;}
+.cb-sub{font-size:12px;color:rgba(255,255,255,0.7);line-height:1.6;}
+.cb-arabic{font-family:'Amiri',serif;font-size:1.5rem;color:rgba(255,255,255,0.9);margin-top:12px;direction:rtl;}
+
+/* Fade animation for info panel */
+.fade-in{animation:fadeIn 0.25s ease forwards;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
+
+@media(min-width:600px){
+  #app{box-shadow:0 0 48px rgba(0,0,0,0.08);}
+}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <header class="topbar">
+    <div class="tb-left">
+      <button class="tb-back" onclick="window.location.href='./index.html'" aria-label="Go back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+        </svg>
+      </button>
+      <span class="topbar-title">Shahada Guide</span>
+    </div>
+    <div class="tb-right">
+      <button class="tb-refs-btn" onclick="toggleDrawer()" aria-label="Knowledge & Misconceptions">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+        Learn More
+      </button>
+    </div>
+  </header>
+
+  <main class="main" id="mainArea">
+    <div id="pageContent" style="display:flex;flex-direction:column;height:100%;min-height:0;"></div>
+  </main>
+
+  <nav class="bot-nav">
+    <button class="nav-btn" id="btnPrev" onclick="go(-1)" aria-label="Previous step">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <div class="dots" id="dotsContainer"></div>
+    <button class="nav-btn" id="btnNext" onclick="go(1)" aria-label="Next step">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  </nav>
+</div>
+
+<!-- ── DRAWER ── -->
+<div class="drawer-overlay" id="drawerOverlay" onclick="toggleDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-header">
+    <div class="dh-title">Knowledge & Details</div>
+    <button class="dh-close" onclick="toggleDrawer()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="drawer-scroll" id="drawerScroll">
+    
+    <div class="sec-label">Conditions</div>
+    <div class="cond-list">
+      <div class="cond-item">
+        <div class="cond-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div>
+          <div class="cond-name">1. ʿIlm (Knowledge)</div>
+          <div class="cond-desc">Knowing what the Shahada means — negating false deities and affirming Allah.</div>
+        </div>
+      </div>
+      <div class="cond-item">
+        <div class="cond-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div>
+          <div class="cond-name">2. Yaqīn (Certainty)</div>
+          <div class="cond-desc">The heart must be free of doubt regarding Allah's oneness.</div>
+        </div>
+      </div>
+      <div class="cond-item">
+        <div class="cond-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div>
+          <div class="cond-name">3. Qabūl (Acceptance)</div>
+          <div class="cond-desc">Accepting all the requirements of Islam without rejection.</div>
+        </div>
+      </div>
+      <div class="cond-item">
+        <div class="cond-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div>
+          <div class="cond-name">4. Inqiyād (Submission)</div>
+          <div class="cond-desc">Acting on the requirements by following Allah's commands.</div>
+        </div>
+      </div>
+      <div class="cond-item">
+        <div class="cond-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div>
+          <div class="cond-name">5. Ṣidq (Truthfulness)</div>
+          <div class="cond-desc">Declaring it sincerely from the heart, not just the tongue.</div>
+        </div>
+      </div>
+      <div class="cond-item">
+        <div class="cond-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div>
+          <div class="cond-name">6. Ikhlāṣ (Sincerity)</div>
+          <div class="cond-desc">Doing it purely for Allah, not for marriage or social status.</div>
+        </div>
+      </div>
+      <div class="cond-item">
+        <div class="cond-check"><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"/></svg></div>
+        <div>
+          <div class="cond-name">7. Maḥabbah (Love)</div>
+          <div class="cond-desc">Loving this testimony, Allah, and His Messenger ﷺ above all.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sec-label">Misconceptions</div>
+    <div class="mc-list">
+      <div class="mc-card">
+        <div class="mc-myth"><span class="mc-myth-icon">❌</span><div class="mc-myth-text">"I need to change my name"</div></div>
+        <div class="mc-truth"><span class="mc-truth-icon">✅</span><div class="mc-body">Changing your name is not required unless it contradicts Islam (e.g., a name meaning "servant of an idol").</div></div>
+      </div>
+      <div class="mc-card">
+        <div class="mc-myth"><span class="mc-myth-icon">❌</span><div class="mc-myth-text">"I must be perfect first"</div></div>
+        <div class="mc-truth"><span class="mc-truth-icon">✅</span><div class="mc-body">Islam begins with faith, not perfection. You don't need to stop all bad habits before taking the Shahada.</div></div>
+      </div>
+      <div class="mc-card">
+        <div class="mc-myth"><span class="mc-myth-icon">❌</span><div class="mc-myth-text">"I have to go to a mosque"</div></div>
+        <div class="mc-truth"><span class="mc-truth-icon">✅</span><div class="mc-body">The Shahada can be taken anywhere — at home, alone, in private. A mosque or witnesses are Sunnah, not obligatory.</div></div>
+      </div>
+      <div class="mc-card">
+        <div class="mc-myth"><span class="mc-myth-icon">❌</span><div class="mc-myth-text">"Muslims worship Muhammad ﷺ"</div></div>
+        <div class="mc-truth"><span class="mc-truth-icon">✅</span><div class="mc-body">Muslims do not worship him. He is the final prophet and a human being. Allah alone is worshipped.</div></div>
+      </div>
+    </div>
+
+    <div class="sec-label">What Changes</div>
+    <div class="benefits-grid">
+      <div class="benefit-card">
+        <div class="benefit-icon">🕊️</div>
+        <div class="benefit-title">Forgiveness</div>
+        <div class="benefit-desc">Every sin before Islam is erased completely.</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">🌟</div>
+        <div class="benefit-title">Purpose</div>
+        <div class="benefit-desc">Life gains clear meaning to serve Allah.</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">🤝</div>
+        <div class="benefit-title">Brotherhood</div>
+        <div class="benefit-desc">Instant family of 1.8 billion Muslims globally.</div>
+      </div>
+      <div class="benefit-card">
+        <div class="benefit-icon">🕊️</div>
+        <div class="benefit-title">Obligations</div>
+        <div class="benefit-desc">Salah and other pillars become your duty.</div>
+      </div>
+    </div>
+
+    <div class="sec-label">Quran & Hadith</div>
+    <div class="refs-list">
+      <div class="ref-card hadith">
+        <div class="ref-header">
+          <span class="ref-badge hadith">📜 Hadith</span>
+          <span class="ref-source">Muslim</span>
+        </div>
+        <div class="ref-arabic">مَنْ قَالَ لَا إِلٰهَ إِلَّا اللَّهُ مُخْلِصًا مِنْ قَلْبِهِ دَخَلَ الْجَنَّةَ</div>
+        <div class="ref-translation">"Whoever says lā ilāha illallāh with sincerity from his heart shall enter Paradise."</div>
+      </div>
+      <div class="ref-card quran">
+        <div class="ref-header">
+          <span class="ref-badge quran">📖 Qurʾān</span>
+          <span class="ref-source">39:53</span>
+        </div>
+        <div class="ref-arabic">قُلْ يَا عِبَادِيَ الَّذِينَ أَسْرَفُوا عَلَىٰ أَنفُسِهِمْ لَا تَقْنَطُوا مِن رَّحْمَةِ اللَّهِ</div>
+        <div class="ref-translation">"Say: 'O My servants who have transgressed against themselves — do not despair of the mercy of Allah. Indeed, Allah forgives all sins.'"</div>
+      </div>
+      <div class="ref-card hadith">
+        <div class="ref-header">
+          <span class="ref-badge hadith">📜 Hadith</span>
+          <span class="ref-source">Muslim</span>
+        </div>
+        <div class="ref-arabic">الْإِسْلَامُ يَهْدِمُ مَا كَانَ قَبْلَهُ</div>
+        <div class="ref-translation">"Islam wipes out whatever (sins) came before it."</div>
+      </div>
+    </div>
+
+    <div class="sec-label">Next Steps</div>
+    <div class="next-steps">
+      <div class="next-item"><div class="next-num">1</div><div><div class="next-title">Learn Salah (Prayer)</div><div class="next-desc">Start with Fajr and learn gradually.</div></div></div>
+      <div class="next-item"><div class="next-num">2</div><div><div class="next-title">Learn Wudu</div><div class="next-desc">Required purification before prayer.</div></div></div>
+      <div class="next-item"><div class="next-num">3</div><div><div class="next-title">Connect with a Mosque</div><div class="next-desc">Find community and guidance.</div></div></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function getSoundwaveSVG() {
+  return `
+    <div class="soundwave">
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+      <div class="bar"></div>
+    </div>
+  `;
+}
+
+const speakerIcon = `<svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>`;
+
+const steps = [
+  {
+    title: "Intention & Preparation",
+    trans: "",
+    arabic: "",
+    desc: "Before taking the Shahada, prepare your heart. Reflect sincerely on your belief. Do you believe Allah is the One True God and that Muhammad ﷺ is His final messenger? This moment is between you and Allah alone. No ritual bath is required beforehand, though many people perform Ghusl out of reverence.",
+    tip: "💡 There is no set time, place, or number of people required. You can take the Shahada right now, wherever you are.",
+    audioAr: null,
+    audioEn: null,
+    svgFn: () => `<div style="font-size:54px;">🤍</div>`
+  },
+  {
+    title: "I bear witness",
+    trans: "Ash-hadu",
+    arabic: "أَشْهَدُ",
+    desc: "A personal, first-person commitment — I testify.",
+    audioAr: "voice/ashadu.mp3",
+    audioEn: "voice/ashadu_en.wav",
+    svgFn: () => getSoundwaveSVG()
+  },
+  {
+    title: "that there is no",
+    trans: "an lā",
+    arabic: "أَنْ لَا",
+    desc: "Negating all false deities.",
+    audioAr: "voice/an_la.mp3",
+    audioEn: "voice/an_la_en.wav",
+    svgFn: () => getSoundwaveSVG()
+  },
+  {
+    title: "deity (worthy of worship)",
+    trans: "ilāha",
+    arabic: "إِلٰهَ",
+    desc: "Any object of worship.",
+    audioAr: "voice/ilaha.mp3",
+    audioEn: "voice/ilaha_en.wav",
+    svgFn: () => getSoundwaveSVG()
+  },
+  {
+    title: "except Allah",
+    trans: "illallāh",
+    arabic: "إِلَّا اللَّهُ",
+    desc: "Affirming Allah alone is the true God.",
+    audioAr: "voice/illallah.mp3",
+    audioEn: "voice/illallah_en.wav",
+    svgFn: () => getSoundwaveSVG()
+  },
+  {
+    title: "and I bear witness",
+    trans: "wa ash-hadu",
+    arabic: "وَأَشْهَدُ",
+    desc: "The second part of the testimony.",
+    audioAr: "voice/wa_ashadu.mp3",
+    audioEn: "voice/wa_ashadu_en.wav",
+    svgFn: () => getSoundwaveSVG()
+  },
+  {
+    title: "that",
+    trans: "anna",
+    arabic: "أَنَّ",
+    desc: "Confirming the truth of what follows.",
+    audioAr: "voice/anna.mp3",
+    audioEn: "voice/anna_en.wav",
+    svgFn: () => getSoundwaveSVG()
+  },
+  {
+    title: "Muhammad ﷺ",
+    trans: "Muḥammadan",
+    arabic: "مُحَمَّدًا",
+    desc: "The final Messenger.",
+    audioAr: "voice/muhammadan.mp3",
+    audioEn: "voice/muhammadan_en.wav",
+    svgFn: () => getSoundwaveSVG()
+  },
+  {
+    title: "is the Messenger of Allah",
+    trans: "rasūlullāh",
+    arabic: "رَسُولُ اللَّهِ",
+    desc: "Affirming his prophethood.",
+    audioAr: "voice/rasulullah.mp3",
+    audioEn: "voice/rasulullah_en.wav",
+    svgFn: () => getSoundwaveSVG()
+  },
+  {
+    title: "The Complete Shahada",
+    trans: "Ash-hadu an lā ilāha illallāh, wa ash-hadu anna Muḥammadan rasūlullāh",
+    arabic: "أَشْهَدُ أَنْ لَا إِلٰهَ إِلَّا اللَّهُ وَأَشْهَدُ أَنَّ مُحَمَّدًا رَسُولُ اللَّهِ",
+    desc: "Now say the complete Shahada clearly and with full conviction from your heart.",
+    audioAr: "voice/full_shahada.mp3",
+    audioEn: "voice/full_shahada_en.wav",
+    svgFn: () => getSoundwaveSVG()
+  },
+  {
+    title: "Du'a & Complete",
+    trans: "Rabbi-j'alni muqima as-salati...",
+    arabic: "رَبِّ اجْعَلْنِي مُقِيمَ الصَّلَاةِ...",
+    desc: "After the Shahada, raise your hands and make duʿāʾ (supplication) to Allah. Ask for firmness in your faith and forgiveness of all past sins.",
+    tip: "💡 \"My Lord, make me an establisher of prayer, and [many] from my descendants. Our Lord, and accept my supplication.\" — Quran 14:40",
+    audioAr: null,
+    audioEn: null,
+    svgFn: () => `<div style="font-size:54px;">🤲</div>`
+  }
+];
+
+let current = 0;
+let currentAudio = null;
+
+function render() {
+  const contentDiv = document.getElementById('pageContent');
+  const s = steps[current];
+
+  // Dots
+  const dotsContainer = document.getElementById('dotsContainer');
+  dotsContainer.innerHTML = steps.map((_, i) => `<div class="dot ${i === current ? 'active' : ''}"></div>`).join('');
+  
+  document.getElementById('btnPrev').disabled = current === 0;
+  document.getElementById('btnNext').disabled = current === steps.length - 1;
+
+  // Completion screen vs normal step
+  if (current === steps.length - 1) {
+    contentDiv.innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:8px;flex:1;overflow:hidden;min-height:0;justify-content:center;">
+        <div class="complete-banner fade-in">
+          <span class="cb-icon">🌙</span>
+          <div class="cb-title">Marhaban bika</div>
+          <div class="cb-sub">Welcome to Islam. You have taken the greatest step a human being can take.</div>
+          <div class="cb-arabic">مَرْحَبًا بِكَ فِي الإِسْلَامِ</div>
+        </div>
+        <div class="info-panel fade-in" style="flex:none;margin-top:10px;">
+          <div class="info-scroll" style="max-height:180px;">
+            <div style="font-size:14px;font-weight:700;color:var(--t1);">What's Next?</div>
+            <div class="step-desc">${s.desc}</div>
+            ${s.tip ? `<div class="step-tip">${s.tip}</div>` : ''}
+          </div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  // Normal steps
+  contentDiv.innerHTML = `
+    <div style="display:flex;flex-direction:column;gap:8px;flex:1;overflow:hidden;min-height:0;">
+      <div class="hero-strip">
+        <div>
+          <div class="hero-en">${current === 0 ? 'Step 1' : 'Word ' + current} of ${steps.length - 2}</div>
+          <div class="hero-sub">${current === 0 ? 'Preparation' : 'Pronunciation'}</div>
+        </div>
+        ${s.arabic ? `<div class="hero-ar">${s.arabic}</div>` : `<div class="hero-ar">بِسْمِ اللَّهِ</div>`}
+      </div>
+
+      <div class="anim-box fade-in" id="animBox">
+        ${s.svgFn()}
+      </div>
+
+      <div class="info-panel fade-in">
+        <div class="info-scroll">
+          ${s.arabic ? `<div class="step-ar ${s.audioAr ? 'interactive-text' : ''}" ${s.audioAr ? `onclick="playAudio('${s.audioAr}', this)"` : ''}>${s.arabic} ${s.audioAr ? speakerIcon : ''}</div>` : ''}
+          <div style="font-size:18px;font-weight:700;color:var(--t1);" class="${s.audioEn ? 'interactive-text' : ''}" ${s.audioEn ? `onclick="playAudio('${s.audioEn}', this)"` : ''}>${s.title} ${s.audioEn ? speakerIcon : ''}</div>
+          ${s.trans ? `<div class="step-tr">"${s.trans}"</div>` : ''}
+          <div class="step-desc">${s.desc}</div>
+          ${s.tip ? `<div class="step-tip">${s.tip}</div>` : ''}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function playAudio(src, container) {
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio.currentTime = 0;
+  }
+  
+  // Reset all other visual indicators
+  document.querySelectorAll('.audio-playing-text').forEach(el => el.classList.remove('audio-playing-text'));
+  const animBox = document.getElementById('animBox');
+  if(animBox) animBox.classList.remove('audio-playing-anim');
+  
+  // Add animation class to the tapped text and the soundwave box
+  container.classList.add('audio-playing-text');
+  if(animBox && animBox.querySelector('.soundwave')) {
+    animBox.classList.add('audio-playing-anim');
+  }
+  
+  currentAudio = new Audio(src);
+  currentAudio.play().catch(e => {
+    console.log("Audio play failed or file missing:", e);
+    // Remove class quickly if it fails to load
+    setTimeout(() => {
+      container.classList.remove('audio-playing-text');
+      if(animBox) animBox.classList.remove('audio-playing-anim');
+    }, 500);
+  });
+  
+  currentAudio.onended = () => {
+    container.classList.remove('audio-playing-text');
+    if(animBox) animBox.classList.remove('audio-playing-anim');
+  };
+}
+
+function go(dir) {
+  if (currentAudio) {
+    currentAudio.pause();
+    currentAudio = null;
+  }
+  // Remove animation state when navigating
+  document.querySelectorAll('.audio-playing-text').forEach(el => el.classList.remove('audio-playing-text'));
+  const animBox = document.getElementById('animBox');
+  if(animBox) animBox.classList.remove('audio-playing-anim');
+  const next = current + dir;
+  if (next >= 0 && next < steps.length) {
+    current = next;
+    render();
+  }
+}
+
+// Drawer
+function toggleDrawer(){
+  const o = document.getElementById('drawerOverlay');
+  const d = document.getElementById('drawer');
+  const isO = d.classList.contains('open');
+  if(isO){
+    d.classList.remove('open');
+    o.classList.remove('open');
+  }else{
+    d.classList.add('open');
+    o.classList.add('open');
+  }
+}
+
+// Swipe — blocked when drawer is open
+let tx = 0;
+function isDrawerOpen(){ return document.getElementById('drawer').classList.contains('open'); }
+document.getElementById('mainArea').addEventListener('touchstart', e => {
+  if(isDrawerOpen()) return;
+  tx = e.touches[0].clientX;
+}, {passive:true});
+document.getElementById('mainArea').addEventListener('touchend', e => {
+  if(isDrawerOpen()) return;
+  const dx = e.changedTouches[0].clientX - tx;
+  if (Math.abs(dx) > 65) { dx < 0 ? go(1) : go(-1); }
+}, {passive:true});
+
+// Key nav
+window.addEventListener('keydown', e => {
+  if(isDrawerOpen()){
+    if(e.key === 'Escape') toggleDrawer();
+    return;
+  }
+  if(e.key === 'ArrowRight') go(1);
+  if(e.key === 'ArrowLeft') go(-1);
+});
+
+// Init
+render();
+
+// Dark mode listener for if it's set from index
+let isDark = window.matchMedia('(prefers-color-scheme:dark)').matches;
+try {
+  const g = localStorage.getItem('globalTheme');
+  if(g) isDark = g === 'dark';
+} catch(e){}
+if(isDark) document.documentElement.setAttribute('data-theme', 'dark');
+</script>
+</body>
+</html>
