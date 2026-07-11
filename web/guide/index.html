@@ -216,33 +216,53 @@ body{background:var(--bg);color:var(--t1);transition:background var(--tr),color 
 /* ── TOAST NOTIFICATION ── */
 #toast {
   position: fixed;
-  bottom: 30px;
+  bottom: 40px;
   left: 50%;
-  transform: translateX(-50%) translateY(100px);
-  background: var(--surf);
+  transform: translateX(-50%) translateY(120px);
+  background: linear-gradient(135deg, var(--surf) 0%, var(--surf2) 100%);
   color: var(--t1);
-  padding: 14px 24px;
-  border-radius: 50px;
-  box-shadow: var(--sh);
+  padding: 16px 24px;
+  border-radius: 20px;
+  box-shadow: 0 8px 32px rgba(0,137,123,0.18), 0 2px 8px rgba(0,0,0,0.10);
   font-size: 14px;
   font-weight: 500;
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: 10px;
-  border: 1px solid var(--bd);
+  gap: 4px;
+  border: 1px solid rgba(0,137,123,0.20);
   opacity: 0;
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  z-index: 1000;
+  transition: all 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  z-index: 9999;
   pointer-events: none;
-  white-space: nowrap;
+  text-align: center;
+  min-width: 220px;
+  max-width: 300px;
 }
 #toast.show {
   transform: translateX(-50%) translateY(0);
   opacity: 1;
 }
-#toast i {
+#toast .toast-emoji {
+  font-size: 26px;
+  line-height: 1;
+  margin-bottom: 2px;
+}
+#toast .toast-title {
+  font-size: 15px;
+  font-weight: 700;
   color: var(--teal);
-  font-size: 18px;
+}
+#toast .toast-sub {
+  font-size: 12px;
+  color: var(--t2);
+  line-height: 1.5;
+}
+#toast .toast-arabic {
+  font-family: 'Amiri', serif;
+  font-size: 15px;
+  color: var(--t3);
+  margin-top: 2px;
 }
 
 /* ── IFRAME MODAL (CANVAS) ── */
@@ -365,7 +385,12 @@ body{background:var(--bg);color:var(--t1);transition:background var(--tr),color 
   </main>
 </div>
 
-<div id="toast"><i class="fas fa-heart"></i> <span>Coming soon In sha Allah. Support us!</span></div>
+<div id="toast">
+  <div class="toast-emoji">🤲</div>
+  <div class="toast-title">In Shaa Allah — Coming Soon!</div>
+  <div class="toast-sub">Support us in building this guide.<br>May Allah reward you. 🌙</div>
+  <div class="toast-arabic">إِن شَاءَ ٱللَّٰهُ</div>
+</div>
 
 <!-- IFRAME MODAL OVERLAY -->
 <div id="iframeModal" class="iframe-modal">
