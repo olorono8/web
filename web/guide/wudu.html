@@ -133,15 +133,6 @@ button{font-family:'Inter',sans-serif;cursor:pointer;border:none;outline:none;ba
 }
 
 /* right: theme toggle (Quran.html style) */
-.tb-theme-btn {
-  width:clamp(26px, 6vw, 32px); height:clamp(26px, 6vw, 32px); border-radius:50%;
-  background:transparent; border:none;
-  color:var(--t1);
-  display:flex; align-items:center; justify-content:center;
-  transition:color var(--tr); flex-shrink:0;
-}
-.tb-theme-btn svg { width:clamp(12px, 3.5vw, 14px); height:clamp(12px, 3.5vw, 14px); }
-
 /* Mobile safe hide for title */
 @media (max-width: 400px) {
   .topbar-title { display: none; }
@@ -500,12 +491,7 @@ button{font-family:'Inter',sans-serif;cursor:pointer;border:none;outline:none;ba
       <div class="step-dots" id="stepDots"></div>
     </div>
 
-    <div class="tb-right">
-      <button class="tb-theme-btn" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Toggle theme">
-        <span id="themeIcon"></span>
-      </button>
-    </div>
-  </header>
+</header>
 
   <div class="prog-track">
     <div class="prog-fill" id="progFill"></div>
@@ -808,33 +794,13 @@ function svgFeet(){return`
   </g>
 </svg>`;}
 
-/* ── THEME SVG ICONS ── */
-const sunIcon = `<i class="fas fa-sun" style="font-size: clamp(12px, 3.5vw, 14px);"></i>`;
-const moonIcon = `<i class="fas fa-moon" style="font-size: clamp(12px, 3.5vw, 14px);"></i>`;
-
-/* ── THEME ── */
+// Dark mode listener for if it's set from index
 let isDark = window.matchMedia('(prefers-color-scheme:dark)').matches;
-(()=>{
-  try {
-    const g = localStorage.getItem('globalTheme');
-    if (g) isDark = g === 'dark';
-    else {
-      const q = localStorage.getItem('quranNightMode');
-      if (q) isDark = q !== 'true';
-    }
-  } catch(e) {}
-  applyTheme();
-})();
-
-function applyTheme(){
-  document.documentElement.setAttribute('data-theme', isDark?'dark':'light');
-  document.getElementById('themeIcon').innerHTML = isDark ? sunIcon : moonIcon;
-}
-function toggleTheme(){
-  isDark=!isDark; applyTheme();
-  localStorage.setItem('globalTheme', isDark ? 'dark' : 'light');
-  localStorage.setItem('quranNightMode', (!isDark).toString());
-}
+try {
+  const g = localStorage.getItem('globalTheme');
+  if(g) isDark = g === 'dark';
+} catch(e){}
+if(isDark) document.documentElement.setAttribute('data-theme', 'dark');
 
 /* ── STATE ── */
 let current = 0;

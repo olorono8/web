@@ -128,15 +128,6 @@ button{font-family:'Inter',sans-serif;cursor:pointer;border:none;outline:none;ba
   transition:color var(--tr);
 }
 
-.tb-theme-btn {
-  width:clamp(26px, 6vw, 32px); height:clamp(26px, 6vw, 32px); border-radius:50%;
-  background:transparent; border:none;
-  color:var(--t1);
-  display:flex; align-items:center; justify-content:center;
-  transition:color var(--tr); flex-shrink:0;
-}
-.tb-theme-btn svg { width:clamp(12px, 3.5vw, 14px); height:clamp(12px, 3.5vw, 14px); }
-
 @media (max-width: 400px) {
   .topbar-title { display: none; }
   .step-dot { width: 18px; height: 18px; font-size: 8px; }
@@ -489,12 +480,7 @@ button{font-family:'Inter',sans-serif;cursor:pointer;border:none;outline:none;ba
       <div class="step-dots" id="stepDots"></div>
     </div>
 
-    <div class="tb-right">
-      <button class="tb-theme-btn" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Toggle theme">
-        <span id="themeIcon"></span>
-      </button>
-    </div>
-  </header>
+</header>
 
   <div class="prog-track">
     <div class="prog-fill" id="progFill"></div>
