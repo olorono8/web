@@ -469,12 +469,26 @@ function bindInteractions() {
         e.preventDefault();
         const titleElement = this.querySelector('.topic-name, .pillar-name, .cat-name');
         iframeTitle.innerText = titleElement ? titleElement.innerText : 'Guide';
+        
+        const isOurFile = targetUrl.includes('githack.com') || targetUrl.includes('github.io');
+        document.querySelector('.iframe-header').style.display = isOurFile ? 'none' : 'flex';
+
         contentIframe.src = targetUrl;
         iframeModal.classList.add('show');
       }
     });
   });
 }
+
+window.addEventListener('message', function(e) {
+  if (e.data === 'close-iframe') {
+    iframeModal.classList.remove('show');
+    setTimeout(() => {
+      contentIframe.src = '';
+      iframeTitle.innerText = 'Loading...';
+    }, 350);
+  }
+});
 
 closeIframeBtn.addEventListener('click', () => {
   iframeModal.classList.remove('show');

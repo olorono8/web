@@ -4,13 +4,13 @@
       "name": "Shahadah",
       "ar": "الشهادة",
       "icon": "📜",
-      "url": "https://en.wikipedia.org/wiki/Shahada"
+      "url": "https://raw.githack.com/olorono8/web/main/web/guide/shahada.html"
     },
     {
       "name": "Salah",
       "ar": "الصلاة",
       "icon": "🕌",
-      "url": "https://en.wikipedia.org/wiki/Salah"
+      "url": "https://raw.githack.com/olorono8/web/main/web/guide/salah.html"
     },
     {
       "name": "Sawm",
@@ -37,35 +37,35 @@
       "desc": "Become Muslim — full guide",
       "icon": "📜",
       "tag": "Pillar 1",
-      "url": "https://en.wikipedia.org/wiki/Shahada"
+      "url": "https://raw.githack.com/olorono8/web/main/web/guide/shahada.html"
     },
     {
       "name": "How to do Wudu",
       "desc": "Step-by-step ablution",
       "icon": "💧",
       "tag": "Essential",
-      "url": "https://en.wikipedia.org/wiki/Wudu"
+      "url": "https://raw.githack.com/olorono8/web/main/web/guide/wudu.html"
     },
     {
       "name": "How to do Ghusl",
       "desc": "Ritual purification",
       "icon": "🚿",
       "tag": "Fard",
-      "url": "https://en.wikipedia.org/wiki/Ghusl"
+      "url": "https://raw.githack.com/olorono8/web/main/web/guide/gusl.html"
     },
     {
       "name": "Fajr Guide",
       "desc": "2 rakat with method",
       "icon": "🌅",
       "tag": "Daily",
-      "url": "https://en.wikipedia.org/wiki/Fajr_prayer"
+      "url": "https://raw.githack.com/olorono8/web/main/web/guide/salah.html"
     },
     {
       "name": "Complete Salah",
       "desc": "All prayers full guide",
       "icon": "📋",
       "tag": "Pillar",
-      "url": "https://en.wikipedia.org/wiki/Salah"
+      "url": "https://raw.githack.com/olorono8/web/main/web/guide/salah.html"
     },
     {
       "name": "Ramadan Guide",
@@ -143,7 +143,7 @@
       "name": "Taharah",
       "sub": "Wudu · Ghusl · Tayammum",
       "color": "#22b589",
-      "url": "https://en.wikipedia.org/wiki/Ritual_purification_in_Islam"
+      "url": "https://raw.githack.com/olorono8/web/main/web/guide/wudu.html"
     },
     {
       "name": "Akhlaq & Character",
