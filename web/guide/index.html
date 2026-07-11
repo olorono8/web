@@ -474,7 +474,7 @@ function bindInteractions() {
         const titleElement = this.querySelector('.topic-name, .pillar-name, .cat-name');
         iframeTitle.innerText = titleElement ? titleElement.innerText : 'Guide';
         
-        const isOurFile = targetUrl.includes('githack.com') || targetUrl.includes('github.io');
+        const isOurFile = targetUrl.includes('githack.com') || targetUrl.includes('github.io') || targetUrl.includes('githubusercontent.com');
         document.querySelector('.iframe-header').style.display = isOurFile ? 'none' : 'flex';
 
         let finalUrl = targetUrl;
@@ -484,6 +484,15 @@ function bindInteractions() {
         }
 
         contentIframe.src = finalUrl;
+        
+        // Force theme on load as a fallback
+        contentIframe.onload = () => {
+          const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+          if (contentIframe.contentWindow) {
+            contentIframe.contentWindow.postMessage({ type: 'set-theme', theme: theme }, '*');
+          }
+        };
+
         iframeModal.classList.add('show');
       }
     });
