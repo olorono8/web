@@ -568,44 +568,14 @@ function renderData(data) {
   }
   bindInteractions();
 }
-// ── HARDCODED FALLBACK DATA (mirrors firebase_data_template.json) ──
-const BASE = 'https://raw.githack.com/olorono8/web/main/web/guide/';
-const FALLBACK_DATA = {
-  pillars: [
-    { name:"Shahada", ar:"الشهادة", icon:"☝️", url: BASE + "shahada.html" },
-    { name:"Salah",   ar:"الصلاة",  icon:"🕌", url: BASE + "salah.html"   },
-    { name:"Zakat",   ar:"الزكاة",  icon:"🪙", url: BASE + "zakat.html"   },
-    { name:"Sawm",    ar:"الصوم",   icon:"🌙", url:"#"                    },
-    { name:"Hajj",    ar:"الحج",    icon:"🕋", url:"#"                    }
-  ],
-  topics: [
-    { name:"Wudu (Ablution)",  desc:"Step-by-step purification",  icon:"💧", tag:"Basics",      url: BASE + "wudu.html"    },
-    { name:"Salah (Prayer)",   desc:"How to pray step-by-step",   icon:"🕌", tag:"Basics",      url: BASE + "salah.html"   },
-    { name:"Ghusl (Bath)",     desc:"Full ritual purification",   icon:"🚿", tag:"Purification",url: BASE + "gusl.html"    },
-    { name:"Shahada",          desc:"Declaration of faith",       icon:"☝️", tag:"Faith",       url: BASE + "shahada.html" },
-    { name:"Daily Duas",       desc:"Supplications for everyday", icon:"🤲", tag:"Must-know",   url:"#"                    },
-    { name:"Names of Allah",   desc:"The 99 Beautiful Names",     icon:"📖", tag:"Faith",       url:"#"                    },
-    { name:"Seerah",           desc:"Life of the Prophet ﷺ",     icon:"📜", tag:"History",     url:"#"                    }
-  ],
-  categories: [
-    { name:"Purification (Taharah)",      sub:"Wudu, Ghusl, Tayammum",              color:"#00897b", url: BASE + "wudu.html"    },
-    { name:"Prayer (Salah)",              sub:"How to pray, times, rulings",        color:"#26a69a", url: BASE + "salah.html"   },
-    { name:"Faith (Aqeedah)",             sub:"Pillars of Faith, Shahada, Tawhid",  color:"#7e57c2", url: BASE + "shahada.html" },
-    { name:"Ghusl & Purity",              sub:"Full ritual bath & its rulings",     color:"#00acc1", url: BASE + "gusl.html"    },
-    { name:"Quranic Studies",             sub:"Tafsir, Tajweed, and Memorization",  color:"#1e88e5", url:"#"                    },
-    { name:"Hadith Sciences",             sub:"Collections and Authenticity",       color:"#ffb300", url:"#"                    },
-    { name:"Islamic Jurisprudence (Fiqh)",sub:"Rules for daily living and worship", color:"#e53935", url:"#"                    },
-    { name:"Islamic History",             sub:"From the early days to modern times",color:"#f57c00", url:"#"                    }
-  ]
-};
-const CACHE_KEY = 'guideData_v2';  // bump version to wipe old stale cache
+// Fallback data removed to ensure strict Firebase loading.
+const CACHE_KEY = 'guideData_v3';  // bump version to wipe old stale cache
 
 function loadDynamicContent() {
   // Wipe any old cache keys from previous versions
   try { localStorage.removeItem('offlineGuideData'); } catch(e) {}
 
-  // ── LAYER 1: Paint instantly with fallback (zero-delay, synchronous) ──
-  renderData(FALLBACK_DATA);
+  // ── LAYER 1: (Removed fallback data) ──
 
   // ── LAYER 2: Upgrade from localStorage cache (sync, still instant) ──
   let cachedStr = null;
