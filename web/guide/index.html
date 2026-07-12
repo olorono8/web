@@ -369,6 +369,9 @@ body{background:var(--bg);color:var(--t1);transition:background var(--tr),color 
   <iframe id="contentIframe" src="" frameborder="0" allowfullscreen></iframe>
 </div>
 <script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
 const sunIcon=`<i class="fas fa-sun" style="font-size: clamp(12px, 3.5vw, 14px);"></i>`;
 const moonIcon=`<i class="fas fa-moon" style="font-size: clamp(12px, 3.5vw, 14px);"></i>`;
 let isDark=window.matchMedia('(prefers-color-scheme:dark)').matches;
@@ -469,8 +472,6 @@ window.addEventListener('message', function(e) {
   if (e.data === 'close-iframe') closeIframe();
 });
 // ── FIREBASE FETCH LOGIC ──
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyB6juW4LLMyLSWf8nFcStatpaIKEMAv7m4",
@@ -558,7 +559,7 @@ const FALLBACK_DATA = {
   pillars: [
     { name:"Shahada", ar:"الشهادة", icon:"☝️", url: BASE + "shahada.html" },
     { name:"Salah",   ar:"الصلاة",  icon:"🕌", url: BASE + "salah.html"   },
-    { name:"Zakat",   ar:"الزكاة",  icon:"🪙", url:"#"                    },
+    { name:"Zakat",   ar:"الزكاة",  icon:"🪙", url:"n"                    },
     { name:"Sawm",    ar:"الصوم",   icon:"🌙", url:"#"                    },
     { name:"Hajj",    ar:"الحج",    icon:"🕋", url:"#"                    }
   ],
