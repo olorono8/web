@@ -491,9 +491,30 @@ function toArr(val) {
   return Object.values(val);
 }
 
+// Self-healing database parser: extracts true keys even if imported under nested nodes
+function findDataGroup(data, key) {
+  if (!data) return null;
+  // Case 1: Direct key matches (e.g., data.topics)
+  if (data[key]) {
+    // If it's a nested object containing the key (e.g., data.topics.topics), prefer the nested one
+    if (data[key] && typeof data[key] === 'object' && data[key][key]) {
+      return data[key][key];
+    }
+    return data[key];
+  }
+  // Case 2: Key is nested under some other top-level node (e.g., data.categories.topics)
+  for (const k in data) {
+    if (data[k] && typeof data[k] === 'object' && data[k][key]) {
+      return data[k][key];
+    }
+  }
+  return null;
+}
+
 function renderData(data) {
-  if (data.pillars) {
-    document.getElementById('pillarsContainer').innerHTML = toArr(data.pillars).map(p => `
+  const pillarsList = findDataGroup(data, 'pillars');
+  if (pillarsList) {
+    document.getElementById('pillarsContainer').innerHTML = toArr(pillarsList).map(p => `
       <a class="pillar" href="${p.url || '#'}">
         <span class="pillar-ico">${p.icon || ''}</span>
         <div class="pillar-name">${p.name || ''}</div>
@@ -501,8 +522,10 @@ function renderData(data) {
       </a>
     `).join('');
   }
-  if (data.topics) {
-    document.getElementById('topicsContainer').innerHTML = toArr(data.topics).map(t => `
+  
+  const topicsList = findDataGroup(data, 'topics');
+  if (topicsList) {
+    document.getElementById('topicsContainer').innerHTML = toArr(topicsList).map(t => `
       <a class="topic-card" href="${t.url || '#'}">
         <span class="topic-ico">${t.icon || ''}</span>
         <div class="topic-body">
@@ -513,8 +536,10 @@ function renderData(data) {
       </a>
     `).join('');
   }
-  if (data.categories) {
-    document.getElementById('catsContainer').innerHTML = toArr(data.categories).map(c => `
+  
+  const categoriesList = findDataGroup(data, 'categories');
+  if (categoriesList) {
+    document.getElementById('catsContainer').innerHTML = toArr(categoriesList).map(c => `
       <a class="cat" href="${c.url || '#'}">
         <div class="cat-dot" style="background:${c.color || '#22b589'}"></div>
         <div class="cat-info">
