@@ -1,0 +1,170 @@
+{
+  "pillars": [
+    {
+      "name": "Shahada",
+      "ar": "الشهادة",
+      "icon": "☝️",
+      "url": "shahada.html"
+    },
+    {
+      "name": "Salah",
+      "ar": "الصلاة",
+      "icon": "🕌",
+      "url": "salah.html"
+    },
+    {
+      "name": "Zakat",
+      "ar": "الزكاة",
+      "icon": "🪙",
+      "url": "#"
+    },
+    {
+      "name": "Sawm",
+      "ar": "الصوم",
+      "icon": "🌙",
+      "url": "#"
+    },
+    {
+      "name": "Hajj",
+      "ar": "الحج",
+      "icon": "🕋",
+      "url": "#"
+    }
+  ],
+  "topics": [
+    {
+      "name": "Wudu (Ablution)",
+      "desc": "Step-by-step purification",
+      "icon": "💧",
+      "tag": "Basics",
+      "url": "wudu.html"
+    },
+    {
+      "name": "Salah (Prayer)",
+      "desc": "How to pray step-by-step",
+      "icon": "🕌",
+      "tag": "Basics",
+      "url": "salah.html"
+    },
+    {
+      "name": "Ghusl (Bath)",
+      "desc": "Full ritual purification",
+      "icon": "🚿",
+      "tag": "Purification",
+      "url": "gusl.html"
+    },
+    {
+      "name": "Shahada",
+      "desc": "Declaration of faith",
+      "icon": "☝️",
+      "tag": "Faith",
+      "url": "shahada.html"
+    },
+    {
+      "name": "Daily Duas",
+      "desc": "Supplications for everyday",
+      "icon": "🤲",
+      "tag": "Must-know",
+      "url": "#"
+    },
+    {
+      "name": "Names of Allah",
+      "desc": "The 99 Beautiful Names",
+      "icon": "📖",
+      "tag": "Faith",
+      "url": "#"
+    },
+    {
+      "name": "Seerah",
+      "desc": "Life of the Prophet ﷺ",
+      "icon": "📜",
+      "tag": "History",
+      "url": "#"
+    },
+    {
+      "name": "Zakat",
+      "desc": "Obligatory charity & calculation",
+      "icon": "🪙",
+      "tag": "Pillars",
+      "url": "#"
+    },
+    {
+      "name": "Sawm (Fasting)",
+      "desc": "Rules & virtues of Ramadan",
+      "icon": "🌙",
+      "tag": "Pillars",
+      "url": "#"
+    },
+    {
+      "name": "Hajj & Umrah",
+      "desc": "Pilgrimage rites & duas",
+      "icon": "🕋",
+      "tag": "Pillars",
+      "url": "#"
+    },
+    {
+      "name": "Halal & Haram",
+      "desc": "What is permissible in Islam",
+      "icon": "✅",
+      "tag": "Fiqh",
+      "url": "#"
+    },
+    {
+      "name": "Islamic Marriage",
+      "desc": "Nikah rules & etiquettes",
+      "icon": "💍",
+      "tag": "Fiqh",
+      "url": "#"
+    }
+  ],
+  "categories": [
+    {
+      "name": "Purification (Taharah)",
+      "sub": "Wudu, Ghusl, Tayammum",
+      "color": "#00897b",
+      "url": "wudu.html"
+    },
+    {
+      "name": "Prayer (Salah)",
+      "sub": "How to pray, times, rulings",
+      "color": "#26a69a",
+      "url": "salah.html"
+    },
+    {
+      "name": "Faith (Aqeedah)",
+      "sub": "Pillars of Faith, Shahada, Tawhid",
+      "color": "#7e57c2",
+      "url": "shahada.html"
+    },
+    {
+      "name": "Quranic Studies",
+      "sub": "Tafsir, Tajweed, and Memorization",
+      "color": "#1e88e5",
+      "url": "#"
+    },
+    {
+      "name": "Hadith Sciences",
+      "sub": "Collections and Authenticity",
+      "color": "#ffb300",
+      "url": "#"
+    },
+    {
+      "name": "Islamic Jurisprudence (Fiqh)",
+      "sub": "Rules for daily living and worship",
+      "color": "#e53935",
+      "url": "#"
+    },
+    {
+      "name": "Islamic History",
+      "sub": "From the early days to modern times",
+      "color": "#f57c00",
+      "url": "#"
+    },
+    {
+      "name": "Duas & Dhikr",
+      "sub": "Daily supplications and remembrance",
+      "color": "#43a047",
+      "url": "#"
+    }
+  ]
+}
