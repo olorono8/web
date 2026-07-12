@@ -16,7 +16,7 @@
       "name": "Zakat",
       "ar": "الزكاة",
       "icon": "🪙",
-      "url": "#"
+      "url": "https://raw.githack.com/olorono8/web/main/web/guide/zakat.html"
     },
     {
       "name": "Sawm",
@@ -86,7 +86,7 @@
       "desc": "Obligatory charity & calculation",
       "icon": "🪙",
       "tag": "Pillars",
-      "url": "#"
+      "url": "https://raw.githack.com/olorono8/web/main/web/guide/zakat.html"
     },
     {
       "name": "Sawm (Fasting)",

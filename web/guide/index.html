@@ -559,7 +559,7 @@ const FALLBACK_DATA = {
   pillars: [
     { name:"Shahada", ar:"الشهادة", icon:"☝️", url: BASE + "shahada.html" },
     { name:"Salah",   ar:"الصلاة",  icon:"🕌", url: BASE + "salah.html"   },
-    { name:"Zakat",   ar:"الزكاة",  icon:"🪙", url:"n"                    },
+    { name:"Zakat",   ar:"الزكاة",  icon:"🪙", url: BASE + "zakat.html"   },
     { name:"Sawm",    ar:"الصوم",   icon:"🌙", url:"#"                    },
     { name:"Hajj",    ar:"الحج",    icon:"🕋", url:"#"                    }
   ],
@@ -606,19 +606,25 @@ function loadDynamicContent() {
   }
 
   // ── LAYER 3: Fetch fresh data from Firebase in background ──
+  console.log('Firebase: Fetching latest guide data from database...');
   get(ref(db, '/')).then(snapshot => {
+    console.log('Firebase: Fetch successful. Snapshot exists:', snapshot.exists());
     if (snapshot.exists()) {
       const data = snapshot.val();
+      console.log('Firebase: Retrieved data keys:', Object.keys(data));
       const newStr = JSON.stringify(data);
       if (newStr !== cachedStr) {
         localStorage.setItem(CACHE_KEY, newStr);
         renderData(data);
+        console.log('Firebase: UI updated with fresh data.');
+      } else {
+        console.log('Firebase: Data matches cache, no redraw needed.');
       }
     } else {
-      console.warn('Firebase DB is empty — showing fallback/cached data.');
+      console.warn('Firebase: Database is empty — showing fallback/cached data.');
     }
   }).catch(error => {
-    console.warn('Firebase fetch failed (offline?):', error);
+    console.error('Firebase: Fetch failed:', error);
   });
 }
 
