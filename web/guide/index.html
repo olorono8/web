@@ -451,46 +451,39 @@ const iframeModal = document.getElementById('iframeModal');
 const contentIframe = document.getElementById('contentIframe');
 const closeIframeBtn = document.getElementById('closeIframe');
 const iframeTitle = document.getElementById('iframeTitle');
-function bindInteractions() {
-  document.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', function(e) {
-      const targetUrl = this.getAttribute('href');
-      
-      if (!targetUrl || targetUrl === '#') {
-        e.preventDefault();
-        toast.classList.add('show');
-        clearTimeout(toastTimeout);
-        toastTimeout = setTimeout(() => {
-          toast.classList.remove('show');
-        }, 3000);
-        return;
-      }
-      if (targetUrl.startsWith('http')) {
-        e.preventDefault();
-        const titleElement = this.querySelector('.topic-name, .pillar-name, .cat-name');
-        iframeTitle.innerText = titleElement ? titleElement.innerText : 'Guide';
-        
-        const isOurFile = targetUrl.includes('githack.com') || targetUrl.includes('github.io') || targetUrl.includes('githubusercontent.com');
-        document.querySelector('.iframe-header').style.display = isOurFile ? 'none' : 'flex';
-        let finalUrl = targetUrl;
-        if (isOurFile) {
-          const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
-          finalUrl += (targetUrl.includes('?') ? '&' : '?') + 'theme=' + theme;
-        }
-        contentIframe.src = finalUrl;
-        
-        // Force theme on load as a fallback
-        contentIframe.onload = () => {
-          const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
-          if (contentIframe.contentWindow) {
-            contentIframe.contentWindow.postMessage({ type: 'set-theme', theme: theme }, '*');
-          }
-        };
-        iframeModal.classList.add('show');
-      }
-    });
-  });
+// ── SINGLE DELEGATED CLICK HANDLER (no duplicate listeners on re-render) ──
+function openInIframe(targetUrl, titleText) {
+  if (!targetUrl || targetUrl === '#') {
+    toast.classList.add('show');
+    clearTimeout(toastTimeout);
+    toastTimeout = setTimeout(() => toast.classList.remove('show'), 3000);
+    return;
+  }
+  iframeTitle.innerText = titleText || 'Guide';
+  const isOurFile = targetUrl.includes('githack.com') || targetUrl.includes('github.io') || targetUrl.includes('githubusercontent.com');
+  document.querySelector('.iframe-header').style.display = isOurFile ? 'none' : 'flex';
+  const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+  const finalUrl = isOurFile
+    ? targetUrl + (targetUrl.includes('?') ? '&' : '?') + 'theme=' + theme
+    : targetUrl;
+  contentIframe.src = finalUrl;
+  contentIframe.onload = () => {
+    if (contentIframe.contentWindow)
+      contentIframe.contentWindow.postMessage({ type: 'set-theme', theme }, '*');
+  };
+  iframeModal.classList.add('show');
 }
+
+document.getElementById('app').addEventListener('click', function(e) {
+  const link = e.target.closest('a[href]');
+  if (!link) return;
+  e.preventDefault();
+  const url = link.getAttribute('href');
+  const label = link.querySelector('.topic-name, .pillar-name, .cat-name');
+  openInIframe(url, label ? label.innerText : 'Guide');
+});
+
+function bindInteractions() { /* no-op — delegation handles everything */ }
 window.addEventListener('message', function(e) {
   if (e.data === 'close-iframe') {
     iframeModal.classList.remove('show');
@@ -560,25 +553,33 @@ function renderData(data) {
   bindInteractions();
 }
 // ── HARDCODED FALLBACK DATA (mirrors firebase_data_template.json) ──
+const BASE = 'https://raw.githack.com/olorono8/web/main/web/guide/';
 const FALLBACK_DATA = {
   pillars: [
-    { name:"Shahada", ar:"الشهادة", icon:"☝️", url:"shahada.html" },
-    { name:"Salah",   ar:"الصلاة",  icon:"🕌", url:"salah.html"   },
-    { name:"Zakat",   ar:"الزكاة",  icon:"🪙", url:"#"            },
-    { name:"Sawm",    ar:"الصوم",   icon:"🌙", url:"#"            },
-    { name:"Hajj",    ar:"الحج",    icon:"🕋", url:"#"            }
+    { name:"Shahada", ar:"الشهادة", icon:"☝️", url: BASE + "shahada.html" },
+    { name:"Salah",   ar:"الصلاة",  icon:"🕌", url: BASE + "salah.html"   },
+    { name:"Zakat",   ar:"الزكاة",  icon:"🪙", url:"#"                    },
+    { name:"Sawm",    ar:"الصوم",   icon:"🌙", url:"#"                    },
+    { name:"Hajj",    ar:"الحج",    icon:"🕋", url:"#"                    }
   ],
   topics: [
-    { name:"Wudu (Ablution)",  desc:"Step-by-step purification",    icon:"💧", tag:"Basics",   url:"wudu.html"  },
-    { name:"Daily Duas",       desc:"Supplications for everyday",   icon:"🤲", tag:"Must-know",url:"#"          },
-    { name:"Names of Allah",   desc:"The 99 Beautiful Names",       icon:"📖", tag:"Faith",    url:"#"          },
-    { name:"Seerah",           desc:"Life of the Prophet (pbuh)",   icon:"📜", tag:"History",  url:"#"          }
+    { name:"Wudu (Ablution)",  desc:"Step-by-step purification",  icon:"💧", tag:"Basics",      url: BASE + "wudu.html"    },
+    { name:"Salah (Prayer)",   desc:"How to pray step-by-step",   icon:"🕌", tag:"Basics",      url: BASE + "salah.html"   },
+    { name:"Ghusl (Bath)",     desc:"Full ritual purification",   icon:"🚿", tag:"Purification",url: BASE + "gusl.html"    },
+    { name:"Shahada",          desc:"Declaration of faith",       icon:"☝️", tag:"Faith",       url: BASE + "shahada.html" },
+    { name:"Daily Duas",       desc:"Supplications for everyday", icon:"🤲", tag:"Must-know",   url:"#"                    },
+    { name:"Names of Allah",   desc:"The 99 Beautiful Names",     icon:"📖", tag:"Faith",       url:"#"                    },
+    { name:"Seerah",           desc:"Life of the Prophet ﷺ",     icon:"📜", tag:"History",     url:"#"                    }
   ],
   categories: [
-    { name:"Quranic Studies",               sub:"Tafsir, Tajweed, and Memorization",      color:"#00897b", url:"#" },
-    { name:"Hadith Sciences",               sub:"Collections and Authenticity",            color:"#ffb300", url:"#" },
-    { name:"Islamic Jurisprudence (Fiqh)",  sub:"Rules for daily living and worship",     color:"#e53935", url:"#" },
-    { name:"Islamic History",               sub:"From the early days to modern times",    color:"#1e88e5", url:"#" }
+    { name:"Purification (Taharah)",      sub:"Wudu, Ghusl, Tayammum",              color:"#00897b", url: BASE + "wudu.html"    },
+    { name:"Prayer (Salah)",              sub:"How to pray, times, rulings",        color:"#26a69a", url: BASE + "salah.html"   },
+    { name:"Faith (Aqeedah)",             sub:"Pillars of Faith, Shahada, Tawhid",  color:"#7e57c2", url: BASE + "shahada.html" },
+    { name:"Ghusl & Purity",              sub:"Full ritual bath & its rulings",     color:"#00acc1", url: BASE + "gusl.html"    },
+    { name:"Quranic Studies",             sub:"Tafsir, Tajweed, and Memorization",  color:"#1e88e5", url:"#"                    },
+    { name:"Hadith Sciences",             sub:"Collections and Authenticity",       color:"#ffb300", url:"#"                    },
+    { name:"Islamic Jurisprudence (Fiqh)",sub:"Rules for daily living and worship", color:"#e53935", url:"#"                    },
+    { name:"Islamic History",             sub:"From the early days to modern times",color:"#f57c00", url:"#"                    }
   ]
 };
 function loadDynamicContent() {
