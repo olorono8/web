@@ -494,32 +494,32 @@ function toArr(val) {
 function renderData(data) {
   if (data.pillars) {
     document.getElementById('pillarsContainer').innerHTML = toArr(data.pillars).map(p => `
-      <a class="pillar" href="${p.url}">
-        <span class="pillar-ico">${p.icon}</span>
-        <div class="pillar-name">${p.name}</div>
-        <div class="pillar-ar">${p.ar}</div>
+      <a class="pillar" href="${p.url || '#'}">
+        <span class="pillar-ico">${p.icon || ''}</span>
+        <div class="pillar-name">${p.name || ''}</div>
+        <div class="pillar-ar">${p.ar || ''}</div>
       </a>
     `).join('');
   }
   if (data.topics) {
     document.getElementById('topicsContainer').innerHTML = toArr(data.topics).map(t => `
-      <a class="topic-card" href="${t.url}">
-        <span class="topic-ico">${t.icon}</span>
+      <a class="topic-card" href="${t.url || '#'}">
+        <span class="topic-ico">${t.icon || ''}</span>
         <div class="topic-body">
-          <div class="topic-name">${t.name}</div>
-          <div class="topic-desc">${t.desc}</div>
-          <div class="topic-tag">${t.tag}</div>
+          <div class="topic-name">${t.name || ''}</div>
+          <div class="topic-desc">${t.desc || ''}</div>
+          <div class="topic-tag">${t.tag || ''}</div>
         </div>
       </a>
     `).join('');
   }
   if (data.categories) {
     document.getElementById('catsContainer').innerHTML = toArr(data.categories).map(c => `
-      <a class="cat" href="${c.url}">
+      <a class="cat" href="${c.url || '#'}">
         <div class="cat-dot" style="background:${c.color || '#22b589'}"></div>
         <div class="cat-info">
-          <div class="cat-name">${c.name}</div>
-          <div class="cat-sub">${c.sub}</div>
+          <div class="cat-name">${c.name || ''}</div>
+          <div class="cat-sub">${c.sub || ''}</div>
         </div>
         <i class="ti ti-chevron-right cat-arr"></i>
       </a>
@@ -557,21 +557,25 @@ const FALLBACK_DATA = {
     { name:"Islamic History",             sub:"From the early days to modern times",color:"#f57c00", url:"#"                    }
   ]
 };
+const CACHE_KEY = 'guideData_v2';  // bump version to wipe old stale cache
+
 function loadDynamicContent() {
+  // Wipe any old cache keys from previous versions
+  try { localStorage.removeItem('offlineGuideData'); } catch(e) {}
+
   // ── LAYER 1: Paint instantly with fallback (zero-delay, synchronous) ──
   renderData(FALLBACK_DATA);
 
   // ── LAYER 2: Upgrade from localStorage cache (sync, still instant) ──
   let cachedStr = null;
   try {
-    cachedStr = localStorage.getItem('offlineGuideData');
+    cachedStr = localStorage.getItem(CACHE_KEY);
     if (cachedStr) {
-      const cached = JSON.parse(cachedStr);
-      renderData(cached);       // overrides fallback with saved data
+      renderData(JSON.parse(cachedStr));
     }
   } catch(e) {
-    console.error("Cache parse error, clearing:", e);
-    localStorage.removeItem('offlineGuideData');
+    console.warn('Cache error, clearing:', e);
+    localStorage.removeItem(CACHE_KEY);
     cachedStr = null;
   }
 
@@ -581,15 +585,14 @@ function loadDynamicContent() {
       const data = snapshot.val();
       const newStr = JSON.stringify(data);
       if (newStr !== cachedStr) {
-        localStorage.setItem('offlineGuideData', newStr);
-        renderData(data);       // seamlessly upgrades to live data
+        localStorage.setItem(CACHE_KEY, newStr);
+        renderData(data);
       }
     } else {
-      console.warn("Firebase DB is empty — showing fallback/cached data.");
+      console.warn('Firebase DB is empty — showing fallback/cached data.');
     }
   }).catch(error => {
-    console.warn("Firebase fetch failed (offline?):", error);
-    // Already showing fallback or cached data, nothing more needed
+    console.warn('Firebase fetch failed (offline?):', error);
   });
 }
 
