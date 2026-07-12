@@ -4,13 +4,13 @@
       "name": "Shahada",
       "ar": "الشهادة",
       "icon": "☝️",
-      "url": "shahada.html"
+      "url": "https://raw.githack.com/olorono8/web/main/web/guide/shahada.html"
     },
     {
       "name": "Salah",
       "ar": "الصلاة",
       "icon": "🕌",
-      "url": "salah.html"
+      "url": "https://raw.githack.com/olorono8/web/main/web/guide/salah.html"
     },
     {
       "name": "Zakat",
@@ -37,28 +37,28 @@
       "desc": "Step-by-step purification",
       "icon": "💧",
       "tag": "Basics",
-      "url": "wudu.html"
+      "url": "https://raw.githack.com/olorono8/web/main/web/guide/wudu.html"
     },
     {
       "name": "Salah (Prayer)",
       "desc": "How to pray step-by-step",
       "icon": "🕌",
       "tag": "Basics",
-      "url": "salah.html"
+      "url": "https://raw.githack.com/olorono8/web/main/web/guide/salah.html"
     },
     {
       "name": "Ghusl (Bath)",
       "desc": "Full ritual purification",
       "icon": "🚿",
       "tag": "Purification",
-      "url": "gusl.html"
+      "url": "https://raw.githack.com/olorono8/web/main/web/guide/gusl.html"
     },
     {
       "name": "Shahada",
       "desc": "Declaration of faith",
       "icon": "☝️",
       "tag": "Faith",
-      "url": "shahada.html"
+      "url": "https://raw.githack.com/olorono8/web/main/web/guide/shahada.html"
     },
     {
       "name": "Daily Duas",
@@ -122,19 +122,25 @@
       "name": "Purification (Taharah)",
       "sub": "Wudu, Ghusl, Tayammum",
       "color": "#00897b",
-      "url": "wudu.html"
+      "url": "https://raw.githack.com/olorono8/web/main/web/guide/wudu.html"
     },
     {
       "name": "Prayer (Salah)",
       "sub": "How to pray, times, rulings",
       "color": "#26a69a",
-      "url": "salah.html"
+      "url": "https://raw.githack.com/olorono8/web/main/web/guide/salah.html"
     },
     {
       "name": "Faith (Aqeedah)",
       "sub": "Pillars of Faith, Shahada, Tawhid",
       "color": "#7e57c2",
-      "url": "shahada.html"
+      "url": "https://raw.githack.com/olorono8/web/main/web/guide/shahada.html"
+    },
+    {
+      "name": "Ghusl & Purity",
+      "sub": "Full ritual bath & its rulings",
+      "color": "#00acc1",
+      "url": "https://raw.githack.com/olorono8/web/main/web/guide/gusl.html"
     },
     {
       "name": "Quranic Studies",
