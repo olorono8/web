@@ -262,30 +262,19 @@ body{background:var(--bg);color:var(--t1);transition:background var(--tr),color 
   color: var(--t3);
   margin-top: 2px;
 }
-/* ── IFRAME MODAL (CANVAS) ── */
+/* ── IFRAME MODAL ── */
 .iframe-modal {
-  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-  background: var(--bg); z-index: 9999; display: flex; flex-direction: column;
-  transform: translateY(100%); transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.1);
+  position: fixed; inset: 0;
+  z-index: 9999;
+  transform: translateY(100%);
+  transition: transform 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.1);
   pointer-events: none;
 }
 .iframe-modal.show { transform: translateY(0); pointer-events: auto; }
-.iframe-header {
-  display: flex; align-items: center; padding: 16px; padding-top: calc(16px + var(--sat));
-  background: var(--surf); border-bottom: 1px solid var(--bd); box-shadow: var(--sh);
+.iframe-modal iframe {
+  width: 100%; height: 100%;
+  border: none; display: block;
 }
-.iframe-close {
-  width: clamp(28px, 7vw, 34px); height: clamp(28px, 7vw, 34px); border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  background: var(--pill); color: var(--t1); margin-right: 12px; flex-shrink: 0; cursor: pointer;
-}
-.iframe-close svg { width: 16px; height: 16px; }
-.iframe-title {
-  font-weight: 600; color: var(--t1); font-size: 15px; white-space: nowrap;
-  overflow: hidden; text-overflow: ellipsis;
-}
-.iframe-content { flex: 1; width: 100%; background: var(--surf2); }
-.iframe-content iframe { width: 100%; height: 100%; border: none; }
 /* ── ANIMATIONS ── */
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
 .page-anim{animation:fadeIn 0.35s ease both;}
@@ -375,20 +364,9 @@ body{background:var(--bg);color:var(--t1);transition:background var(--tr),color 
   <div class="toast-sub">Support us in building this guide.<br>May Allah reward you. 🌙</div>
   <div class="toast-arabic">إِن شَاءَ ٱللَّٰهُ</div>
 </div>
-<!-- IFRAME MODAL OVERLAY -->
+<!-- IFRAME MODAL -->
 <div id="iframeModal" class="iframe-modal">
-  <div class="iframe-header">
-    <button class="iframe-close" id="closeIframe" aria-label="Close">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="18" y1="6" x2="6" y2="18"></line>
-        <line x1="6" y1="6" x2="18" y2="18"></line>
-      </svg>
-    </button>
-    <span class="iframe-title" id="iframeTitle">Loading...</span>
-  </div>
-  <div class="iframe-content">
-    <iframe id="contentIframe" src="" frameborder="0"></iframe>
-  </div>
+  <iframe id="contentIframe" src="" frameborder="0" allowfullscreen></iframe>
 </div>
 <script type="module">
 const sunIcon=`<i class="fas fa-sun" style="font-size: clamp(12px, 3.5vw, 14px);"></i>`;
@@ -443,26 +421,28 @@ document.getElementById('si').addEventListener('input', function(e) {
     }
   });
 });
-// ── TOAST FOR "#" LINKS ──
+// ── TOAST ──
 const toast = document.getElementById('toast');
 let toastTimeout;
-// ── IFRAME MODAL LOGIC ──
+
+// ── IFRAME MODAL ──
 const iframeModal = document.getElementById('iframeModal');
 const contentIframe = document.getElementById('contentIframe');
-const closeIframeBtn = document.getElementById('closeIframe');
-const iframeTitle = document.getElementById('iframeTitle');
-// ── SINGLE DELEGATED CLICK HANDLER (no duplicate listeners on re-render) ──
-function openInIframe(targetUrl, titleText) {
+
+function closeIframe() {
+  iframeModal.classList.remove('show');
+  setTimeout(() => contentIframe.removeAttribute('src'), 350);
+}
+
+function openInIframe(targetUrl) {
   if (!targetUrl || targetUrl === '#') {
     toast.classList.add('show');
     clearTimeout(toastTimeout);
     toastTimeout = setTimeout(() => toast.classList.remove('show'), 3000);
     return;
   }
-  iframeTitle.innerText = titleText || 'Guide';
-  const isOurFile = targetUrl.includes('githack.com') || targetUrl.includes('github.io') || targetUrl.includes('githubusercontent.com');
-  document.querySelector('.iframe-header').style.display = isOurFile ? 'none' : 'flex';
   const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+  const isOurFile = targetUrl.includes('githack.com') || targetUrl.includes('github.io') || targetUrl.includes('githubusercontent.com');
   const finalUrl = isOurFile
     ? targetUrl + (targetUrl.includes('?') ? '&' : '?') + 'theme=' + theme
     : targetUrl;
@@ -474,31 +454,19 @@ function openInIframe(targetUrl, titleText) {
   iframeModal.classList.add('show');
 }
 
+// Delegated click — works for all dynamically rendered cards
 document.getElementById('app').addEventListener('click', function(e) {
   const link = e.target.closest('a[href]');
   if (!link) return;
   e.preventDefault();
-  const url = link.getAttribute('href');
-  const label = link.querySelector('.topic-name, .pillar-name, .cat-name');
-  openInIframe(url, label ? label.innerText : 'Guide');
+  openInIframe(link.getAttribute('href'));
 });
 
 function bindInteractions() { /* no-op — delegation handles everything */ }
+
+// Back button inside child pages closes the modal
 window.addEventListener('message', function(e) {
-  if (e.data === 'close-iframe') {
-    iframeModal.classList.remove('show');
-    setTimeout(() => {
-      contentIframe.removeAttribute('src');
-      iframeTitle.innerText = 'Loading...';
-    }, 350);
-  }
-});
-closeIframeBtn.addEventListener('click', () => {
-  iframeModal.classList.remove('show');
-  setTimeout(() => {
-    contentIframe.removeAttribute('src');
-    iframeTitle.innerText = 'Loading...';
-  }, 350); 
+  if (e.data === 'close-iframe') closeIframe();
 });
 // ── FIREBASE FETCH LOGIC ──
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
