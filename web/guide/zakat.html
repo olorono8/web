@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<script>
+(function(){
+  var isDark = window.matchMedia('(prefers-color-scheme:dark)').matches;
+  try {
+    var p = new URLSearchParams(window.location.search).get('theme');
+    if (p) { isDark = p === 'dark'; }
+    else { var g = localStorage.getItem('globalTheme'); if(g) isDark = g === 'dark'; }
+  } catch(e){}
+  document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
+})();
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Zakat calculator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f6f4ee; --surface: #ffffff; --surface-2: #efebe1;
+    --text-primary: #201f1d; --text-secondary: #6b6a64; --text-muted: #96948b;
+    --border: #e1ddd1; --emerald: #0f6e56; --emerald-soft: #e1f1ec;
+    --gold: #a97d32; --gold-soft: #f3e8d2;
+    --shadow: 0 1px 2px rgba(32,31,29,0.04), 0 8px 24px rgba(32,31,29,0.06);
+  }
+  [data-theme="dark"] {
+    --bg: #222222; --surface: #2a2a2a; --surface-2: #333230;
+    --text-primary: #f1efe8; --text-secondary: #adaba3; --text-muted: #7d7b74;
+    --border: #3d3b37; --emerald: #4fbe95; --emerald-soft: #17332c;
+    --gold: #d4a857; --gold-soft: #34291a;
+    --shadow: 0 1px 2px rgba(0,0,0,0.2), 0 8px 24px rgba(0,0,0,0.3);
+  }
+  * { box-sizing: border-box; }
+  html,body { background:var(--bg); }
+  body { margin:0; min-height:100vh; display:flex; justify-content:center; padding:32px 16px;
+    font-family:'Inter',sans-serif; color:var(--text-primary); transition:background .25s,color .25s; }
+  .tb-back {
+    width:34px; height:34px; border-radius:50%;
+    background:transparent; border:none;
+    color:var(--text-primary);
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0; outline: none; cursor: pointer;
+  }
+  .tb-back:hover { background:var(--surface-2); }
+  .tb-back svg { width:18px; height:18px; }
+  .wrap { width:100%; max-width:460px; }
+  .card { background:var(--surface); border:0.5px solid var(--border); border-radius:20px;
+    padding:26px 24px; box-shadow:var(--shadow); margin-bottom:16px; transition:background .25s,border-color .25s; }
+  .header { display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:16px; gap:10px; }
+  .title { font-family:'Fraunces',serif; font-weight:500; font-size:24px; margin:0; letter-spacing:-0.01em; }
+  .subtitle { font-size:13px; color:var(--text-secondary); margin:4px 0 0; }
+  .header-controls { display:flex; align-items:center; gap:8px; flex-shrink:0; }
+  select#currency { height:34px; border-radius:8px; border:0.5px solid var(--border); background:var(--surface-2);
+    color:var(--text-primary); font-family:'Inter',sans-serif; font-size:12.5px; padding:0 8px; }
+  .toggle { width:34px; height:34px; border-radius:50%; border:0.5px solid var(--border); background:var(--surface-2);
+    display:flex; align-items:center; justify-content:center; cursor:pointer; color:var(--text-primary); }
+  .toggle:hover { border-color:var(--gold); }
+  .pattern { height:9px; margin:16px 0;
+    background-image: repeating-linear-gradient(135deg,var(--gold) 0 1.5px,transparent 1.5px 12px),
+                       repeating-linear-gradient(45deg,var(--gold) 0 1.5px,transparent 1.5px 12px);
+    opacity:.4; }
+  .banner { background:var(--emerald-soft); color:var(--emerald); border-radius:10px; padding:12px 14px;
+    font-size:12.5px; line-height:1.55; margin-bottom:18px; }
+  .note { font-size:11.5px; color:var(--text-muted); line-height:1.5; margin:6px 0 0; }
+  .section-label { font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--text-muted); margin:0 0 10px; }
+  .section { margin-bottom:18px; }
+  .row { display:flex; align-items:center; justify-content:space-between; gap:10px; padding:8px 0; border-bottom:0.5px solid var(--border); }
+  .row:last-child { border-bottom:none; }
+  .row label { font-size:13.5px; color:var(--text-secondary); }
+  .prefix { display:flex; align-items:center; gap:4px; flex-shrink:0; }
+  .prefix .cur { font-family:'IBM Plex Mono',monospace; font-size:13px; color:var(--text-muted); }
+  input[type=number], input[type=date], input[type=text] { width:118px; height:32px; border-radius:7px;
+    border:0.5px solid var(--border); background:var(--bg); color:var(--text-primary);
+    font-family:'IBM Plex Mono',monospace; font-size:13.5px; text-align:right; padding:0 10px; }
+  input[type=date] { width:150px; text-align:left; font-family:'Inter',sans-serif; font-size:12.5px; }
+  input:focus, select:focus { outline:none; border-color:var(--emerald); box-shadow:0 0 0 2px var(--emerald-soft); }
+  select.small { height:32px; border-radius:7px; border:0.5px solid var(--border); background:var(--bg);
+    color:var(--text-primary); font-size:12.5px; padding:0 8px; }
+  .check-row { display:flex; align-items:flex-start; gap:8px; padding:8px 0; }
+  .check-row input[type=checkbox] { margin-top:2px; width:15px; height:15px; accent-color:var(--emerald); }
+  .check-row span { font-size:12.5px; color:var(--text-secondary); line-height:1.5; }
+  details.group { border:0.5px solid var(--border); border-radius:12px; margin-bottom:12px; overflow:hidden; }
+  details.group summary { list-style:none; cursor:pointer; padding:12px 14px; display:flex; align-items:center;
+    justify-content:space-between; font-size:13px; font-weight:500; background:var(--surface-2); }
+  details.group summary::-webkit-details-marker { display:none; }
+  .chev { font-size:11px; color:var(--text-muted); transition:transform .2s; }
+  details.group[open] .chev { transform:rotate(180deg); }
+  details.group .content { padding:14px; }
+  .result { background:var(--surface-2); border-radius:14px; padding:16px 16px 14px; }
+  .result-line { display:flex; justify-content:space-between; align-items:baseline; font-size:12.5px; color:var(--text-secondary); margin-bottom:7px; }
+  .result-line .val { font-family:'IBM Plex Mono',monospace; color:var(--text-primary); }
+  .due { display:flex; justify-content:space-between; align-items:baseline; padding-top:10px; border-top:0.5px solid var(--border); margin-top:4px; }
+  .due .label { font-size:14px; }
+  .due .amount { font-family:'Fraunces',serif; font-weight:500; font-size:26px; color:var(--emerald); }
+  .status { font-size:11.5px; color:var(--text-muted); margin:8px 0 0; }
+  .btn-row { display:flex; gap:8px; margin-top:14px; }
+  button.action { flex:1; height:38px; border-radius:9px; border:0.5px solid var(--border); background:var(--surface);
+    color:var(--text-primary); font-family:'Inter',sans-serif; font-size:12.5px; font-weight:500; cursor:pointer; }
+  button.action:hover { border-color:var(--emerald); color:var(--emerald); }
+  button.action:disabled { opacity:.6; cursor:default; }
+  .asnaf { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+  .asnaf-item { background:var(--surface); border:0.5px solid var(--border); border-radius:8px; padding:8px 10px; }
+  .asnaf-item .n { font-size:11px; color:var(--gold); font-family:'IBM Plex Mono',monospace; }
+  .asnaf-item .t { font-size:12px; margin:2px 0 0; }
+  .icon { width:16px; height:16px; }
+  @media print {
+    body { background:#fff; padding:0; }
+    .toggle, select#currency, .btn-row { display:none; }
+    .card { box-shadow:none; border:1px solid #ccc; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="card">
+    <div class="header">
+      <div style="display:flex; align-items:center; gap:12px;">
+        <button class="tb-back" onclick="if(window.parent!==window){window.parent.postMessage('close-iframe','*')}else{window.location.href='./index.html'}" aria-label="Go back">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+          </svg>
+        </button>
+        <div>
+          <p class="title">Zakat calculator</p>
+          <p class="subtitle">A complete ledger for annual giving</p>
+        </div>
+      </div>
+      <div class="header-controls">
+        <select id="currency" aria-label="Currency">
+          <option value="INR">INR ₹</option>
+          <option value="USD">USD $</option>
+          <option value="GBP">GBP £</option>
+          <option value="EUR">EUR €</option>
+          <option value="SAR">SAR ﷼</option>
+          <option value="AED">AED د.إ</option>
+          <option value="PKR">PKR ₨</option>
+          <option value="BDT">BDT ৳</option>
+          <option value="MYR">MYR RM</option>
+          <option value="IDR">IDR Rp</option>
+        </select>
+        <button class="toggle" id="theme-toggle" aria-label="Toggle dark mode">
+          <svg class="icon" id="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+    <div class="pattern"></div>
+    <div class="banner">This calculator gives a general estimate based on commonly followed rules. Practices differ across schools of thought — for your specific situation, consult a knowledgeable scholar or your local zakat authority.</div>
+
+    <details class="group" open>
+      <summary>Nisab settings <span class="chev">▾</span></summary>
+      <div class="content">
+        <div class="row"><label>Gold price / gram</label><div class="prefix"><span class="cur" id="cur1">₹</span><input type="number" min="0" id="goldPrice" value=""></div></div>
+        <div class="row"><label>Silver price / gram</label><div class="prefix"><span class="cur" id="cur2">₹</span><input type="number" min="0" id="silverPrice" value=""></div></div>
+        <div class="btn-row">
+          <button class="action" id="useGoldNisab">Use gold standard (87.48g)</button>
+          <button class="action" id="useSilverNisab">Use silver standard (612.36g)</button>
+        </div>
+        <div class="row" style="margin-top:6px;"><label>Nisab threshold</label><div class="prefix"><span class="cur" id="cur3">₹</span><input type="number" min="0" id="nisab" value="75000"></div></div>
+        <p class="note">Silver gives a lower, more inclusive threshold; gold a higher one. Both views are followed — pick one or enter your own figure.</p>
+      </div>
+    </details>
+
+    <div class="section">
+      <p class="section-label">Zakatable assets</p>
+      <div class="row"><label>Cash and bank savings</label><div class="prefix"><span class="cur" id="cur4">₹</span><input type="number" min="0" id="cash" value="0"></div></div>
+      <div class="row"><label>Gold (bars, coins, trade)</label><div class="prefix"><span class="cur" id="cur5">₹</span><input type="number" min="0" id="goldTrade" value="0"></div></div>
+      <div class="row"><label>Silver (bars, coins, trade)</label><div class="prefix"><span class="cur" id="cur6">₹</span><input type="number" min="0" id="silverTrade" value="0"></div></div>
+      <div class="check-row"><input type="checkbox" id="jewelryToggle" checked><span>Include gold and silver jewelry kept for personal, regular use (some schools exempt this — uncheck if you follow that view)</span></div>
+      <div class="row"><label>Gold and silver jewelry value</label><div class="prefix"><span class="cur" id="cur7">₹</span><input type="number" min="0" id="jewelry" value="0"></div></div>
+      <div class="row"><label>Cryptocurrency</label><div class="prefix"><span class="cur" id="cur8">₹</span><input type="number" min="0" id="crypto" value="0"></div></div>
+      <div class="row"><label>Money owed to you</label><div class="prefix"><span class="cur" id="cur9">₹</span><input type="number" min="0" id="receivables" value="0"></div></div>
+      <div class="row"><label>Business inventory</label><div class="prefix"><span class="cur" id="cur10">₹</span><input type="number" min="0" id="business" value="0"></div></div>
+      <div class="row"><label>Other zakatable assets</label><div class="prefix"><span class="cur" id="cur11">₹</span><input type="number" min="0" id="other" value="0"></div></div>
+    </div>
+
+    <details class="group">
+      <summary>Investments and stocks <span class="chev">▾</span></summary>
+      <div class="content">
+        <div class="row"><label>Market value of holdings</label><div class="prefix"><span class="cur" id="cur12">₹</span><input type="number" min="0" id="invest" value="0"></div></div>
+        <div class="row"><label>Holding type</label><select class="small" id="investType"><option value="trade">Trading (full value)</option><option value="longterm">Long-term holding (portion only)</option></select></div>
+        <div class="row"><label>Zakatable portion</label><div class="prefix"><input type="number" min="0" max="100" id="investPct" value="30" style="width:60px;"><span class="cur">%</span></div></div>
+        <p class="note">Shares held for trading are zakatable at full value. Long-term holdings are commonly estimated at the zakatable portion of the company's underlying assets — 30% is a common approximation; adjust if you have a more precise figure.</p>
+      </div>
+    </details>
+
+    <div class="section" style="margin-top:16px;">
+      <p class="section-label">Deductions</p>
+      <div class="row"><label>Short-term debts and liabilities</label><div class="prefix"><span class="cur" id="cur13">₹</span><input type="number" min="0" id="debts" value="0"></div></div>
+    </div>
+
+    <div class="pattern"></div>
+
+    <div class="result">
+      <div class="result-line"><span>Total zakatable wealth</span><span class="val" id="assets-out">₹0</span></div>
+      <div class="result-line"><span>Net wealth after debts</span><span class="val" id="net-out">₹0</span></div>
+      <div class="result-line"><span>Nisab threshold in use</span><span class="val" id="nisab-out">₹0</span></div>
+      <div class="due">
+        <span class="label">Zakat on wealth (2.5%)</span>
+        <span class="amount" id="zakat-out">₹0</span>
+      </div>
+      <p class="status" id="status-out">Below nisab — no zakat due yet.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <p class="section-label">Additional zakat obligations</p>
+
+    <details class="group">
+      <summary>Agricultural produce — ushr <span class="chev">▾</span></summary>
+      <div class="content">
+        <div class="row"><label>Value of harvested crop</label><div class="prefix"><span class="cur" id="cur14">₹</span><input type="number" min="0" id="cropValue" value="0"></div></div>
+        <div class="row"><label>Crop nisab (≈653kg equivalent)</label><div class="prefix"><span class="cur" id="cur15">₹</span><input type="number" min="0" id="cropNisab" value="0"></div></div>
+        <div class="row"><label>Irrigation</label><select class="small" id="irrigation"><option value="natural">Rain-fed / natural (10%)</option><option value="artificial">Artificially irrigated (5%)</option></select></div>
+        <p class="note">Zakat on produce is due at harvest, without waiting a full year, once the crop meets its own nisab.</p>
+      </div>
+    </details>
+
+    <details class="group">
+      <summary>Livestock <span class="chev">▾</span></summary>
+      <div class="content">
+        <div class="row"><label>Sheep / goats owned</label><input type="number" min="0" id="sheepCount" value="0"></div>
+        <div class="row"><label>Avg. value per animal</label><div class="prefix"><span class="cur" id="cur16">₹</span><input type="number" min="0" id="sheepPrice" value="0"></div></div>
+        <div class="row"><label>Cattle / buffalo owned</label><input type="number" min="0" id="cattleCount" value="0"></div>
+        <div class="row"><label>Avg. value per animal</label><div class="prefix"><span class="cur" id="cur17">₹</span><input type="number" min="0" id="cattlePrice" value="0"></div></div>
+        <div class="row"><label>Camels owned</label><input type="number" min="0" id="camelCount" value="0"></div>
+        <p class="note" id="livestock-note">Livestock zakat is traditionally paid in animals rather than cash, following detailed tiered tables. Camel calculations aren't covered here — please consult a scholar for an exact figure.</p>
+      </div>
+    </details>
+
+    <details class="group">
+      <summary>Rikaz — found treasure <span class="chev">▾</span></summary>
+      <div class="content">
+        <div class="row"><label>Value found</label><div class="prefix"><span class="cur" id="cur18">₹</span><input type="number" min="0" id="rikaz" value="0"></div></div>
+        <p class="note">Rikaz is due immediately at 20%, with no nisab or waiting year.</p>
+      </div>
+    </details>
+
+    <details class="group">
+      <summary>Zakat al-Fitr <span class="chev">▾</span></summary>
+      <div class="content">
+        <div class="row"><label>Family members</label><input type="number" min="0" id="fitrPeople" value="1"></div>
+        <div class="row"><label>Amount per person</label><div class="prefix"><span class="cur" id="cur19">₹</span><input type="number" min="0" id="fitrAmount" value=""></div></div>
+        <div class="due"><span class="label">Zakat al-Fitr total</span><span class="amount" id="fitr-out" style="font-size:20px;">₹0</span></div>
+        <p class="note">A separate, fixed obligation per person — usually equivalent to a measure of staple food, paid before Eid prayer. Local zakat authorities publish a current figure each year.</p>
+      </div>
+    </details>
+
+    <div class="pattern"></div>
+
+    <div class="result">
+      <div class="result-line"><span>Zakat on produce (ushr)</span><span class="val" id="ushr-out">₹0</span></div>
+      <div class="result-line"><span>Zakat on rikaz</span><span class="val" id="rikaz-out">₹0</span></div>
+      <div class="result-line"><span>Sheep / goats due</span><span class="val" id="sheep-out">0</span></div>
+      <div class="result-line"><span>Cattle due</span><span class="val" id="cattle-out">0</span></div>
+      <div class="due">
+        <span class="label">Grand total payable (cash)</span>
+        <span class="amount" id="grand-out">₹0</span>
+      </div>
+      <p class="status">Excludes livestock and Zakat al-Fitr, shown separately above — livestock is normally paid in kind.</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <details class="group" open>
+      <summary>Hawl tracker <span class="chev">▾</span></summary>
+      <div class="content">
+        <div class="row"><label>Date wealth reached nisab</label><input type="date" id="hawlDate"></div>
+        <p class="note" id="hawl-out">Enter a date to see when your lunar year (hawl) completes and zakat becomes due.</p>
+      </div>
+    </details>
+
+    <details class="group">
+      <summary>Who receives zakat <span class="chev">▾</span></summary>
+      <div class="content">
+        <div class="asnaf">
+          <div class="asnaf-item"><div class="n">01</div><p class="t">The poor (fuqara)</p></div>
+          <div class="asnaf-item"><div class="n">02</div><p class="t">The needy (masakin)</p></div>
+          <div class="asnaf-item"><div class="n">03</div><p class="t">Zakat administrators</p></div>
+          <div class="asnaf-item"><div class="n">04</div><p class="t">Those inclined to the faith</p></div>
+          <div class="asnaf-item"><div class="n">05</div><p class="t">Freeing captives</p></div>
+          <div class="asnaf-item"><div class="n">06</div><p class="t">Those in debt</p></div>
+          <div class="asnaf-item"><div class="n">07</div><p class="t">In the cause of Allah</p></div>
+          <div class="asnaf-item"><div class="n">08</div><p class="t">Stranded travelers</p></div>
+        </div>
+        <p class="note">These eight categories are named in the Quran, chapter 9, verse 60.</p>
+      </div>
+    </details>
+
+    <div class="btn-row">
+      <button class="action" id="pdfBtn">Save PDF</button>
+      <button class="action" id="copyBtn">Copy summary</button>
+    </div>
+    <p class="note" id="pdf-status" style="margin-top:8px;"></p>
+  </div>
+
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+<script>
+(function () {
+  var root = document.documentElement;
+  var toggleBtn = document.getElementById('theme-toggle');
+  var iconPath = document.getElementById('theme-icon').querySelector('path');
+  var MOON = 'M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z';
+  var SUN = 'M12 4.5V2.5M12 21.5v-2M4.93 4.93 3.5 3.5M20.5 20.5l-1.43-1.43M4.5 12h-2M21.5 12h-2M4.93 19.07 3.5 20.5M20.5 3.5l-1.43 1.43M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z';
+
+  function setTheme(theme) {
+    root.setAttribute('data-theme', theme);
+    iconPath.setAttribute('d', theme === 'dark' ? SUN : MOON);
+  }
+
+  // Initial sync from data-theme set by early inline script
+  setTheme(root.getAttribute('data-theme') || 'light');
+
+  toggleBtn.addEventListener('click', function () {
+    var isDark = root.getAttribute('data-theme') === 'dark';
+    var nextTheme = isDark ? 'light' : 'dark';
+    setTheme(nextTheme);
+    try {
+      localStorage.setItem('globalTheme', nextTheme);
+      localStorage.setItem('quranNightMode', (nextTheme === 'light').toString());
+    } catch(e){}
+  });
+
+  window.addEventListener('message', function(e) {
+    if (e.data && e.data.type === 'set-theme') {
+      setTheme(e.data.theme);
+    }
+  });
+
+  var localeMap = { INR:'en-IN', USD:'en-US', GBP:'en-GB', EUR:'en-IE', SAR:'ar-SA-u-nu-latn', AED:'ar-AE-u-nu-latn', PKR:'en-PK', BDT:'en-BD', MYR:'en-MY', IDR:'en-ID' };
+  var currencySel = document.getElementById('currency');
+  var fmt, symbol;
+
+  function updateCurrency() {
+    var code = currencySel.value;
+    fmt = new Intl.NumberFormat(localeMap[code] || 'en-US', { style:'currency', currency:code, maximumFractionDigits:0 });
+    var parts = fmt.formatToParts(0);
+    symbol = (parts.find(function(p){ return p.type==='currency'; }) || {}).value || code;
+    document.querySelectorAll('.cur').forEach(function (el) { el.textContent = symbol; });
+    calc();
+  }
+  currencySel.addEventListener('change', updateCurrency);
+
+  function num(id) { return parseFloat(document.getElementById(id).value) || 0; }
+
+  document.getElementById('useGoldNisab').addEventListener('click', function () {
+    var v = num('goldPrice') * 87.48;
+    if (v > 0) document.getElementById('nisab').value = Math.round(v);
+    calc();
+  });
+  document.getElementById('useSilverNisab').addEventListener('click', function () {
+    var v = num('silverPrice') * 612.36;
+    if (v > 0) document.getElementById('nisab').value = Math.round(v);
+    calc();
+  });
+
+  function sheepZakat(n) {
+    if (n < 40) return 0;
+    if (n <= 120) return 1;
+    if (n <= 200) return 2;
+    if (n <= 300) return 3;
+    return 3 + Math.floor((n - 300) / 100);
+  }
+  var cattleTable = [
+    [30,39,"1 tabi' (1-yr calf)"], [40,59,'1 musinnah (2-yr)'], [60,69,"2 tabi'"],
+    [70,79,"1 tabi' + 1 musinnah"], [80,89,'2 musinnah'], [90,99,"3 tabi'"],
+    [100,109,"2 tabi' + 1 musinnah"], [110,119,"1 tabi' + 2 musinnah"]
+  ];
+  function cattleZakatCount(n) {
+    if (n < 30) return { count:0, label:'none' };
+    if (n <= 119) {
+      for (var i=0;i<cattleTable.length;i++) {
+        if (n>=cattleTable[i][0] && n<=cattleTable[i][1]) {
+          var count = (cattleTable[i][2].match(/\d+/g)||[]).reduce(function(a,b){return a+parseInt(b);},0);
+          return { count:count, label:cattleTable[i][2] };
+        }
+      }
+    }
+    return { count:null, label:'consult a scholar for herds of 120+' };
+  }
+
+  var state = {};
+
+  function calc() {
+    var jewelryIncluded = document.getElementById('jewelryToggle').checked;
+    var cash = num('cash'), goldTrade = num('goldTrade'), silverTrade = num('silverTrade'),
+        jewelry = num('jewelry'), crypto = num('crypto'), receivables = num('receivables'),
+        business = num('business'), other = num('other');
+    var assets = cash + goldTrade + silverTrade + crypto + receivables + business + other;
+    if (jewelryIncluded) assets += jewelry;
+    var investVal = num('invest');
+    var investType = document.getElementById('investType').value;
+    var investPortion = investType === 'trade' ? investVal : investVal * (num('investPct')/100);
+    assets += investPortion;
+    var debts = num('debts');
+    var net = Math.max(assets - debts, 0);
+    var nisab = num('nisab');
+    var zakat = net >= nisab && nisab > 0 ? net * 0.025 : 0;
+
+    document.getElementById('assets-out').textContent = fmt.format(Math.round(assets));
+    document.getElementById('net-out').textContent = fmt.format(Math.round(net));
+    document.getElementById('nisab-out').textContent = fmt.format(Math.round(nisab));
+    document.getElementById('zakat-out').textContent = fmt.format(Math.round(zakat));
+    document.getElementById('status-out').textContent = (net >= nisab && nisab > 0)
+      ? 'Above nisab — zakat is due on this wealth.' : 'Below nisab — no zakat due yet.';
+
+    var cropValue = num('cropValue'), cropNisab = num('cropNisab');
+    var irrigation = document.getElementById('irrigation').value;
+    var rate = irrigation === 'artificial' ? 0.05 : 0.10;
+    var ushr = (cropNisab > 0 && cropValue >= cropNisab) ? cropValue * rate : 0;
+    document.getElementById('ushr-out').textContent = fmt.format(Math.round(ushr));
+
+    var rikazVal = num('rikaz');
+    var rikaz = rikazVal * 0.20;
+    document.getElementById('rikaz-out').textContent = fmt.format(Math.round(rikaz));
+
+    var sheepCount = num('sheepCount'), sheepDue = sheepZakat(sheepCount);
+    var sheepCash = sheepDue * num('sheepPrice');
+    document.getElementById('sheep-out').textContent = sheepCount>0 ? (sheepDue + ' head' + (sheepCash>0?' ('+fmt.format(Math.round(sheepCash))+')':'')) : '0';
+
+    var cattleCount = num('cattleCount'), cattleResult = cattleZakatCount(cattleCount);
+    var cattleLabel = cattleCount>0 ? cattleResult.label : '0';
+    document.getElementById('cattle-out').textContent = cattleLabel;
+    var cattleCash = (cattleResult.count!=null) ? cattleResult.count * num('cattlePrice') : 0;
+
+    var camelCount = num('camelCount');
+    document.getElementById('livestock-note').textContent = camelCount>0
+      ? 'You entered ' + camelCount + " camel(s) — camel zakat follows a detailed tiered table not covered here. Please consult a scholar or local zakat authority for an exact figure."
+      : "Livestock zakat is traditionally paid in animals rather than cash, following detailed tiered tables. Camel calculations aren't covered here — please consult a scholar for an exact figure.";
+
+    var grand = zakat + ushr + rikaz + sheepCash + cattleCash;
+    document.getElementById('grand-out').textContent = fmt.format(Math.round(grand));
+
+    var fitrPeople = num('fitrPeople'), fitrAmount = num('fitrAmount');
+    var fitrTotal = fitrPeople * fitrAmount;
+    document.getElementById('fitr-out').textContent = fmt.format(Math.round(fitrTotal));
+
+    state = {
+      cash: cash, goldTrade: goldTrade, silverTrade: silverTrade, jewelry: jewelry, jewelryIncluded: jewelryIncluded,
+      crypto: crypto, receivables: receivables, business: business, other: other, investPortion: investPortion,
+      debts: debts, assets: assets, net: net, nisab: nisab, zakat: zakat,
+      cropValue: cropValue, cropNisab: cropNisab, ushr: ushr, rikaz: rikaz,
+      sheepCount: sheepCount, sheepDue: sheepDue, sheepCash: sheepCash,
+      cattleCount: cattleCount, cattleLabel: cattleLabel, cattleCash: cattleCash, camelCount: camelCount,
+      grand: grand, fitrPeople: fitrPeople, fitrAmount: fitrAmount, fitrTotal: fitrTotal
+    };
+  }
+
+  document.getElementById('hawlDate').addEventListener('change', function (e) {
+    var out = document.getElementById('hawl-out');
+    if (!e.target.value) { out.textContent = 'Enter a date to see when your lunar year (hawl) completes and zakat becomes due.'; return; }
+    var start = new Date(e.target.value);
+    var due = new Date(start.getTime() + 354 * 24 * 60 * 60 * 1000);
+    var today = new Date();
+    var daysLeft = Math.ceil((due - today) / (24*60*60*1000));
+    var dueStr = due.toLocaleDateString(undefined, { year:'numeric', month:'long', day:'numeric' });
+    out.textContent = daysLeft > 0
+      ? 'Your lunar year completes around ' + dueStr + ' (about ' + daysLeft + ' days from today).'
+      : 'Your lunar year has completed — zakat has been due since around ' + dueStr + '.';
+  });
+
+  document.getElementById('copyBtn').addEventListener('click', function () {
+    var text = 'Zakat calculator summary\n' +
+      'Total zakatable wealth: ' + document.getElementById('assets-out').textContent + '\n' +
+      'Net wealth after debts: ' + document.getElementById('net-out').textContent + '\n' +
+      'Nisab threshold: ' + document.getElementById('nisab-out').textContent + '\n' +
+      'Zakat on wealth (2.5%): ' + document.getElementById('zakat-out').textContent + '\n' +
+      'Zakat on produce (ushr): ' + document.getElementById('ushr-out').textContent + '\n' +
+      'Zakat on rikaz: ' + document.getElementById('rikaz-out').textContent + '\n' +
+      'Grand total payable (cash): ' + document.getElementById('grand-out').textContent + '\n' +
+      'Zakat al-Fitr total: ' + document.getElementById('fitr-out').textContent;
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text).then(function () {
+        var btn = document.getElementById('copyBtn');
+        var original = btn.textContent;
+        btn.textContent = 'Copied';
+        setTimeout(function () { btn.textContent = original; }, 1500);
+      });
+    }
+  });
+
+  // ---- PDF generation ----
+  function buildPDF() {
+    var jsPDF = window.jspdf.jsPDF;
+    var doc = new jsPDF({ unit:'mm', format:'a4' });
+    var pageWidth = doc.internal.pageSize.getWidth();
+    var marginX = 16;
+    var contentWidth = pageWidth - marginX*2;
+    var emerald = [15,110,86], gold = [169,125,50], textDark = [32,31,29], textMuted = [107,106,100], bannerBg = [225,241,236];
+    var s = state;
+    function money(v) { return fmt.format(Math.round(v||0)); }
+    function divider(yy) { doc.setDrawColor.apply(doc, gold); doc.setLineWidth(0.4); doc.line(marginX, yy, pageWidth-marginX, yy); }
+
+    doc.setFillColor.apply(doc, emerald);
+    doc.rect(0, 0, pageWidth, 32, 'F');
+    doc.setTextColor(255,255,255);
+    doc.setFont('helvetica','bold'); doc.setFontSize(20);
+    doc.text('Zakat calculator', marginX, 16);
+    doc.setFont('helvetica','normal'); doc.setFontSize(10);
+    var today = new Date().toLocaleDateString(undefined, { year:'numeric', month:'long', day:'numeric' });
+    doc.text('Summary generated on ' + today, marginX, 24);
+
+    var y = 42;
+    doc.setTextColor.apply(doc, textDark);
+    doc.setFillColor.apply(doc, bannerBg);
+    doc.roundedRect(marginX, y, contentWidth, 16, 2, 2, 'F');
+    doc.setFontSize(9); doc.setTextColor.apply(doc, emerald);
+    var disclaimer = doc.splitTextToSize('This is a general estimate based on commonly followed rules. Consult a knowledgeable scholar or your local zakat authority for your specific situation.', contentWidth-8);
+    doc.text(disclaimer, marginX+4, y+6);
+    y += 16 + 10;
+
+    doc.setTextColor.apply(doc, textDark);
+    doc.setFont('helvetica','bold'); doc.setFontSize(12);
+    doc.text('Contents', marginX, y); y += 7;
+    doc.setFont('helvetica','normal'); doc.setFontSize(10);
+    var tocItems = ['Wealth zakat','Additional obligations','Zakat al-Fitr','Hawl tracker','Who receives zakat'];
+    var tocY = {}, tocPageNum = 1;
+    tocItems.forEach(function (label) {
+      doc.setTextColor.apply(doc, emerald);
+      doc.text(label, marginX+2, y);
+      tocY[label] = y; y += 6;
+    });
+    doc.setTextColor.apply(doc, textDark);
+    y += 4;
+    divider(y); y += 8;
+
+    var sectionRefs = {};
+    function sectionHeader(title) {
+      sectionRefs[title] = { page: doc.internal.getNumberOfPages(), y: y - 4 };
+      doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.setTextColor.apply(doc, emerald);
+      doc.text(title, marginX, y);
+      doc.setTextColor.apply(doc, textDark);
+      y += 6;
+    }
+
+    sectionHeader('Wealth zakat');
+    var wealthRows = [
+      ['Cash and bank savings', money(s.cash)],
+      ['Gold (trade)', money(s.goldTrade)],
+      ['Silver (trade)', money(s.silverTrade)],
+      ['Jewelry' + (s.jewelryIncluded ? '' : ' (excluded)'), money(s.jewelryIncluded ? s.jewelry : 0)],
+      ['Cryptocurrency', money(s.crypto)],
+      ['Money owed to you', money(s.receivables)],
+      ['Business inventory', money(s.business)],
+      ['Other assets', money(s.other)],
+      ['Investments (zakatable portion)', money(s.investPortion)],
+      ['Short-term debts (deducted)', '-' + money(s.debts)]
+    ];
+    doc.autoTable({
+      startY: y, margin:{ left:marginX, right:marginX },
+      head:[['Item','Value']], body: wealthRows, theme:'plain',
+      styles:{ font:'helvetica', fontSize:9.5, textColor: textDark, cellPadding:2 },
+      headStyles:{ fillColor: emerald, textColor:[255,255,255], fontStyle:'bold' },
+      alternateRowStyles:{ fillColor:[246,244,238] },
+      columnStyles:{ 1:{ halign:'right' } }
+    });
+    y = doc.lastAutoTable.finalY + 6;
+
+    doc.setFillColor.apply(doc, bannerBg);
+    doc.roundedRect(marginX, y, contentWidth, 30, 2, 2, 'F');
+    doc.setFontSize(9.5); doc.setTextColor.apply(doc, textMuted);
+    doc.text('Total zakatable wealth', marginX+5, y+7);
+    doc.text('Net wealth after debts', marginX+5, y+14);
+    doc.text('Nisab threshold in use', marginX+5, y+21);
+    doc.setTextColor.apply(doc, textDark);
+    doc.text(money(s.assets), pageWidth-marginX-5, y+7, { align:'right' });
+    doc.text(money(s.net), pageWidth-marginX-5, y+14, { align:'right' });
+    doc.text(money(s.nisab), pageWidth-marginX-5, y+21, { align:'right' });
+    doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.setTextColor.apply(doc, emerald);
+    doc.text('Zakat due (2.5%)', marginX+5, y+28);
+    doc.text(money(s.zakat), pageWidth-marginX-5, y+28, { align:'right' });
+    y += 30 + 10;
+    doc.setFont('helvetica','normal'); doc.setTextColor.apply(doc, textDark);
+
+    if (y > 250) { doc.addPage(); y = 20; }
+    sectionHeader('Additional obligations');
+    var addRows = [
+      ['Agricultural produce (ushr)', money(s.ushr)],
+      ['Rikaz (found treasure)', money(s.rikaz)],
+      ['Sheep / goats due', s.sheepCount>0 ? (s.sheepDue + ' head') : '0'],
+      ['Cattle due', s.cattleCount>0 ? s.cattleLabel : '0']
+    ];
+    doc.autoTable({
+      startY: y, margin:{ left:marginX, right:marginX },
+      head:[['Item','Value']], body: addRows, theme:'plain',
+      styles:{ font:'helvetica', fontSize:9.5, textColor: textDark, cellPadding:2 },
+      headStyles:{ fillColor: gold, textColor:[255,255,255], fontStyle:'bold' },
+      alternateRowStyles:{ fillColor:[246,244,238] },
+      columnStyles:{ 1:{ halign:'right' } }
+    });
+    y = doc.lastAutoTable.finalY + 6;
+    doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.setTextColor.apply(doc, emerald);
+    doc.text('Grand total payable (cash)', marginX, y);
+    doc.text(money(s.grand), pageWidth-marginX, y, { align:'right' });
+    y += 6;
+    doc.setFont('helvetica','normal'); doc.setFontSize(8.5); doc.setTextColor.apply(doc, textMuted);
+    doc.text('Excludes livestock paid in kind and Zakat al-Fitr, shown separately.', marginX, y);
+    y += 12; doc.setTextColor.apply(doc, textDark);
+
+    if (y > 250) { doc.addPage(); y = 20; }
+    sectionHeader('Zakat al-Fitr');
+    doc.autoTable({
+      startY: y, margin:{ left:marginX, right:marginX },
+      head:[['Family members','Amount per person','Total']],
+      body:[[ s.fitrPeople, money(s.fitrAmount), money(s.fitrTotal) ]],
+      theme:'plain',
+      styles:{ font:'helvetica', fontSize:9.5, textColor: textDark, cellPadding:2 },
+      headStyles:{ fillColor: emerald, textColor:[255,255,255], fontStyle:'bold' }
+    });
+    y = doc.lastAutoTable.finalY + 12;
+
+    if (y > 250) { doc.addPage(); y = 20; }
+    sectionHeader('Hawl tracker');
+    doc.setFontSize(9.5);
+    var hawlText = document.getElementById('hawl-out').textContent;
+    var hawlLines = doc.splitTextToSize(hawlText, contentWidth);
+    doc.text(hawlLines, marginX, y);
+    y += hawlLines.length * 5 + 10;
+
+    if (y > 230) { doc.addPage(); y = 20; }
+    sectionHeader('Who receives zakat');
+    var asnaf = ['The poor (fuqara)','The needy (masakin)','Zakat administrators','Those inclined to the faith','Freeing captives','Those in debt','In the cause of Allah','Stranded travelers'];
+    doc.autoTable({
+      startY: y, margin:{ left:marginX, right:marginX },
+      body: asnaf.map(function (a,i) { return [ String(i+1).padStart(2,'0'), a ]; }),
+      theme:'plain',
+      styles:{ font:'helvetica', fontSize:9.5, textColor: textDark, cellPadding:2 },
+      columnStyles:{ 0:{ cellWidth:12, textColor: gold, fontStyle:'bold' } }
+    });
+    y = doc.lastAutoTable.finalY + 6;
+    doc.setFontSize(8); doc.setTextColor.apply(doc, textMuted);
+    doc.text('These eight categories are named in the Quran, chapter 9, verse 60.', marginX, y);
+
+    doc.setPage(tocPageNum);
+    tocItems.forEach(function (label) {
+      var ref = sectionRefs[label];
+      if (ref) doc.link(marginX, tocY[label]-4, contentWidth, 5.5, { pageNumber: ref.page, top: ref.y-6 });
+    });
+    try {
+      if (doc.outline && typeof doc.outline.add === 'function') {
+        tocItems.forEach(function (label) {
+          var ref = sectionRefs[label];
+          if (ref) doc.outline.add(null, label, { pageNumber: ref.page });
+        });
+      }
+    } catch (e) {}
+
+    var totalPages = doc.internal.getNumberOfPages();
+    for (var i=1; i<=totalPages; i++) {
+      doc.setPage(i);
+      doc.setFontSize(8); doc.setTextColor.apply(doc, textMuted);
+      doc.text('Zakat calculator', marginX, 289);
+      doc.text('Page ' + i + ' of ' + totalPages, pageWidth-marginX, 289, { align:'right' });
+    }
+    return doc;
+  }
+
+  function isCapacitorNative() {
+    return typeof Capacitor !== 'undefined' && Capacitor.isNativePlatform && Capacitor.isNativePlatform();
+  }
+
+  document.getElementById('pdfBtn').addEventListener('click', function () {
+    var btn = this;
+    var statusEl = document.getElementById('pdf-status');
+    if (!window.jspdf) {
+      statusEl.textContent = 'PDF library failed to load — check your connection and try again.';
+      return;
+    }
+    btn.disabled = true;
+    var original = btn.textContent;
+    btn.textContent = 'Generating…';
+    statusEl.textContent = '';
+    setTimeout(function () {
+      try {
+        var doc = buildPDF();
+        var fileName = 'zakat-summary-' + Date.now() + '.pdf';
+        if (isCapacitorNative() && window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem && window.Capacitor.Plugins.Share) {
+          var Filesystem = window.Capacitor.Plugins.Filesystem;
+          var Share = window.Capacitor.Plugins.Share;
+          Filesystem.writeFile({ path: fileName, data: doc.output('base64'), directory: 'CACHE' })
+            .then(function (result) {
+              return Share.share({ title: 'Zakat summary', url: result.uri, dialogTitle: 'Share or save your zakat summary' });
+            })
+            .then(function () { statusEl.textContent = 'PDF ready — choose where to save or share it.'; })
+            .catch(function () { doc.save(fileName); statusEl.textContent = 'Saved as a download instead.'; })
+            .finally(function () { btn.disabled = false; btn.textContent = original; });
+        } else {
+          doc.save(fileName);
+          statusEl.textContent = 'PDF downloaded.';
+          btn.disabled = false; btn.textContent = original;
+        }
+      } catch (err) {
+        statusEl.textContent = 'Could not generate the PDF. Please try again.';
+        btn.disabled = false; btn.textContent = original;
+      }
+    }, 30);
+  });
+
+  var allInputs = document.querySelectorAll('input[type=number], input[type=text], select#currency, select.small, #jewelryToggle');
+  allInputs.forEach(function (el) { el.addEventListener('input', calc); el.addEventListener('change', calc); });
+
+  updateCurrency();
+})();
+</script>
+</body>
+</html>
