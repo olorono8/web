@@ -503,8 +503,8 @@ const db = getDatabase(app);
 // Firebase stores JSON arrays as objects {0:{},1:{}} — normalise both cases
 function toArr(val) {
   if (!val) return [];
-  if (Array.isArray(val)) return val;
-  return Object.values(val);
+  if (Array.isArray(val)) return val.filter(Boolean);
+  return Object.values(val).filter(Boolean);
 }
 
 // Self-healing database parser: extracts true keys even if imported under nested nodes
