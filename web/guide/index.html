@@ -484,9 +484,16 @@ const firebaseConfig = {
 };
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+// Firebase stores JSON arrays as objects {0:{},1:{}} — normalise both cases
+function toArr(val) {
+  if (!val) return [];
+  if (Array.isArray(val)) return val;
+  return Object.values(val);
+}
+
 function renderData(data) {
   if (data.pillars) {
-    document.getElementById('pillarsContainer').innerHTML = data.pillars.map(p => `
+    document.getElementById('pillarsContainer').innerHTML = toArr(data.pillars).map(p => `
       <a class="pillar" href="${p.url}">
         <span class="pillar-ico">${p.icon}</span>
         <div class="pillar-name">${p.name}</div>
@@ -495,7 +502,7 @@ function renderData(data) {
     `).join('');
   }
   if (data.topics) {
-    document.getElementById('topicsContainer').innerHTML = data.topics.map(t => `
+    document.getElementById('topicsContainer').innerHTML = toArr(data.topics).map(t => `
       <a class="topic-card" href="${t.url}">
         <span class="topic-ico">${t.icon}</span>
         <div class="topic-body">
@@ -507,7 +514,7 @@ function renderData(data) {
     `).join('');
   }
   if (data.categories) {
-    document.getElementById('catsContainer').innerHTML = data.categories.map(c => `
+    document.getElementById('catsContainer').innerHTML = toArr(data.categories).map(c => `
       <a class="cat" href="${c.url}">
         <div class="cat-dot" style="background:${c.color || '#22b589'}"></div>
         <div class="cat-info">
