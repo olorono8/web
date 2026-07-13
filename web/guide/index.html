@@ -94,6 +94,7 @@ body{background:var(--bg);color:var(--t1);transition:background var(--tr),color 
   display:flex;align-items:center;gap:8px;
   pointer-events:none;
 }
+body.modal-open .topbar{display:none !important;}
 .topbar button {
   pointer-events:auto;
 }
@@ -455,6 +456,7 @@ const contentIframe = document.getElementById('contentIframe');
 
 function closeIframe() {
   iframeModal.classList.remove('show');
+  document.body.classList.remove('modal-open');
   setTimeout(() => contentIframe.removeAttribute('src'), 350);
 }
 
@@ -468,7 +470,7 @@ function openInIframe(targetUrl) {
   const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
   const isOurFile = targetUrl.includes('githack.com') || targetUrl.includes('github.io') || targetUrl.includes('githubusercontent.com');
   const finalUrl = isOurFile
-    ? targetUrl + (targetUrl.includes('?') ? '&' : '?') + 'theme=' + theme
+    ? targetUrl + (targetUrl.includes('?') ? '&' : '?') + 'theme=' + theme + '&v=' + Date.now()
     : targetUrl;
   contentIframe.src = finalUrl;
   contentIframe.onload = () => {
@@ -476,6 +478,7 @@ function openInIframe(targetUrl) {
       contentIframe.contentWindow.postMessage({ type: 'set-theme', theme }, '*');
   };
   iframeModal.classList.add('show');
+  document.body.classList.add('modal-open');
 }
 
 // Delegated click — works for all dynamically rendered cards
