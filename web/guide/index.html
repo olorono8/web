@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
+<meta charset="UTF-8"/>
 <script>
 (function(){
   var isDark = window.matchMedia('(prefers-color-scheme:dark)').matches;
   try {
     var g = localStorage.getItem('globalTheme');
     if (g) isDark = g === 'dark';
-    else { var q = localStorage.getItem('quranNightMode'); if (q) isDark = q !== 'true'; }
+    else { var q = localStorage.getItem('quranNightMode'); if (q) isDark = q === 'true'; }
   } catch(e){}
   document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
 })();
 </script>
-<meta charset="UTF-8"/>
+<meta name="description" content="A comprehensive Muslim Knowledge Guide covering the Five Pillars of Islam, pillars of faith, Quran, worship, and daily life topics."/>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
 <meta name="mobile-web-app-capable" content="yes"/>
@@ -341,7 +342,7 @@ body{background:var(--bg);color:var(--t1);transition:background var(--tr),color 
   <main class="main">
     <div class="hero-strip page-anim">
       <div class="hero-left">
-        <h2 class="hero-en">Muslim Knowledge</h2>
+        <h1 class="hero-en">Muslim Knowledge</h1>
         <div class="hero-sub">A comprehensive reference for faith, worship, and daily life.</div>
       </div>
       <div class="hero-ar" aria-hidden="true">بِسْمِ اللَّهِ</div>
@@ -381,7 +382,7 @@ body{background:var(--bg);color:var(--t1);transition:background var(--tr),color 
 </div>
 <!-- IFRAME MODAL -->
 <div id="iframeModal" class="iframe-modal">
-  <iframe id="contentIframe" src="" frameborder="0" allowfullscreen></iframe>
+  <iframe id="contentIframe" src="" allowfullscreen></iframe>
 </div>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
@@ -396,7 +397,7 @@ let isDark=window.matchMedia('(prefers-color-scheme:dark)').matches;
     if (g) isDark = g === 'dark';
     else {
       const q = localStorage.getItem('quranNightMode');
-      if (q) isDark = q !== 'true';
+      if (q) isDark = q === 'true';
     }
   } catch(e) {}
   applyTheme();
@@ -425,10 +426,15 @@ document.getElementById('si').addEventListener('input', function(e) {
     const text = item.innerText.toLowerCase();
     item.style.display = text.includes(term) ? '' : 'none';
   });
+  const secLabels = document.querySelectorAll('.sec-label');
+  const pillarsWrap = document.querySelector('.pillars-wrap');
+  const pillarsContainer = document.getElementById('pillarsContainer');
+  const topicsContainer = document.getElementById('topicsContainer');
+  const catsContainer = document.getElementById('catsContainer');
   const sections = [
-    { label: document.querySelectorAll('.sec-label')[0], wrap: document.querySelector('.pillars-wrap'), container: document.querySelector('.pillars') },
-    { label: document.querySelectorAll('.sec-label')[1], wrap: document.querySelector('.topics'), container: document.querySelector('.topics') },
-    { label: document.querySelectorAll('.sec-label')[2], wrap: document.querySelector('.cats'), container: document.querySelector('.cats') }
+    { label: secLabels[0], wrap: pillarsWrap,      container: pillarsContainer },
+    { label: secLabels[1], wrap: topicsContainer,  container: topicsContainer },
+    { label: secLabels[2], wrap: catsContainer,    container: catsContainer }
   ];
   sections.forEach(sec => {
     if (sec.label && sec.container && sec.wrap) {
@@ -495,8 +501,7 @@ const firebaseConfig = {
   projectId: "jee-dahr",
   storageBucket: "jee-dahr.firebasestorage.app",
   messagingSenderId: "766094664775",
-  appId: "1:766094664775:web:3d35b46d171cf9802dbd62",
-  
+  appId: "1:766094664775:web:3d35b46d171cf9802dbd62"
 };
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);

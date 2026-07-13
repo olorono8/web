@@ -142,11 +142,6 @@
           <option value="MYR">MYR RM</option>
           <option value="IDR">IDR Rp</option>
         </select>
-        <button class="toggle" id="theme-toggle" aria-label="Toggle dark mode">
-          <svg class="icon" id="theme-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z"></path>
-          </svg>
-        </button>
       </div>
     </div>
     <div class="pattern"></div>
@@ -306,28 +301,13 @@
 <script>
 (function () {
   var root = document.documentElement;
-  var toggleBtn = document.getElementById('theme-toggle');
-  var iconPath = document.getElementById('theme-icon').querySelector('path');
-  var MOON = 'M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8Z';
-  var SUN = 'M12 4.5V2.5M12 21.5v-2M4.93 4.93 3.5 3.5M20.5 20.5l-1.43-1.43M4.5 12h-2M21.5 12h-2M4.93 19.07 3.5 20.5M20.5 3.5l-1.43 1.43M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8Z';
 
   function setTheme(theme) {
     root.setAttribute('data-theme', theme);
-    iconPath.setAttribute('d', theme === 'dark' ? SUN : MOON);
   }
 
   // Initial sync from data-theme set by early inline script
   setTheme(root.getAttribute('data-theme') || 'light');
-
-  toggleBtn.addEventListener('click', function () {
-    var isDark = root.getAttribute('data-theme') === 'dark';
-    var nextTheme = isDark ? 'light' : 'dark';
-    setTheme(nextTheme);
-    try {
-      localStorage.setItem('globalTheme', nextTheme);
-      localStorage.setItem('quranNightMode', (nextTheme === 'light').toString());
-    } catch(e){}
-  });
 
   window.addEventListener('message', function(e) {
     if (e.data && e.data.type === 'set-theme') {
