@@ -469,10 +469,23 @@ function openInIframe(targetUrl) {
     return;
   }
   const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
-  const isOurFile = targetUrl.includes('githack.com') || targetUrl.includes('github.io') || targetUrl.includes('githubusercontent.com');
-  const finalUrl = isOurFile
-    ? targetUrl + (targetUrl.includes('?') ? '&' : '?') + 'theme=' + theme + '&v=' + Date.now()
-    : targetUrl;
+
+  // If the URL points to one of our own guide HTML files on githack/github,
+  // serve it locally from the app's bundled assets instead.
+  // This eliminates CDN caching and gives the iframe full same-origin Capacitor access.
+  const ourGuidePattern = /raw\.githack\.com\/olorono8\/web\/[^/]+\/web\/guide\/([^?#]+\.html)/;
+  const localMatch = targetUrl.match(ourGuidePattern);
+
+  let finalUrl;
+  if (localMatch) {
+    // Serve locally — e.g. "./zakat.html?theme=dark"
+    finalUrl = './' + localMatch[1] + '?theme=' + theme;
+  } else if (targetUrl.includes('githack.com') || targetUrl.includes('github.io') || targetUrl.includes('githubusercontent.com')) {
+    finalUrl = targetUrl + (targetUrl.includes('?') ? '&' : '?') + 'theme=' + theme + '&v=' + Date.now();
+  } else {
+    finalUrl = targetUrl;
+  }
+
   contentIframe.src = finalUrl;
   contentIframe.onload = () => {
     if (contentIframe.contentWindow)

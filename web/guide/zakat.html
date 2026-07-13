@@ -658,43 +658,57 @@
     var original = btn.textContent;
     btn.textContent = 'Generating…';
     statusEl.textContent = '';
+
     setTimeout(function () {
       try {
         var doc = buildPDF();
         var fileName = 'zakat-summary-' + Date.now() + '.pdf';
         var base64Data = doc.output('datauristring').split(',')[1];
 
-        if (window.parent !== window) {
-          // Inside iframe: post message to parent page to trigger Capacitor native download/share
-          window.parent.postMessage({
-            type: 'download-pdf',
-            fileName: fileName,
-            data: base64Data
-          }, '*');
-          statusEl.textContent = 'PDF generated. Processing download...';
+        // --- Path 1: Direct Capacitor access (loaded as local same-origin asset) ---
+        var Cap = window.Capacitor;
+        if (Cap && Cap.isNativePlatform && Cap.isNativePlatform() && Cap.Plugins && Cap.Plugins.Filesystem && Cap.Plugins.Share) {
+          var Filesystem = Cap.Plugins.Filesystem;
+          var Share = Cap.Plugins.Share;
+          Filesystem.writeFile({ path: fileName, data: base64Data, directory: 'CACHE' })
+            .then(function (result) {
+              return Share.share({ title: 'Zakat Summary', url: result.uri, dialogTitle: 'Share or save your Zakat summary' });
+            })
+            .then(function () {
+              statusEl.textContent = 'PDF ready — choose where to save or share it.';
+            })
+            .catch(function (err) {
+              console.warn('Native share failed, trying postMessage fallback', err);
+              // If share sheet fails, try postMessage to parent
+              if (window.parent !== window) {
+                window.parent.postMessage({ type: 'download-pdf', fileName: fileName, data: base64Data }, '*');
+              } else {
+                doc.save(fileName);
+              }
+              statusEl.textContent = 'PDF saved.';
+            })
+            .finally(function () { btn.disabled = false; btn.textContent = original; });
+
+        // --- Path 2: Inside cross-origin iframe — relay to parent via postMessage ---
+        } else if (window.parent !== window) {
+          window.parent.postMessage({ type: 'download-pdf', fileName: fileName, data: base64Data }, '*');
+          statusEl.textContent = 'PDF generated. Processing download…';
           btn.disabled = false;
           btn.textContent = original;
+
+        // --- Path 3: Plain browser fallback ---
         } else {
-          // Outside iframe (standalone/browser page)
-          if (isCapacitorNative() && window.Capacitor.Plugins && window.Capacitor.Plugins.Filesystem && window.Capacitor.Plugins.Share) {
-            var Filesystem = window.Capacitor.Plugins.Filesystem;
-            var Share = window.Capacitor.Plugins.Share;
-            Filesystem.writeFile({ path: fileName, data: base64Data, directory: 'CACHE' })
-              .then(function (result) {
-                return Share.share({ title: 'Zakat summary', url: result.uri, dialogTitle: 'Share or save your zakat summary' });
-              })
-              .then(function () { statusEl.textContent = 'PDF ready — choose where to save or share it.'; })
-              .catch(function () { doc.save(fileName); statusEl.textContent = 'Saved as a download instead.'; })
-              .finally(function () { btn.disabled = false; btn.textContent = original; });
-          } else {
-            doc.save(fileName);
-            statusEl.textContent = 'PDF downloaded.';
-            btn.disabled = false; btn.textContent = original;
-          }
+          doc.save(fileName);
+          statusEl.textContent = 'PDF downloaded.';
+          btn.disabled = false;
+          btn.textContent = original;
         }
+
       } catch (err) {
+        console.error('PDF generation error:', err);
         statusEl.textContent = 'Could not generate the PDF. Please try again.';
-        btn.disabled = false; btn.textContent = original;
+        btn.disabled = false;
+        btn.textContent = original;
       }
     }, 30);
   });
