@@ -20,6 +20,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <title>Muslim Knowledge Guide</title>
+<script src="../capacitor.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tabler-icons/3.31.0/iconfont/tabler-icons.min.css"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
@@ -491,9 +492,67 @@ document.getElementById('app').addEventListener('click', function(e) {
 
 function bindInteractions() { /* no-op — delegation handles everything */ }
 
-// Back button inside child pages closes the modal
+// Dynamic toast helper
+function showToast(title, sub, emoji, arabic) {
+  const toast = document.getElementById('toast');
+  if (!toast) return;
+  toast.querySelector('.toast-emoji').textContent = emoji || '🤲';
+  toast.querySelector('.toast-title').textContent = title;
+  toast.querySelector('.toast-sub').innerHTML = sub || '';
+  const arabicEl = toast.querySelector('.toast-arabic');
+  if (arabicEl) arabicEl.textContent = arabic || '';
+  toast.classList.add('show');
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// Back button inside child pages closes the modal & PDF download handler
 window.addEventListener('message', function(e) {
   if (e.data === 'close-iframe') closeIframe();
+
+  if (e.data && e.data.type === 'download-pdf') {
+    const { fileName, data } = e.data;
+    
+    // Check if we are running in Capacitor Native
+    if (window.Capacitor && window.Capacitor.isNativePlatform()) {
+      const Filesystem = window.Capacitor.Plugins.Filesystem;
+      const Share = window.Capacitor.Plugins.Share;
+      
+      if (Filesystem && Share) {
+        Filesystem.writeFile({
+          path: fileName,
+          data: data,
+          directory: 'CACHE'
+        }).then(function(result) {
+          return Share.share({
+            title: 'Zakat summary',
+            url: result.uri,
+            dialogTitle: 'Share or save your zakat summary'
+          });
+        }).then(function() {
+          showToast('PDF Ready', 'May Allah reward you. 🌙', '📄', 'بَارَكَ ٱللَّٰهُ فِيكَ');
+        }).catch(function(err) {
+          console.error('Filesystem/Share error:', err);
+          showToast('Error', 'Failed to save PDF natively.', '❌', '');
+        });
+      } else {
+        showToast('Error', 'Capacitor plugins not available.', '❌', '');
+      }
+    } else {
+      // Fallback for web browser: trigger download
+      try {
+        const link = document.createElement('a');
+        link.href = 'data:application/pdf;base64,' + data;
+        link.download = fileName;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        showToast('PDF Saved', 'Check your downloads folder.', '📄', '');
+      } catch (err) {
+        showToast('Error', 'Could not download PDF.', '❌', '');
+      }
+    }
+  }
 });
 // ── FIREBASE FETCH LOGIC ──
 // For Firebase JS SDK v7.20.0 and later, measurementId is optional
