@@ -7,8 +7,8 @@
   try {
     var p = new URLSearchParams(window.location.search).get('theme');
     if (p) { isDark = p === 'dark'; }
-    else { var g = localStorage.getItem('globalTheme'); if(g) isDark = g === 'dark'; }
-  } catch(e){}
+    else { var g = localStorage.getItem('globalTheme'); if (g) isDark = g === 'dark'; }
+  } catch(e) {}
   document.documentElement.setAttribute('data-theme', isDark ? 'dark' : 'light');
 })();
 </script>
@@ -18,61 +18,58 @@
 <meta name="apple-mobile-web-app-capable" content="yes"/>
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
 <title>Zakat Calculator</title>
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Amiri+Quran&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
 <style>
+/* ── RESET ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{height:100%;overflow:hidden;background:var(--bg);}
-body{
-  font-family:'Inter',sans-serif;
-  -webkit-font-smoothing:antialiased;
-  overscroll-behavior:none;
-  user-select:none;-webkit-user-select:none;
-}
-.info-scroll,.ref-card,.ref-arabic,.ref-translation,.ref-note,.result-card{
-  user-select:text;-webkit-user-select:text;
-}
-button{font-family:'Inter',sans-serif;cursor:pointer;border:none;outline:none;background:none;}
-input,select{font-family:'Inter',sans-serif;}
+body{font-family:'Inter',sans-serif;-webkit-font-smoothing:antialiased;overscroll-behavior:none;user-select:none;-webkit-user-select:none;}
+button{font-family:inherit;cursor:pointer;border:none;outline:none;background:none;}
+input,select{font-family:inherit;-webkit-appearance:none;appearance:none;}
 
-/* ── TOKENS ── */
+/* Allow text selection in result areas and notes */
+.result-panel,.hawl-display,.notice-box,.coll-note{user-select:text;-webkit-user-select:text;}
+
+/* ── DESIGN TOKENS ── */
 :root{
   --teal:#0f6e56;--teal-d:#0a4a3a;--teal-l:#4fbe95;
-  --gold:#a97d32;--gold-l:#d4a857;
-  --r:16px;--rp:100px;
-  --tr:0.28s cubic-bezier(0.4,0,0.2,1);
+  --gold:#a97d32;--gold-l:#c9973c;
+  --r:14px;--rp:100px;
+  --tr:0.26s cubic-bezier(0.4,0,0.2,1);
   --sat:env(safe-area-inset-top,0px);
   --sab:env(safe-area-inset-bottom,0px);
+  --sal:env(safe-area-inset-left,0px);
+  --sar:env(safe-area-inset-right,0px);
 }
 [data-theme="light"]{
-  --bg:#f0efea;--surf:#fff;--surf2:#f5f4ef;
-  --bd:rgba(0,0,0,0.07);--bd2:rgba(0,0,0,0.05);
-  --t1:#111;--t2:#555;--t3:#999;
-  --hero:linear-gradient(145deg,#0a2e24 0%,#0f6e56 60%,#1a9a78 100%);
-  --nb:rgba(255,255,255,0.94);--nbl:blur(20px) saturate(1.8);
-  --sh:0 2px 16px rgba(15,110,86,0.10);
+  --bg:#f0efea;--surf:#ffffff;--surf2:#f5f4ef;--surf3:#eeede8;
+  --bd:rgba(0,0,0,0.08);--bd2:rgba(0,0,0,0.05);
+  --t1:#111111;--t2:#555555;--t3:#999999;
+  --hero:linear-gradient(145deg,#092820 0%,#0f6e56 65%,#189a72 100%);
+  --nb:rgba(255,255,255,0.95);--nbl:blur(18px) saturate(1.8);
+  --sh:0 1px 3px rgba(0,0,0,0.06),0 4px 16px rgba(15,110,86,0.08);
   --pill:rgba(15,110,86,0.10);--pillt:#0a4a3a;
-  --tip:#fffbeb;--tipb:#a97d32;--tipt:#78541a;
-  --dotbg:#e0dfd9;--dotd:#b2ece5;
-  --inp-bg:#f8f7f3;
-  --emerald-soft:rgba(15,110,86,0.08);
-  --gold-soft:rgba(169,125,50,0.10);
-  --success-bg:rgba(15,110,86,0.07);
+  --tip:#fffdf0;--tipb:#a97d32;--tipt:#6b4e18;
+  --dotbg:#dddcd7;
+  --inp-bg:#fafaf7;--inp-border:rgba(0,0,0,0.12);
+  --emerald-glow:rgba(15,110,86,0.09);
+  --success-bg:rgba(15,110,86,0.05);
+  --result-amount-color:#0a4a3a;
 }
 [data-theme="dark"]{
-  --bg:#222;--surf:#2c2c2c;--surf2:#353535;
-  --bd:rgba(255,255,255,0.07);--bd2:rgba(255,255,255,0.04);
-  --t1:#f0f0f0;--t2:#a0a0a0;--t3:#606060;
-  --hero:linear-gradient(145deg,#111 0%,#1a3329 60%,#162b22 100%);
-  --nb:rgba(30,30,30,0.94);--nbl:blur(20px) saturate(1.4);
-  --sh:0 2px 16px rgba(0,0,0,0.40);
+  --bg:#1e1e1e;--surf:#282828;--surf2:#323232;--surf3:#3a3a3a;
+  --bd:rgba(255,255,255,0.08);--bd2:rgba(255,255,255,0.05);
+  --t1:#f2f2f2;--t2:#a0a0a0;--t3:#606060;
+  --hero:linear-gradient(145deg,#0d0d0d 0%,#1a3329 65%,#142b22 100%);
+  --nb:rgba(28,28,28,0.96);--nbl:blur(18px) saturate(1.4);
+  --sh:0 1px 3px rgba(0,0,0,0.3),0 4px 16px rgba(0,0,0,0.3);
   --pill:rgba(79,190,149,0.14);--pillt:#4fbe95;
-  --tip:rgba(169,125,50,0.09);--tipb:#a97d32;--tipt:#d4a857;
-  --dotbg:#383838;--dotd:#1a3330;
-  --inp-bg:#252525;
-  --emerald-soft:rgba(79,190,149,0.10);
-  --gold-soft:rgba(212,168,87,0.10);
-  --success-bg:rgba(79,190,149,0.08);
+  --tip:rgba(169,125,50,0.10);--tipb:#a97d32;--tipt:#c9973c;
+  --dotbg:#3a3a3a;
+  --inp-bg:#232323;--inp-border:rgba(255,255,255,0.10);
+  --emerald-glow:rgba(79,190,149,0.10);
+  --success-bg:rgba(79,190,149,0.06);
+  --result-amount-color:#4fbe95;
 }
 
 /* ── APP SHELL ── */
@@ -86,342 +83,298 @@ input,select{font-family:'Inter',sans-serif;}
 /* ── TOPBAR ── */
 .topbar{
   flex-shrink:0;
-  padding:calc(var(--sat) + 8px) 14px 8px;
+  padding:calc(var(--sat) + 10px) calc(14px + var(--sar)) 10px calc(14px + var(--sal));
   background:var(--nb);
   backdrop-filter:var(--nbl);-webkit-backdrop-filter:var(--nbl);
   border-bottom:1px solid var(--bd);
-  display:flex;align-items:center;justify-content:space-between;
-  gap:8px;z-index:200;
-  transition:background var(--tr),border-color var(--tr);
+  display:flex;align-items:center;gap:10px;
+  z-index:200;
 }
-.tb-left,.tb-right{display:flex;align-items:center;flex:1;}
-.tb-left{gap:10px;justify-content:flex-start;}
-.tb-right{justify-content:flex-end;gap:8px;}
-.tb-center{display:flex;justify-content:center;flex:2;overflow:hidden;}
 .tb-back{
-  width:clamp(26px,6vw,32px);height:clamp(26px,6vw,32px);border-radius:50%;
-  background:transparent;border:none;color:var(--t1);
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+  width:34px;height:34px;min-width:34px;border-radius:50%;
+  color:var(--t1);display:flex;align-items:center;justify-content:center;
+  transition:background .2s;
 }
-.tb-back svg{width:clamp(12px,3.5vw,14px);height:clamp(12px,3.5vw,14px);}
-.topbar-title{font-size:15px;font-weight:700;letter-spacing:-0.3px;color:var(--t1);white-space:nowrap;}
-
-/* Currency select in topbar */
+.tb-back:active{background:var(--surf2);}
+.tb-back svg{width:18px;height:18px;display:block;}
+.topbar-title{font-size:15px;font-weight:700;letter-spacing:-0.3px;color:var(--t1);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .cur-select{
-  height:28px;border-radius:20px;border:1px solid var(--bd);
-  background:var(--surf2);color:var(--t1);
-  font-family:'Inter',sans-serif;font-size:11.5px;font-weight:600;
-  padding:0 10px;cursor:pointer;
-  transition:border-color .2s;
+  height:30px;border-radius:20px;
+  border:1px solid var(--bd);background:var(--surf2);color:var(--t1);
+  font-size:11.5px;font-weight:600;padding:0 10px;
+  cursor:pointer;flex-shrink:0;-webkit-appearance:none;appearance:none;
 }
-.cur-select:focus{outline:none;border-color:var(--teal);}
 
-/* ── PROGRESS BAR ── */
-.prog-track{flex-shrink:0;height:3px;background:var(--dotbg);}
-.prog-fill{
-  height:100%;width:0%;
-  background:linear-gradient(90deg,var(--teal),var(--gold-l));
-  transition:width 0.6s cubic-bezier(0.4,0,0.2,1);
-}
+/* ── PROGRESS ── */
+.prog-track{flex-shrink:0;height:3px;background:var(--dotbg);transition:background var(--tr);}
+.prog-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--teal),var(--gold-l));transition:width .55s cubic-bezier(0.4,0,0.2,1);}
 
 /* ── SCROLL AREA ── */
 .main{
-  flex:1;overflow-y:auto;overflow-x:hidden;
+  flex:1;min-height:0;
+  overflow-y:auto;overflow-x:hidden;
   -webkit-overflow-scrolling:touch;
-  padding:10px 12px calc(var(--sab) + 80px);
-  display:flex;flex-direction:column;gap:10px;
-  min-height:0;
   overscroll-behavior:contain;
+  padding:10px 12px 100px;  /* 100px clears fixed action bar + safe area */
+  display:flex;flex-direction:column;gap:10px;
+  padding-bottom:calc(100px + var(--sab));
 }
-.main::-webkit-scrollbar{width:3px;}
-.main::-webkit-scrollbar-thumb{background:var(--dotbg);border-radius:3px;}
+.main::-webkit-scrollbar{width:2px;}
+.main::-webkit-scrollbar-thumb{background:var(--dotbg);border-radius:2px;}
 
-/* ── HERO STRIP ── */
+/* ── HERO ── */
 .hero-strip{
-  flex-shrink:0;
-  background:var(--hero);
   border-radius:14px;
+  background:var(--hero);
   padding:14px 16px;
   display:flex;align-items:center;justify-content:space-between;
-  gap:10px;position:relative;overflow:hidden;
-  box-shadow:var(--sh);
+  gap:8px;position:relative;overflow:hidden;
+  box-shadow:var(--sh);flex-shrink:0;
 }
-.hero-strip::before{
-  content:'';position:absolute;
-  top:-30px;right:-20px;width:110px;height:110px;
-  border-radius:50%;background:rgba(255,255,255,0.04);
-}
-.hero-strip::after{
-  content:'';position:absolute;
-  bottom:-20px;right:30px;width:70px;height:70px;
-  border-radius:50%;background:rgba(255,255,255,0.03);
-}
-.hero-left{position:relative;z-index:1;}
-.hero-en{font-size:18px;font-weight:700;color:#fff;letter-spacing:-0.4px;line-height:1.15;}
-.hero-sub{font-size:11px;color:rgba(255,255,255,0.55);font-style:italic;margin-top:2px;}
-.hero-chips{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
-.hero-chip{
-  background:rgba(255,255,255,0.14);
-  border-radius:var(--rp);padding:3px 9px;
-  font-size:10px;font-weight:600;color:rgba(255,255,255,0.88);white-space:nowrap;
-}
-.hero-ar{
-  font-family:'Amiri',serif;font-size:22px;
-  color:rgba(255,255,255,0.82);direction:rtl;line-height:1.3;
-  flex-shrink:0;text-align:right;position:relative;z-index:1;
-}
+.hero-strip::before{content:'';position:absolute;top:-25px;right:-15px;width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,0.04);pointer-events:none;}
+.hero-left{min-width:0;flex:1;position:relative;z-index:1;}
+.hero-en{font-size:clamp(15px,4.5vw,19px);font-weight:700;color:#fff;letter-spacing:-0.3px;line-height:1.2;}
+.hero-sub{font-size:11px;color:rgba(255,255,255,0.5);font-style:italic;margin-top:2px;}
+.hero-chips{display:flex;gap:5px;margin-top:8px;flex-wrap:wrap;}
+.hero-chip{background:rgba(255,255,255,0.13);border-radius:20px;padding:3px 8px;font-size:9.5px;font-weight:600;color:rgba(255,255,255,0.85);white-space:nowrap;}
+.hero-ar{font-family:'Amiri',serif;font-size:clamp(18px,5vw,24px);color:rgba(255,255,255,0.78);direction:rtl;line-height:1.3;flex-shrink:0;position:relative;z-index:1;}
 
-/* ── NOTICE BANNER ── */
+/* ── NOTICE BOX ── */
 .notice-box{
-  background:var(--tip);
-  border-left:3px solid var(--tipb);
-  border-radius:0 10px 10px 0;
-  padding:10px 13px;
-  font-size:12px;line-height:1.62;
-  color:var(--tipt);
+  background:var(--tip);border-left:3px solid var(--tipb);
+  border-radius:0 10px 10px 0;padding:10px 13px;
+  font-size:12px;line-height:1.65;color:var(--tipt);
 }
+.notice-box strong{font-weight:700;}
 
 /* ── SECTION CARDS ── */
 .section-card{
-  background:var(--surf);
-  border:1px solid var(--bd);
-  border-radius:14px;
-  overflow:hidden;
-  box-shadow:var(--sh);
+  background:var(--surf);border:1px solid var(--bd);
+  border-radius:14px;overflow:hidden;box-shadow:var(--sh);
 }
 .section-card-header{
-  padding:13px 16px 10px;
-  border-bottom:1px solid var(--bd2);
+  padding:12px 15px 11px;border-bottom:1px solid var(--bd2);
   display:flex;align-items:center;gap:10px;
 }
 .section-icon{
-  width:32px;height:32px;border-radius:9px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:15px;flex-shrink:0;
+  width:32px;height:32px;min-width:32px;border-radius:9px;
+  display:flex;align-items:center;justify-content:center;font-size:15px;
 }
 .section-icon.emerald{background:linear-gradient(135deg,var(--teal-d),var(--teal));}
-.section-icon.gold{background:linear-gradient(135deg,#7a5a1e,var(--gold));}
-.section-icon.purple{background:linear-gradient(135deg,#4a2a7a,#7a52c0);}
-.section-card-title{font-size:13.5px;font-weight:700;color:var(--t1);}
-.section-card-sub{font-size:10.5px;color:var(--t3);margin-top:1px;}
-.section-card-body{padding:4px 0;}
+.section-icon.gold{background:linear-gradient(135deg,#5c3f0e,var(--gold));}
+.section-icon.purple{background:linear-gradient(135deg,#3a1f6e,#7052c0);}
+.section-icon.teal-light{background:linear-gradient(135deg,var(--teal),var(--teal-l));}
+.scard-title{font-size:13.5px;font-weight:700;color:var(--t1);line-height:1.2;}
+.scard-sub{font-size:10.5px;color:var(--t3);margin-top:1px;}
+
+/* ── COLLAPSIBLE HEADERS ── */
+.coll-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:11px 15px;cursor:pointer;
+  background:var(--surf2);border-top:1px solid var(--bd2);
+  transition:background .15s;-webkit-user-select:none;user-select:none;
+}
+.coll-hdr.first-in-card{border-top:none;}
+.coll-hdr:active{background:var(--surf3);}
+.coll-title{font-size:13px;font-weight:600;color:var(--t1);display:flex;align-items:center;gap:7px;min-width:0;flex:1;padding-right:8px;}
+.coll-badge{
+  font-size:9.5px;font-weight:700;letter-spacing:.03em;flex-shrink:0;
+  padding:2px 7px;border-radius:20px;
+  background:var(--pill);color:var(--pillt);
+}
+.coll-chev{font-size:11px;color:var(--t3);transition:transform .22s;flex-shrink:0;}
+.coll-chev.open{transform:rotate(180deg);}
+.coll-body{display:none;}
+.coll-body.open{display:block;}
+.coll-note{font-size:11.5px;color:var(--t3);line-height:1.6;padding:8px 15px 13px;}
 
 /* ── INPUT ROWS ── */
 .input-row{
   display:flex;align-items:center;justify-content:space-between;
-  gap:8px;padding:10px 16px;
+  gap:8px;padding:10px 15px;
   border-bottom:1px solid var(--bd2);
-  transition:background .15s;
 }
-.input-row:last-child{border-bottom:none;}
-.input-row:active{background:var(--surf2);}
-.input-label{font-size:13px;color:var(--t2);line-height:1.3;flex:1;}
-.input-label small{display:block;font-size:10.5px;color:var(--t3);margin-top:1px;}
-.input-right{display:flex;align-items:center;gap:4px;flex-shrink:0;}
-.cur-symbol{font-size:12px;color:var(--t3);font-weight:500;min-width:12px;}
-.num-input{
-  width:110px;height:34px;border-radius:8px;
-  border:1px solid var(--bd);background:var(--inp-bg);
-  color:var(--t1);font-size:13.5px;text-align:right;
-  padding:0 10px;transition:border-color .2s,box-shadow .2s;
-}
-.num-input:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px var(--emerald-soft);}
-.num-input.narrow{width:70px;}
-.small-select{
-  height:34px;border-radius:8px;border:1px solid var(--bd);
+.input-row:last-of-type{border-bottom:none;}
+.lbl{font-size:13px;color:var(--t2);line-height:1.35;flex:1;min-width:0;}
+.lbl small{display:block;font-size:10.5px;color:var(--t3);margin-top:2px;line-height:1.4;}
+.inp-right{display:flex;align-items:center;gap:5px;flex-shrink:0;}
+.cur-sym{font-size:12px;color:var(--t3);font-weight:500;min-width:10px;text-align:center;}
+.num-inp{
+  width:clamp(85px,26vw,110px);height:36px;
+  border-radius:8px;border:1px solid var(--inp-border);
   background:var(--inp-bg);color:var(--t1);
-  font-size:12px;padding:0 8px;
-  transition:border-color .2s;
+  font-size:13.5px;text-align:right;padding:0 10px;
+  transition:border-color .2s,box-shadow .2s;
 }
-.small-select:focus{outline:none;border-color:var(--teal);}
-.date-input{
-  height:34px;border-radius:8px;border:1px solid var(--bd);
-  background:var(--inp-bg);color:var(--t1);
-  font-size:12px;padding:0 10px;
-  transition:border-color .2s;width:auto;
+.num-inp:focus{outline:none;border-color:var(--teal);box-shadow:0 0 0 3px var(--emerald-glow);}
+.num-inp.narrow{width:clamp(55px,16vw,70px);}
+.sel-inp{
+  height:36px;border-radius:8px;border:1px solid var(--inp-border);
+  background:var(--inp-bg);color:var(--t1);font-size:12px;
+  padding:0 8px;-webkit-appearance:none;appearance:none;
+  transition:border-color .2s;max-width:clamp(110px,35vw,160px);
 }
-.date-input:focus{outline:none;border-color:var(--teal);}
+.sel-inp:focus{outline:none;border-color:var(--teal);}
+.date-inp{
+  height:36px;border-radius:8px;border:1px solid var(--inp-border);
+  background:var(--inp-bg);color:var(--t1);font-size:12px;padding:0 10px;
+  transition:border-color .2s;max-width:clamp(130px,45vw,165px);
+}
+.date-inp:focus{outline:none;border-color:var(--teal);}
 
-/* Checkbox row */
+/* ── CUSTOM CHECKBOX ── */
 .check-row{
   display:flex;align-items:flex-start;gap:10px;
-  padding:10px 16px;border-bottom:1px solid var(--bd2);
+  padding:10px 15px;border-bottom:1px solid var(--bd2);
 }
-.check-row:last-child{border-bottom:none;}
-.check-box{
-  width:18px;height:18px;border-radius:5px;border:2px solid var(--bd);
-  background:var(--inp-bg);flex-shrink:0;margin-top:1px;
+.chk-box{
+  width:20px;height:20px;min-width:20px;border-radius:5px;
+  border:2px solid var(--inp-border);background:var(--inp-bg);
   display:flex;align-items:center;justify-content:center;cursor:pointer;
-  transition:background .2s,border-color .2s;
+  margin-top:1px;transition:background .18s,border-color .18s;flex-shrink:0;
 }
-.check-box.checked{background:var(--teal);border-color:var(--teal);}
-.check-box.checked::after{content:'✓';color:#fff;font-size:11px;font-weight:700;}
-.check-row span{font-size:12.5px;color:var(--t2);line-height:1.55;}
+.chk-box.on{background:var(--teal);border-color:var(--teal);}
+.chk-box.on::after{content:'✓';color:#fff;font-size:12px;font-weight:700;line-height:1;}
+.check-row span{font-size:12.5px;color:var(--t2);line-height:1.58;}
 
-/* Collapsible groups */
-.collapsible-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:11px 16px;cursor:pointer;
-  background:var(--surf2);
-  border-top:1px solid var(--bd2);
-  transition:background .15s;
+/* ── NISAB BUTTONS ── */
+.nisab-btns{display:flex;gap:8px;padding:10px 15px 12px;}
+.nisab-btn{
+  flex:1;min-width:0;height:36px;border-radius:8px;
+  border:1px solid var(--bd);background:var(--surf2);
+  color:var(--t2);font-size:11.5px;font-weight:600;
+  cursor:pointer;transition:all .2s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 6px;
 }
-.collapsible-header:first-child{border-top:none;}
-.collapsible-header:active{background:var(--dotbg);}
-.collapsible-title{font-size:13px;font-weight:600;color:var(--t1);display:flex;align-items:center;gap:8px;}
-.collapsible-badge{
-  font-size:9.5px;font-weight:700;letter-spacing:.04em;
-  padding:2px 7px;border-radius:20px;
-  background:var(--pill);color:var(--pillt);
-}
-.collapsible-chev{font-size:10px;color:var(--t3);transition:transform .2s;}
-.collapsible-chev.open{transform:rotate(180deg);}
-.collapsible-body{display:none;border-top:1px solid var(--bd2);}
-.collapsible-body.open{display:block;}
-.coll-note{font-size:11.5px;color:var(--t3);line-height:1.55;padding:8px 16px 12px;}
+.nisab-btn:active{border-color:var(--teal);color:var(--teal);background:var(--emerald-glow);}
 
 /* ── RESULT PANEL ── */
 .result-panel{
-  background:var(--success-bg);
-  border-top:1px solid var(--bd);
-  padding:14px 16px 16px;
+  background:var(--success-bg);border-top:1px solid var(--bd);
+  padding:13px 15px 15px;
 }
-.result-row{
+.res-row{
   display:flex;justify-content:space-between;align-items:center;
-  font-size:12.5px;color:var(--t2);padding:4px 0;
+  font-size:12.5px;color:var(--t2);padding:3.5px 0;
 }
-.result-val{font-weight:600;color:var(--t1);font-size:12.5px;}
-.result-divider{height:1px;background:var(--bd);margin:8px 0;}
-.result-main{
-  display:flex;justify-content:space-between;align-items:baseline;
-  padding-top:8px;
+.res-val{font-weight:600;color:var(--t1);}
+.res-divider{height:1px;background:var(--bd);margin:8px 0;}
+.res-main{display:flex;justify-content:space-between;align-items:baseline;padding-top:6px;}
+.res-main-lbl{font-size:13.5px;font-weight:700;color:var(--t1);flex:1;min-width:0;padding-right:8px;}
+.res-amount{
+  font-family:'Amiri',serif;font-size:clamp(22px,6vw,28px);
+  font-weight:700;color:var(--result-amount-color);line-height:1;flex-shrink:0;
 }
-.result-main-label{font-size:14px;font-weight:700;color:var(--t1);}
-.result-main-amount{
-  font-family:'Amiri',serif;font-size:28px;font-weight:700;
-  color:var(--teal);line-height:1;
-}
-.result-status{
-  font-size:11px;color:var(--t3);margin-top:6px;line-height:1.5;
-}
-.result-status.above{color:var(--teal);font-weight:500;}
+.res-status{font-size:11px;color:var(--t3);margin-top:6px;line-height:1.55;}
+.res-status.above{color:var(--teal);font-weight:600;}
 
-/* Nisab buttons */
-.nisab-btn-row{display:flex;gap:8px;padding:10px 16px 12px;}
-.nisab-btn{
-  flex:1;height:34px;border-radius:8px;
-  border:1px solid var(--bd);background:var(--surf2);
-  color:var(--t2);font-size:11.5px;font-weight:600;
-  cursor:pointer;transition:all .2s;
-}
-.nisab-btn:hover,.nisab-btn:active{border-color:var(--teal);color:var(--teal);background:var(--emerald-soft);}
-
-/* ── HAWL TRACKER ── */
+/* ── HAWL DISPLAY ── */
 .hawl-display{
-  margin:10px 16px 14px;
-  background:var(--surf2);border:1px solid var(--bd);
-  border-radius:10px;padding:12px 14px;
-  font-size:12.5px;color:var(--t2);line-height:1.62;
+  margin:10px 15px 14px;background:var(--surf2);border:1px solid var(--bd);
+  border-radius:10px;padding:11px 13px;
+  font-size:12.5px;color:var(--t2);line-height:1.65;
 }
 
 /* ── ASNAF GRID ── */
 .asnaf-grid{
-  display:grid;grid-template-columns:1fr 1fr;
-  gap:8px;padding:12px 16px 16px;
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
+  gap:8px;padding:12px 15px 15px;
 }
 .asnaf-item{
   background:var(--surf2);border:1px solid var(--bd);
-  border-radius:10px;padding:10px 11px;
+  border-radius:10px;padding:10px 11px;min-width:0;
 }
-.asnaf-num{font-size:10px;font-weight:800;color:var(--gold-l);letter-spacing:.04em;}
-.asnaf-name{font-size:12px;font-weight:600;color:var(--t1);margin-top:2px;}
+.asnaf-num{font-size:9.5px;font-weight:800;color:var(--gold-l);letter-spacing:.05em;}
+.asnaf-name{font-size:12px;font-weight:600;color:var(--t1);margin-top:3px;}
 .asnaf-ar{font-family:'Amiri',serif;font-size:13px;color:var(--teal);direction:rtl;margin-top:2px;}
 
-/* ── ACTION BUTTONS BAR ── */
+/* ── ACTION BAR (fixed bottom) ── */
 .action-bar{
   position:fixed;bottom:0;left:0;right:0;
-  padding:10px 16px calc(var(--sab) + 12px);
+  padding:10px calc(16px + var(--sar)) calc(14px + var(--sab)) calc(16px + var(--sal));
   background:var(--nb);
   backdrop-filter:var(--nbl);-webkit-backdrop-filter:var(--nbl);
   border-top:1px solid var(--bd);
-  display:flex;gap:10px;z-index:150;
+  display:flex;gap:10px;z-index:200;
 }
 .action-btn{
   flex:1;height:46px;border-radius:12px;
-  font-size:13.5px;font-weight:600;cursor:pointer;
-  transition:all .2s;display:flex;align-items:center;justify-content:center;gap:7px;
+  font-size:13.5px;font-weight:600;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  cursor:pointer;transition:transform .15s,opacity .15s;
 }
-.action-btn.primary{
+.action-btn:active{transform:scale(0.96);}
+.action-btn:disabled{opacity:.5;pointer-events:none;}
+.btn-primary{
   background:linear-gradient(135deg,var(--teal-d),var(--teal));
   color:#fff;border:none;
-  box-shadow:0 4px 14px rgba(15,110,86,0.38);
+  box-shadow:0 4px 14px rgba(15,110,86,0.36);
 }
-.action-btn.primary:active{transform:scale(0.96);}
-.action-btn.secondary{
+.btn-secondary{
   background:var(--surf);color:var(--t1);
   border:1px solid var(--bd);
 }
-.action-btn.secondary:active{transform:scale(0.96);background:var(--surf2);}
-.action-btn:disabled{opacity:.55;pointer-events:none;}
+.btn-secondary:active{background:var(--surf2);}
 
-/* Status text above action bar */
-.pdf-status{
-  position:fixed;bottom:calc(var(--sab) + 76px);left:50%;
-  transform:translateX(-50%);
-  background:var(--surf);border:1px solid var(--bd);
-  border-radius:20px;padding:5px 14px;
-  font-size:11.5px;color:var(--t2);white-space:nowrap;
-  box-shadow:var(--sh);pointer-events:none;
-  opacity:0;transition:opacity .3s;z-index:151;
+/* ── STATUS CHIP ── */
+.status-chip{
+  position:fixed;z-index:300;
+  left:50%;bottom:calc(76px + var(--sab));
+  transform:translateX(-50%) translateY(8px);
+  background:var(--surf);border:1px solid var(--bd);border-radius:20px;
+  padding:5px 15px;font-size:12px;color:var(--t2);
+  white-space:nowrap;box-shadow:var(--sh);pointer-events:none;
+  opacity:0;transition:opacity .25s,transform .25s;max-width:90vw;overflow:hidden;text-overflow:ellipsis;
 }
-.pdf-status.show{opacity:1;}
+.status-chip.show{opacity:1;transform:translateX(-50%) translateY(0);}
 
 /* ── ANIMATIONS ── */
-@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
-@keyframes pulse{0%,100%{transform:scale(1);opacity:0.6}50%{transform:scale(1.06);opacity:1}}
-.fade-in{animation:fadeUp 0.35s cubic-bezier(0.4,0,0.2,1) both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.fade-in{animation:fadeUp .32s cubic-bezier(0.4,0,0.2,1) both;}
 
-/* ── RESULT AMOUNT PULSE ON CHANGE ── */
-@keyframes numPop{0%{transform:scale(1)}50%{transform:scale(1.06)}100%{transform:scale(1)}}
-.pop{animation:numPop .3s cubic-bezier(0.34,1.56,0.64,1);}
+@keyframes numBounce{0%{transform:scale(1)}40%{transform:scale(1.07)}100%{transform:scale(1)}}
+.pop{animation:numBounce .28s cubic-bezier(0.34,1.56,0.64,1);}
 
-@media(max-width:380px){
-  .topbar-title{display:none;}
+/* ── RESPONSIVE TWEAKS ── */
+@media(max-width:360px){
   .hero-ar{display:none;}
+  .topbar-title{font-size:13px;}
+  .num-inp{width:clamp(72px,22vw,90px);}
+  .sel-inp{max-width:clamp(90px,30vw,130px);}
+}
+@media(max-width:320px){
+  .topbar-title{display:none;}
+  .asnaf-grid{grid-template-columns:1fr 1fr;}
 }
 </style>
 </head>
 <body>
 <div id="app">
 
+  <!-- TOPBAR -->
   <header class="topbar">
-    <div class="tb-left">
-      <button class="tb-back" onclick="if(window.parent!==window){window.parent.postMessage('close-iframe','*')}else{window.location.href='./index.html'}" aria-label="Go back">
-        <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-          <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
-        </svg>
-      </button>
-      <span class="topbar-title">Zakat Calculator</span>
-    </div>
-    <div class="tb-right">
-      <select class="cur-select" id="currency" aria-label="Currency">
-        <option value="INR">₹ INR</option>
-        <option value="USD">$ USD</option>
-        <option value="GBP">£ GBP</option>
-        <option value="EUR">€ EUR</option>
-        <option value="SAR">﷼ SAR</option>
-        <option value="AED">د.إ AED</option>
-        <option value="PKR">₨ PKR</option>
-        <option value="BDT">৳ BDT</option>
-        <option value="MYR">RM MYR</option>
-        <option value="IDR">Rp IDR</option>
-      </select>
-    </div>
+    <button class="tb-back" onclick="if(window.parent!==window){window.parent.postMessage('close-iframe','*')}else{history.back()}" aria-label="Go back">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/>
+      </svg>
+    </button>
+    <span class="topbar-title">Zakat Calculator</span>
+    <select class="cur-select" id="currency" aria-label="Currency">
+      <option value="INR">₹ INR</option>
+      <option value="USD">$ USD</option>
+      <option value="GBP">£ GBP</option>
+      <option value="EUR">€ EUR</option>
+      <option value="SAR">﷼ SAR</option>
+      <option value="AED">AED</option>
+      <option value="PKR">₨ PKR</option>
+      <option value="BDT">৳ BDT</option>
+      <option value="MYR">RM MYR</option>
+      <option value="IDR">Rp IDR</option>
+    </select>
   </header>
-
   <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
 
-  <main class="main" id="mainScroll">
+  <!-- SCROLL AREA -->
+  <main class="main">
 
     <!-- Hero -->
     <div class="hero-strip fade-in">
@@ -431,7 +384,7 @@ input,select{font-family:'Inter',sans-serif;}
         <div class="hero-chips">
           <span class="hero-chip">💰 3rd Pillar of Islam</span>
           <span class="hero-chip">📅 Annual (Hawl)</span>
-          <span class="hero-chip">⚖️ 2.5% of Nisab+</span>
+          <span class="hero-chip">⚖️ 2.5% of wealth</span>
         </div>
       </div>
       <div class="hero-ar">الزَّكَاة</div>
@@ -439,734 +392,856 @@ input,select{font-family:'Inter',sans-serif;}
 
     <!-- Notice -->
     <div class="notice-box fade-in">
-      <strong>General estimate only.</strong> Practices differ across schools of thought. For your specific situation, consult a knowledgeable scholar or your local zakat authority.
+      <strong>General estimate only.</strong> Zakat rulings differ across schools of thought. For your specific situation, consult a knowledgeable scholar or your local zakat authority.
     </div>
 
-    <!-- ── SECTION 1: WEALTH ZAKAT ── -->
+    <!-- ══ CARD 1: WEALTH ZAKAT ══ -->
     <div class="section-card fade-in">
       <div class="section-card-header">
         <div class="section-icon emerald">💎</div>
         <div>
-          <div class="section-card-title">Wealth Zakat</div>
-          <div class="section-card-sub">Cash, gold, silver, investments and debts</div>
+          <div class="scard-title">Wealth Zakat</div>
+          <div class="scard-sub">Cash, gold, silver, investments &amp; debts</div>
         </div>
       </div>
-      <div class="section-card-body">
 
-        <!-- Nisab settings -->
-        <div class="collapsible-header" id="nisabHead" onclick="toggleColl('nisabBody','nisabChev')" style="border-top:none;">
-          <span class="collapsible-title">
-            <span>Nisab settings</span>
-            <span class="collapsible-badge">Required</span>
-          </span>
-          <span class="collapsible-chev open" id="nisabChev">▾</span>
-        </div>
-        <div class="collapsible-body open" id="nisabBody">
-          <div class="input-row">
-            <span class="input-label">Gold price per gram</span>
-            <div class="input-right">
-              <span class="cur-symbol" id="cur1">₹</span>
-              <input type="number" min="0" id="goldPrice" class="num-input" placeholder="0">
-            </div>
-          </div>
-          <div class="input-row">
-            <span class="input-label">Silver price per gram</span>
-            <div class="input-right">
-              <span class="cur-symbol" id="cur2">₹</span>
-              <input type="number" min="0" id="silverPrice" class="num-input" placeholder="0">
-            </div>
-          </div>
-          <div class="nisab-btn-row">
-            <button class="nisab-btn" id="useGoldNisab">🥇 Gold (87.48 g)</button>
-            <button class="nisab-btn" id="useSilverNisab">🥈 Silver (612.36 g)</button>
-          </div>
-          <div class="input-row" style="border-top:1px solid var(--bd2);">
-            <span class="input-label">Nisab threshold</span>
-            <div class="input-right">
-              <span class="cur-symbol" id="cur3">₹</span>
-              <input type="number" min="0" id="nisab" class="num-input" value="75000">
-            </div>
-          </div>
-          <p class="coll-note">Silver gives a lower, more inclusive threshold; gold a higher one. Both views are followed — pick one or enter your own.</p>
-        </div>
-
-        <!-- Assets -->
-        <div class="collapsible-header" id="assetsHead" onclick="toggleColl('assetsBody','assetsChev')">
-          <span class="collapsible-title">Zakatable assets</span>
-          <span class="collapsible-chev open" id="assetsChev">▾</span>
-        </div>
-        <div class="collapsible-body open" id="assetsBody">
-          <div class="input-row">
-            <span class="input-label">Cash and bank savings</span>
-            <div class="input-right"><span class="cur-symbol" id="cur4">₹</span><input type="number" min="0" id="cash" class="num-input" value="0"></div>
-          </div>
-          <div class="input-row">
-            <span class="input-label">Gold (bars, coins, trade)</span>
-            <div class="input-right"><span class="cur-symbol" id="cur5">₹</span><input type="number" min="0" id="goldTrade" class="num-input" value="0"></div>
-          </div>
-          <div class="input-row">
-            <span class="input-label">Silver (bars, coins, trade)</span>
-            <div class="input-right"><span class="cur-symbol" id="cur6">₹</span><input type="number" min="0" id="silverTrade" class="num-input" value="0"></div>
-          </div>
-          <div class="check-row">
-            <div class="check-box checked" id="jewelryBox" onclick="toggleJewelry()"></div>
-            <span>Include gold and silver jewelry for personal use — some schools exempt this; uncheck if you follow that view.</span>
-          </div>
-          <div class="input-row">
-            <span class="input-label">Gold and silver jewelry value</span>
-            <div class="input-right"><span class="cur-symbol" id="cur7">₹</span><input type="number" min="0" id="jewelry" class="num-input" value="0"></div>
-          </div>
-          <div class="input-row">
-            <span class="input-label">Cryptocurrency</span>
-            <div class="input-right"><span class="cur-symbol" id="cur8">₹</span><input type="number" min="0" id="crypto" class="num-input" value="0"></div>
-          </div>
-          <div class="input-row">
-            <span class="input-label">Money owed to you</span>
-            <div class="input-right"><span class="cur-symbol" id="cur9">₹</span><input type="number" min="0" id="receivables" class="num-input" value="0"></div>
-          </div>
-          <div class="input-row">
-            <span class="input-label">Business inventory</span>
-            <div class="input-right"><span class="cur-symbol" id="cur10">₹</span><input type="number" min="0" id="business" class="num-input" value="0"></div>
-          </div>
-          <div class="input-row" style="border-bottom:none;">
-            <span class="input-label">Other zakatable assets</span>
-            <div class="input-right"><span class="cur-symbol" id="cur11">₹</span><input type="number" min="0" id="other" class="num-input" value="0"></div>
-          </div>
-        </div>
-
-        <!-- Investments -->
-        <div class="collapsible-header" id="investHead" onclick="toggleColl('investBody','investChev')">
-          <span class="collapsible-title">Investments and stocks</span>
-          <span class="collapsible-chev" id="investChev">▾</span>
-        </div>
-        <div class="collapsible-body" id="investBody">
-          <div class="input-row">
-            <span class="input-label">Market value of holdings</span>
-            <div class="input-right"><span class="cur-symbol" id="cur12">₹</span><input type="number" min="0" id="invest" class="num-input" value="0"></div>
-          </div>
-          <div class="input-row">
-            <span class="input-label">Holding type</span>
-            <select class="small-select" id="investType">
-              <option value="trade">Trading (full value)</option>
-              <option value="longterm">Long-term (portion only)</option>
-            </select>
-          </div>
-          <div class="input-row">
-            <span class="input-label">Zakatable portion <small>Adjust if you have a precise figure</small></span>
-            <div class="input-right"><input type="number" min="0" max="100" id="investPct" class="num-input narrow" value="30"><span class="cur-symbol" style="margin-left:2px;">%</span></div>
-          </div>
-          <p class="coll-note">Trading shares: full value. Long-term holdings: commonly 30% of underlying assets — adjust as needed.</p>
-        </div>
-
-        <!-- Deductions -->
-        <div class="collapsible-header" id="debtsHead" onclick="toggleColl('debtsBody','debtsChev')">
-          <span class="collapsible-title">Deductions</span>
-          <span class="collapsible-chev" id="debtsChev">▾</span>
-        </div>
-        <div class="collapsible-body" id="debtsBody">
-          <div class="input-row" style="border-bottom:none;">
-            <span class="input-label">Short-term debts and liabilities</span>
-            <div class="input-right"><span class="cur-symbol" id="cur13">₹</span><input type="number" min="0" id="debts" class="num-input" value="0"></div>
-          </div>
-        </div>
-
-        <!-- Wealth result -->
-        <div class="result-panel">
-          <div class="result-row"><span>Total zakatable wealth</span><span class="result-val" id="assets-out">₹0</span></div>
-          <div class="result-row"><span>Net wealth after debts</span><span class="result-val" id="net-out">₹0</span></div>
-          <div class="result-row"><span>Nisab threshold in use</span><span class="result-val" id="nisab-out">₹0</span></div>
-          <div class="result-divider"></div>
-          <div class="result-main">
-            <span class="result-main-label">Zakat on wealth (2.5%)</span>
-            <span class="result-main-amount" id="zakat-out">₹0</span>
-          </div>
-          <p class="result-status" id="status-out">Below nisab — no zakat due yet.</p>
-        </div>
-
+      <!-- Nisab -->
+      <div class="coll-hdr first-in-card" onclick="toggleColl('nisabBody','nisabChev')">
+        <span class="coll-title">Nisab settings <span class="coll-badge">Required</span></span>
+        <span class="coll-chev open" id="nisabChev">▾</span>
       </div>
-    </div>
+      <div class="coll-body open" id="nisabBody">
+        <div class="input-row">
+          <span class="lbl">Gold price per gram</span>
+          <div class="inp-right"><span class="cur-sym" id="s1">₹</span><input type="number" min="0" inputmode="decimal" id="goldPrice" class="num-inp" placeholder="0"></div>
+        </div>
+        <div class="input-row">
+          <span class="lbl">Silver price per gram</span>
+          <div class="inp-right"><span class="cur-sym" id="s2">₹</span><input type="number" min="0" inputmode="decimal" id="silverPrice" class="num-inp" placeholder="0"></div>
+        </div>
+        <div class="nisab-btns">
+          <button class="nisab-btn" id="useGoldNisab">🥇 Gold (87.48 g)</button>
+          <button class="nisab-btn" id="useSilverNisab">🥈 Silver (612 g)</button>
+        </div>
+        <div class="input-row" style="border-top:1px solid var(--bd2);">
+          <span class="lbl">Nisab threshold</span>
+          <div class="inp-right"><span class="cur-sym" id="s3">₹</span><input type="number" min="0" inputmode="decimal" id="nisab" class="num-inp" value="75000"></div>
+        </div>
+        <p class="coll-note">Silver gives a lower, more inclusive threshold; gold a higher one. Both views are widely followed.</p>
+      </div>
 
-    <!-- ── SECTION 2: ADDITIONAL OBLIGATIONS ── -->
+      <!-- Assets -->
+      <div class="coll-hdr" onclick="toggleColl('assetsBody','assetsChev')">
+        <span class="coll-title">Zakatable assets</span>
+        <span class="coll-chev open" id="assetsChev">▾</span>
+      </div>
+      <div class="coll-body open" id="assetsBody">
+        <div class="input-row">
+          <span class="lbl">Cash and bank savings</span>
+          <div class="inp-right"><span class="cur-sym" id="s4">₹</span><input type="number" min="0" inputmode="decimal" id="cash" class="num-inp" value="0"></div>
+        </div>
+        <div class="input-row">
+          <span class="lbl">Gold (bars, coins, trade)</span>
+          <div class="inp-right"><span class="cur-sym" id="s5">₹</span><input type="number" min="0" inputmode="decimal" id="goldTrade" class="num-inp" value="0"></div>
+        </div>
+        <div class="input-row">
+          <span class="lbl">Silver (bars, coins, trade)</span>
+          <div class="inp-right"><span class="cur-sym" id="s6">₹</span><input type="number" min="0" inputmode="decimal" id="silverTrade" class="num-inp" value="0"></div>
+        </div>
+        <div class="check-row">
+          <div class="chk-box on" id="jewelryBox" onclick="toggleJewelry()" role="checkbox" aria-checked="true" tabindex="0"></div>
+          <span>Include personal gold &amp; silver jewelry — some schools exempt this; uncheck to exclude.</span>
+        </div>
+        <div class="input-row">
+          <span class="lbl">Jewelry value</span>
+          <div class="inp-right"><span class="cur-sym" id="s7">₹</span><input type="number" min="0" inputmode="decimal" id="jewelry" class="num-inp" value="0"></div>
+        </div>
+        <div class="input-row">
+          <span class="lbl">Cryptocurrency</span>
+          <div class="inp-right"><span class="cur-sym" id="s8">₹</span><input type="number" min="0" inputmode="decimal" id="crypto" class="num-inp" value="0"></div>
+        </div>
+        <div class="input-row">
+          <span class="lbl">Money owed to you</span>
+          <div class="inp-right"><span class="cur-sym" id="s9">₹</span><input type="number" min="0" inputmode="decimal" id="receivables" class="num-inp" value="0"></div>
+        </div>
+        <div class="input-row">
+          <span class="lbl">Business inventory</span>
+          <div class="inp-right"><span class="cur-sym" id="s10">₹</span><input type="number" min="0" inputmode="decimal" id="business" class="num-inp" value="0"></div>
+        </div>
+        <div class="input-row" style="border-bottom:none;">
+          <span class="lbl">Other zakatable assets</span>
+          <div class="inp-right"><span class="cur-sym" id="s11">₹</span><input type="number" min="0" inputmode="decimal" id="other" class="num-inp" value="0"></div>
+        </div>
+      </div>
+
+      <!-- Investments -->
+      <div class="coll-hdr" onclick="toggleColl('investBody','investChev')">
+        <span class="coll-title">Investments &amp; stocks</span>
+        <span class="coll-chev" id="investChev">▾</span>
+      </div>
+      <div class="coll-body" id="investBody">
+        <div class="input-row">
+          <span class="lbl">Market value of holdings</span>
+          <div class="inp-right"><span class="cur-sym" id="s12">₹</span><input type="number" min="0" inputmode="decimal" id="invest" class="num-inp" value="0"></div>
+        </div>
+        <div class="input-row">
+          <span class="lbl">Holding type</span>
+          <select class="sel-inp" id="investType">
+            <option value="trade">Trading (full value)</option>
+            <option value="longterm">Long-term (portion)</option>
+          </select>
+        </div>
+        <div class="input-row" style="border-bottom:none;">
+          <span class="lbl">Zakatable portion <small>Common default is 30%</small></span>
+          <div class="inp-right"><input type="number" min="0" max="100" inputmode="decimal" id="investPct" class="num-inp narrow" value="30"><span class="cur-sym">%</span></div>
+        </div>
+        <p class="coll-note">Trading shares: full market value. Long-term holdings: typically 30% of underlying assets — adjust if you have a precise figure.</p>
+      </div>
+
+      <!-- Deductions -->
+      <div class="coll-hdr" onclick="toggleColl('debtsBody','debtsChev')">
+        <span class="coll-title">Deductions</span>
+        <span class="coll-chev" id="debtsChev">▾</span>
+      </div>
+      <div class="coll-body" id="debtsBody">
+        <div class="input-row" style="border-bottom:none;">
+          <span class="lbl">Short-term debts &amp; liabilities</span>
+          <div class="inp-right"><span class="cur-sym" id="s13">₹</span><input type="number" min="0" inputmode="decimal" id="debts" class="num-inp" value="0"></div>
+        </div>
+      </div>
+
+      <!-- Wealth Result -->
+      <div class="result-panel">
+        <div class="res-row"><span>Total zakatable wealth</span><span class="res-val" id="assets-out">₹0</span></div>
+        <div class="res-row"><span>Net wealth after debts</span><span class="res-val" id="net-out">₹0</span></div>
+        <div class="res-row"><span>Nisab threshold</span><span class="res-val" id="nisab-out">₹0</span></div>
+        <div class="res-divider"></div>
+        <div class="res-main">
+          <span class="res-main-lbl">Zakat on wealth (2.5%)</span>
+          <span class="res-amount" id="zakat-out">₹0</span>
+        </div>
+        <p class="res-status" id="status-out">Below nisab — no zakat due yet.</p>
+      </div>
+    </div><!-- /card 1 -->
+
+    <!-- ══ CARD 2: ADDITIONAL OBLIGATIONS ══ -->
     <div class="section-card fade-in">
       <div class="section-card-header">
         <div class="section-icon gold">🌾</div>
         <div>
-          <div class="section-card-title">Additional Obligations</div>
-          <div class="section-card-sub">Produce, livestock, rikaz, Zakat al-Fitr</div>
+          <div class="scard-title">Additional Obligations</div>
+          <div class="scard-sub">Produce, livestock, rikaz &amp; Zakat al-Fitr</div>
         </div>
       </div>
-      <div class="section-card-body">
 
-        <!-- Agricultural -->
-        <div class="collapsible-header" id="cropHead" onclick="toggleColl('cropBody','cropChev')" style="border-top:none;">
-          <span class="collapsible-title">Agricultural produce — ʿUshr</span>
-          <span class="collapsible-chev" id="cropChev">▾</span>
-        </div>
-        <div class="collapsible-body" id="cropBody">
-          <div class="input-row">
-            <span class="input-label">Value of harvested crop</span>
-            <div class="input-right"><span class="cur-symbol" id="cur14">₹</span><input type="number" min="0" id="cropValue" class="num-input" value="0"></div>
-          </div>
-          <div class="input-row">
-            <span class="input-label">Crop nisab (≈653 kg equivalent)</span>
-            <div class="input-right"><span class="cur-symbol" id="cur15">₹</span><input type="number" min="0" id="cropNisab" class="num-input" value="0"></div>
-          </div>
-          <div class="input-row" style="border-bottom:none;">
-            <span class="input-label">Irrigation type</span>
-            <select class="small-select" id="irrigation">
-              <option value="natural">Rain-fed / natural (10%)</option>
-              <option value="artificial">Artificially irrigated (5%)</option>
-            </select>
-          </div>
-          <p class="coll-note">Produce zakat is due at harvest — no waiting year needed — once it meets its own nisab.</p>
-        </div>
-
-        <!-- Livestock -->
-        <div class="collapsible-header" id="liveHead" onclick="toggleColl('liveBody','liveChev')">
-          <span class="collapsible-title">Livestock</span>
-          <span class="collapsible-chev" id="liveChev">▾</span>
-        </div>
-        <div class="collapsible-body" id="liveBody">
-          <div class="input-row">
-            <span class="input-label">Sheep / goats owned</span>
-            <div class="input-right"><input type="number" min="0" id="sheepCount" class="num-input narrow" value="0"></div>
-          </div>
-          <div class="input-row">
-            <span class="input-label">Avg. value per sheep / goat</span>
-            <div class="input-right"><span class="cur-symbol" id="cur16">₹</span><input type="number" min="0" id="sheepPrice" class="num-input" value="0"></div>
-          </div>
-          <div class="input-row">
-            <span class="input-label">Cattle / buffalo owned</span>
-            <div class="input-right"><input type="number" min="0" id="cattleCount" class="num-input narrow" value="0"></div>
-          </div>
-          <div class="input-row" style="border-bottom:none;">
-            <span class="input-label">Avg. value per cattle</span>
-            <div class="input-right"><span class="cur-symbol" id="cur17">₹</span><input type="number" min="0" id="cattlePrice" class="num-input" value="0"></div>
-          </div>
-          <p class="coll-note">Livestock zakat is traditionally paid in animals, following detailed tiered tables. Camel calculations require a scholar's guidance.</p>
-        </div>
-
-        <!-- Rikaz -->
-        <div class="collapsible-header" id="rikazHead" onclick="toggleColl('rikazBody','rikazChev')">
-          <span class="collapsible-title">Rikaz — found treasure</span>
-          <span class="collapsible-chev" id="rikazChev">▾</span>
-        </div>
-        <div class="collapsible-body" id="rikazBody">
-          <div class="input-row" style="border-bottom:none;">
-            <span class="input-label">Value found</span>
-            <div class="input-right"><span class="cur-symbol" id="cur18">₹</span><input type="number" min="0" id="rikaz" class="num-input" value="0"></div>
-          </div>
-          <p class="coll-note">Rikaz is due immediately at 20%, with no nisab or hawl required.</p>
-        </div>
-
-        <!-- Zakat al-Fitr -->
-        <div class="collapsible-header" id="fitrHead" onclick="toggleColl('fitrBody','fitrChev')">
-          <span class="collapsible-title">
-            <span>Zakat al-Fitr</span>
-            <span class="collapsible-badge">Before Eid</span>
-          </span>
-          <span class="collapsible-chev" id="fitrChev">▾</span>
-        </div>
-        <div class="collapsible-body" id="fitrBody">
-          <div class="input-row">
-            <span class="input-label">Family members</span>
-            <div class="input-right"><input type="number" min="0" id="fitrPeople" class="num-input narrow" value="1"></div>
-          </div>
-          <div class="input-row" style="border-bottom:none;">
-            <span class="input-label">Amount per person <small>Check local authority each year</small></span>
-            <div class="input-right"><span class="cur-symbol" id="cur19">₹</span><input type="number" min="0" id="fitrAmount" class="num-input" placeholder="0"></div>
-          </div>
-          <p class="coll-note">A fixed obligation per person — equivalent to a staple food measure, paid before the Eid prayer.</p>
-        </div>
-
-        <!-- Additional result -->
-        <div class="result-panel">
-          <div class="result-row"><span>Zakat on produce (ʿushr)</span><span class="result-val" id="ushr-out">₹0</span></div>
-          <div class="result-row"><span>Zakat on rikaz</span><span class="result-val" id="rikaz-out">₹0</span></div>
-          <div class="result-row"><span>Sheep / goats due</span><span class="result-val" id="sheep-out">0 head</span></div>
-          <div class="result-row"><span>Cattle due</span><span class="result-val" id="cattle-out">0</span></div>
-          <div class="result-row"><span>Zakat al-Fitr total</span><span class="result-val" id="fitr-out">₹0</span></div>
-          <div class="result-divider"></div>
-          <div class="result-main">
-            <span class="result-main-label">Grand total (cash)</span>
-            <span class="result-main-amount" id="grand-out">₹0</span>
-          </div>
-          <p class="result-status">Excludes livestock (paid in kind) and Zakat al-Fitr — shown separately above.</p>
-        </div>
-
+      <!-- Agriculture -->
+      <div class="coll-hdr first-in-card" onclick="toggleColl('cropBody','cropChev')">
+        <span class="coll-title">Agricultural produce — ʿUshr</span>
+        <span class="coll-chev" id="cropChev">▾</span>
       </div>
-    </div>
+      <div class="coll-body" id="cropBody">
+        <div class="input-row">
+          <span class="lbl">Harvested crop value</span>
+          <div class="inp-right"><span class="cur-sym" id="s14">₹</span><input type="number" min="0" inputmode="decimal" id="cropValue" class="num-inp" value="0"></div>
+        </div>
+        <div class="input-row">
+          <span class="lbl">Crop nisab (≈653 kg value)</span>
+          <div class="inp-right"><span class="cur-sym" id="s15">₹</span><input type="number" min="0" inputmode="decimal" id="cropNisab" class="num-inp" value="0"></div>
+        </div>
+        <div class="input-row" style="border-bottom:none;">
+          <span class="lbl">Irrigation type</span>
+          <select class="sel-inp" id="irrigation">
+            <option value="natural">Rain-fed (10%)</option>
+            <option value="artificial">Irrigated (5%)</option>
+          </select>
+        </div>
+        <p class="coll-note">Produce zakat is due at each harvest — no one-year wait — once it meets its own nisab threshold.</p>
+      </div>
 
-    <!-- ── SECTION 3: HAWL & INFO ── -->
+      <!-- Livestock -->
+      <div class="coll-hdr" onclick="toggleColl('liveBody','liveChev')">
+        <span class="coll-title">Livestock</span>
+        <span class="coll-chev" id="liveChev">▾</span>
+      </div>
+      <div class="coll-body" id="liveBody">
+        <div class="input-row">
+          <span class="lbl">Sheep / goats owned</span>
+          <div class="inp-right"><input type="number" min="0" inputmode="numeric" id="sheepCount" class="num-inp narrow" value="0"></div>
+        </div>
+        <div class="input-row">
+          <span class="lbl">Cattle / buffalo owned</span>
+          <div class="inp-right"><input type="number" min="0" inputmode="numeric" id="cattleCount" class="num-inp narrow" value="0"></div>
+        </div>
+        <p class="coll-note">Livestock zakat follows detailed tiered tables and is traditionally paid in animals. Camels require a scholar's specific guidance.</p>
+      </div>
+
+      <!-- Rikaz -->
+      <div class="coll-hdr" onclick="toggleColl('rikazBody','rikazChev')">
+        <span class="coll-title">Rikaz — found treasure</span>
+        <span class="coll-chev" id="rikazChev">▾</span>
+      </div>
+      <div class="coll-body" id="rikazBody">
+        <div class="input-row" style="border-bottom:none;">
+          <span class="lbl">Value found</span>
+          <div class="inp-right"><span class="cur-sym" id="s16">₹</span><input type="number" min="0" inputmode="decimal" id="rikaz" class="num-inp" value="0"></div>
+        </div>
+        <p class="coll-note">Rikaz is due immediately at 20% — no nisab or hawl required.</p>
+      </div>
+
+      <!-- Zakat al-Fitr -->
+      <div class="coll-hdr" onclick="toggleColl('fitrBody','fitrChev')">
+        <span class="coll-title">Zakat al-Fitr <span class="coll-badge">Before Eid</span></span>
+        <span class="coll-chev" id="fitrChev">▾</span>
+      </div>
+      <div class="coll-body" id="fitrBody">
+        <div class="input-row">
+          <span class="lbl">Family members</span>
+          <div class="inp-right"><input type="number" min="0" inputmode="numeric" id="fitrPeople" class="num-inp narrow" value="1"></div>
+        </div>
+        <div class="input-row" style="border-bottom:none;">
+          <span class="lbl">Amount per person <small>Published by local authority yearly</small></span>
+          <div class="inp-right"><span class="cur-sym" id="s17">₹</span><input type="number" min="0" inputmode="decimal" id="fitrAmount" class="num-inp" placeholder="0"></div>
+        </div>
+        <p class="coll-note">A fixed obligation per person, equivalent to a staple food measure, paid before the Eid al-Fitr prayer.</p>
+      </div>
+
+      <!-- Additional Result -->
+      <div class="result-panel">
+        <div class="res-row"><span>Produce (ʿushr)</span><span class="res-val" id="ushr-out">₹0</span></div>
+        <div class="res-row"><span>Rikaz</span><span class="res-val" id="rikaz-out">₹0</span></div>
+        <div class="res-row"><span>Sheep / goats due</span><span class="res-val" id="sheep-out">0 head</span></div>
+        <div class="res-row"><span>Cattle due</span><span class="res-val" id="cattle-out">0</span></div>
+        <div class="res-row"><span>Zakat al-Fitr total</span><span class="res-val" id="fitr-out">₹0</span></div>
+        <div class="res-divider"></div>
+        <div class="res-main">
+          <span class="res-main-lbl">Grand total (cash)</span>
+          <span class="res-amount" id="grand-out">₹0</span>
+        </div>
+        <p class="res-status">Excludes livestock (paid in kind) and Zakat al-Fitr shown above.</p>
+      </div>
+    </div><!-- /card 2 -->
+
+    <!-- ══ CARD 3: HAWL TRACKER ══ -->
     <div class="section-card fade-in">
       <div class="section-card-header">
         <div class="section-icon purple">🗓️</div>
         <div>
-          <div class="section-card-title">Hawl Tracker</div>
-          <div class="section-card-sub">Lunar year countdown to your due date</div>
+          <div class="scard-title">Hawl Tracker</div>
+          <div class="scard-sub">Lunar year countdown to your due date</div>
         </div>
       </div>
-      <div class="section-card-body">
-        <div class="input-row" style="border-bottom:none;">
-          <span class="input-label">Date wealth reached nisab</span>
-          <input type="date" id="hawlDate" class="date-input">
-        </div>
-        <div class="hawl-display" id="hawl-out">
-          Enter the date above to see when your hawl (lunar year) completes and zakat becomes due.
-        </div>
+      <div class="coll-hdr first-in-card" style="cursor:default;background:var(--surf);">
+        <span class="lbl">Date wealth first reached nisab</span>
+        <input type="date" id="hawlDate" class="date-inp" aria-label="Date nisab was first reached">
       </div>
+      <div class="hawl-display" id="hawl-out">Enter the date above to see when your hawl (lunar year) completes and zakat becomes due.</div>
     </div>
 
-    <!-- ── SECTION 4: WHO RECEIVES ── -->
+    <!-- ══ CARD 4: WHO RECEIVES ZAKAT ══ -->
     <div class="section-card fade-in">
       <div class="section-card-header">
-        <div class="section-icon emerald">🤲</div>
+        <div class="section-icon teal-light">🤲</div>
         <div>
-          <div class="section-card-title">Who Receives Zakat</div>
-          <div class="section-card-sub">Eight categories — Quran 9:60</div>
+          <div class="scard-title">Who Receives Zakat</div>
+          <div class="scard-sub">Eight categories — Quran 9:60</div>
         </div>
       </div>
-      <div class="section-card-body">
-        <div class="asnaf-grid">
-          <div class="asnaf-item"><div class="asnaf-num">01</div><div class="asnaf-name">The poor</div><div class="asnaf-ar">الفُقَرَاء</div></div>
-          <div class="asnaf-item"><div class="asnaf-num">02</div><div class="asnaf-name">The needy</div><div class="asnaf-ar">الْمَسَاكِين</div></div>
-          <div class="asnaf-item"><div class="asnaf-num">03</div><div class="asnaf-name">Zakat workers</div><div class="asnaf-ar">الْعَامِلِينَ</div></div>
-          <div class="asnaf-item"><div class="asnaf-num">04</div><div class="asnaf-name">New Muslims</div><div class="asnaf-ar">الْمُؤَلَّفَة</div></div>
-          <div class="asnaf-item"><div class="asnaf-num">05</div><div class="asnaf-name">Freeing captives</div><div class="asnaf-ar">الرِّقَاب</div></div>
-          <div class="asnaf-item"><div class="asnaf-num">06</div><div class="asnaf-name">Those in debt</div><div class="asnaf-ar">الْغَارِمِين</div></div>
-          <div class="asnaf-item"><div class="asnaf-num">07</div><div class="asnaf-name">Cause of Allah</div><div class="asnaf-ar">فِي سَبِيلِ اللَّه</div></div>
-          <div class="asnaf-item"><div class="asnaf-num">08</div><div class="asnaf-name">Stranded travelers</div><div class="asnaf-ar">ابْنُ السَّبِيل</div></div>
-        </div>
+      <div class="asnaf-grid">
+        <div class="asnaf-item"><div class="asnaf-num">01</div><div class="asnaf-name">The poor</div><div class="asnaf-ar">الفُقَرَاء</div></div>
+        <div class="asnaf-item"><div class="asnaf-num">02</div><div class="asnaf-name">The needy</div><div class="asnaf-ar">الْمَسَاكِين</div></div>
+        <div class="asnaf-item"><div class="asnaf-num">03</div><div class="asnaf-name">Zakat workers</div><div class="asnaf-ar">الْعَامِلِينَ</div></div>
+        <div class="asnaf-item"><div class="asnaf-num">04</div><div class="asnaf-name">New Muslims</div><div class="asnaf-ar">الْمُؤَلَّفَة</div></div>
+        <div class="asnaf-item"><div class="asnaf-num">05</div><div class="asnaf-name">Freeing captives</div><div class="asnaf-ar">الرِّقَاب</div></div>
+        <div class="asnaf-item"><div class="asnaf-num">06</div><div class="asnaf-name">Those in debt</div><div class="asnaf-ar">الْغَارِمِين</div></div>
+        <div class="asnaf-item"><div class="asnaf-num">07</div><div class="asnaf-name">Cause of Allah</div><div class="asnaf-ar">فِي سَبِيلِ اللَّه</div></div>
+        <div class="asnaf-item"><div class="asnaf-num">08</div><div class="asnaf-name">Stranded traveler</div><div class="asnaf-ar">ابْنُ السَّبِيل</div></div>
       </div>
     </div>
 
-  </main>
+  </main><!-- /main -->
 
-  <!-- Fixed action bar -->
+  <!-- FIXED ACTION BAR -->
   <div class="action-bar">
-    <button class="action-btn secondary" id="copyBtn" onclick="copySummary()">
-      <i class="fa-regular fa-copy"></i> Copy
-    </button>
-    <button class="action-btn primary" id="pdfBtn" onclick="triggerPDF()">
-      <i class="fa-regular fa-file-pdf"></i> Save PDF
-    </button>
+    <button class="action-btn btn-secondary" id="copyBtn" onclick="copySummary()">📋 Copy</button>
+    <button class="action-btn btn-primary" id="pdfBtn" onclick="triggerPDF()">📄 Save PDF</button>
   </div>
-  <div class="pdf-status" id="pdf-status"></div>
+  <div class="status-chip" id="statusChip"></div>
 
-</div>
+</div><!-- /#app -->
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 <script>
-/* ─────────────────── COLLAPSIBLE ─────────────────── */
+/* ══════════════════════════════════════════════
+   COLLAPSIBLE
+══════════════════════════════════════════════ */
 function toggleColl(bodyId, chevId) {
   var body = document.getElementById(bodyId);
   var chev = document.getElementById(chevId);
-  var open = body.classList.toggle('open');
-  chev.classList.toggle('open', open);
+  if (!body || !chev) return;
+  var isOpen = body.classList.toggle('open');
+  chev.classList.toggle('open', isOpen);
 }
 
-/* ─────────────────── JEWELRY TOGGLE ─────────────────── */
+/* ══════════════════════════════════════════════
+   JEWELRY TOGGLE
+══════════════════════════════════════════════ */
 var jewelryIncluded = true;
 function toggleJewelry() {
   jewelryIncluded = !jewelryIncluded;
   var box = document.getElementById('jewelryBox');
-  box.classList.toggle('checked', jewelryIncluded);
+  if (box) {
+    box.classList.toggle('on', jewelryIncluded);
+    box.setAttribute('aria-checked', String(jewelryIncluded));
+  }
   recalc();
 }
 
-/* ─────────────────── CURRENCY ─────────────────── */
-var currencySymbols = {
-  INR:'₹', USD:'$', GBP:'£', EUR:'€', SAR:'﷼', AED:'د.إ', PKR:'₨', BDT:'৳', MYR:'RM', IDR:'Rp'
+/* ══════════════════════════════════════════════
+   CURRENCY
+══════════════════════════════════════════════ */
+var CUR_SYMBOLS = {
+  INR:'₹', USD:'$', GBP:'£', EUR:'€', SAR:'﷼',
+  AED:'د.إ', PKR:'₨', BDT:'৳', MYR:'RM', IDR:'Rp'
 };
-var curSymbol = '₹';
 var curCode = 'INR';
+var curSym  = '₹';
 
 document.getElementById('currency').addEventListener('change', function() {
   curCode = this.value;
-  curSymbol = currencySymbols[curCode] || curCode;
-  document.querySelectorAll('.cur-symbol').forEach(function(el) { el.textContent = curSymbol; });
+  curSym  = CUR_SYMBOLS[curCode] || curCode;
+  /* Update all currency symbol spans */
+  document.querySelectorAll('.cur-sym').forEach(function(el) { el.textContent = curSym; });
   recalc();
 });
 
-/* ─────────────────── FORMATTER ─────────────────── */
-function fmt(v) {
-  return new Intl.NumberFormat(undefined, {
-    style:'currency', currency: curCode,
-    minimumFractionDigits:0, maximumFractionDigits:0
-  }).format(Math.round(v || 0));
+/* ══════════════════════════════════════════════
+   SAFE NUMBER HELPERS — fixes parameter-shadowing bug
+   and guards against missing elements
+══════════════════════════════════════════════ */
+function getNum(id) {
+  var el = document.getElementById(id);
+  if (!el) return 0;
+  var v = parseFloat(el.value);
+  return isFinite(v) && v >= 0 ? v : 0;
 }
-function money(v) { return fmt(v); }
-function n(id) { return parseFloat(document.getElementById(id).value) || 0; }
 
-/* ─────────────────── NISAB BUTTONS ─────────────────── */
+/* Currency formatter — uses simple prefix to avoid
+   Intl.NumberFormat currency mode failures on old WebViews */
+function fmt(v) {
+  var rounded = Math.round(isFinite(v) ? v : 0);
+  var formatted = rounded.toLocaleString();   /* e.g. "1,23,456" or "123,456" */
+  return curSym + formatted;
+}
+
+/* ══════════════════════════════════════════════
+   NISAB BUTTONS
+══════════════════════════════════════════════ */
 document.getElementById('useGoldNisab').addEventListener('click', function() {
-  var g = n('goldPrice');
-  if (!g) { showStatus('Enter gold price per gram first.', false); return; }
-  document.getElementById('nisab').value = Math.round(g * 87.48);
+  var g = getNum('goldPrice');
+  if (!g) { showStatus('Enter gold price per gram first'); return; }
+  var el = document.getElementById('nisab');
+  if (el) el.value = Math.round(g * 87.48);
   recalc();
 });
 document.getElementById('useSilverNisab').addEventListener('click', function() {
-  var s = n('silverPrice');
-  if (!s) { showStatus('Enter silver price per gram first.', false); return; }
-  document.getElementById('nisab').value = Math.round(s * 612.36);
+  var sv = getNum('silverPrice');
+  if (!sv) { showStatus('Enter silver price per gram first'); return; }
+  var el = document.getElementById('nisab');
+  if (el) el.value = Math.round(sv * 612.36);
   recalc();
 });
 
-/* ─────────────────── HAWL ─────────────────── */
+/* ══════════════════════════════════════════════
+   HAWL TRACKER
+══════════════════════════════════════════════ */
 function updateHawl() {
   var el = document.getElementById('hawlDate');
   var out = document.getElementById('hawl-out');
+  if (!el || !out) return;
   if (!el.value) {
     out.textContent = 'Enter the date above to see when your hawl (lunar year) completes and zakat becomes due.';
     return;
   }
   var start = new Date(el.value);
-  // 1 lunar year ≈ 354.367 days
-  var due = new Date(start.getTime() + 354.367 * 24 * 60 * 60 * 1000);
+  if (isNaN(start.getTime())) {
+    out.textContent = 'Invalid date — please enter a valid date.';
+    return;
+  }
+  /* 1 Islamic lunar year = 354.367 days */
+  var due   = new Date(start.getTime() + 354.367 * 86400000);
   var today = new Date();
-  var diff = Math.round((due - today) / (24 * 60 * 60 * 1000));
-  var opts = { year:'numeric', month:'long', day:'numeric' };
+  var diff  = Math.round((due - today) / 86400000);
+  var opts  = { year:'numeric', month:'long', day:'numeric' };
   if (diff < 0) {
     out.textContent = 'Your hawl completed on ' + due.toLocaleDateString(undefined, opts) + '. Zakat is now due — pay at your earliest.';
   } else if (diff === 0) {
-    out.textContent = 'Your hawl completes TODAY! Zakat is now due. ';
+    out.textContent = 'Your hawl completes TODAY. Zakat is now due!';
   } else {
-    out.textContent = 'Hawl completes on ' + due.toLocaleDateString(undefined, opts) + ' — ' + diff + ' day' + (diff !== 1 ? 's' : '') + ' from now. Zakat will be due then.';
+    out.textContent = 'Hawl completes on ' + due.toLocaleDateString(undefined, opts) + ' — ' + diff + ' day' + (diff !== 1 ? 's' : '') + ' from now.';
   }
 }
 document.getElementById('hawlDate').addEventListener('change', updateHawl);
 
-/* ─────────────────── SHEEP CALCULATION ─────────────────── */
-function calcSheepDue(n) {
-  if (n < 40) return 0;
-  if (n <= 120) return 1;
-  if (n <= 200) return 2;
-  if (n <= 300) return 3;
-  return 3 + Math.floor((n - 300) / 100);
+/* ══════════════════════════════════════════════
+   LIVESTOCK CALCULATIONS
+   (renamed params to avoid shadowing getNum)
+══════════════════════════════════════════════ */
+function calcSheepDue(count) {
+  count = Math.floor(count);
+  if (count < 40)  return 0;
+  if (count <= 120) return 1;
+  if (count <= 200) return 2;
+  if (count <= 300) return 3;
+  return 3 + Math.floor((count - 300) / 100);
 }
-function calcCattleDue(n) {
-  if (n < 30) return { due: 0, label: '0' };
-  var due = Math.floor(n / 30);
-  return { due: due, label: due + ' tabi\' (1-yr)' };
+function calcCattleDue(count) {
+  count = Math.floor(count);
+  if (count < 30) return { label: '0' };
+  var due = Math.floor(count / 30);
+  return { label: due + " tabi\u02BF (yearling)" };
 }
 
-/* ─────────────────── STATE ─────────────────── */
+/* ══════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════ */
 var state = {};
 
-/* ─────────────────── RECALC ─────────────────── */
+/* ══════════════════════════════════════════════
+   RECALCULATE — runs on every input change
+══════════════════════════════════════════════ */
 function recalc() {
-  var cash = n('cash'), goldT = n('goldTrade'), silverT = n('silverTrade');
-  var jewelry = jewelryIncluded ? n('jewelry') : 0;
-  var crypto = n('crypto'), recv = n('receivables'), biz = n('business'), other = n('other');
-  var invest = n('invest'), investPct = n('investPct');
-  var investType = document.getElementById('investType').value;
-  var investPortion = investType === 'trade' ? invest : invest * (investPct / 100);
-  var debts = n('debts');
-  var nisab = n('nisab');
+  /* Wealth */
+  var cash      = getNum('cash');
+  var goldT     = getNum('goldTrade');
+  var silverT   = getNum('silverTrade');
+  var jewelry   = jewelryIncluded ? getNum('jewelry') : 0;
+  var crypto    = getNum('crypto');
+  var recv      = getNum('receivables');
+  var biz       = getNum('business');
+  var other     = getNum('other');
+  var invest    = getNum('invest');
+  var investPct = getNum('investPct');
+  var investTypeEl = document.getElementById('investType');
+  var investType   = investTypeEl ? investTypeEl.value : 'trade';
+  var investPortion = (investType === 'trade') ? invest : invest * (investPct / 100);
+  var debts     = getNum('debts');
+  var nisab     = getNum('nisab');
 
   var assets = cash + goldT + silverT + jewelry + crypto + recv + biz + other + investPortion;
-  var net = Math.max(0, assets - debts);
-  var zakat = net >= nisab ? net * 0.025 : 0;
+  var net    = Math.max(0, assets - debts);
+  var zakat  = (nisab > 0 && net >= nisab) ? net * 0.025 : 0;
 
-  // Additional
-  var cropValue = n('cropValue'), cropNisab = n('cropNisab');
-  var irr = document.getElementById('irrigation').value;
-  var ushr = (cropValue >= cropNisab && cropValue > 0) ? cropValue * (irr === 'natural' ? 0.1 : 0.05) : 0;
-  var rikaz = n('rikaz') * 0.20;
-  var sheepC = n('sheepCount'), sheepP = n('sheepPrice');
-  var sheepDue = calcSheepDue(sheepC);
-  var cattleC = n('cattleCount'), cattleP = n('cattlePrice');
-  var cattleResult = calcCattleDue(cattleC);
-  var fitrPeople = n('fitrPeople'), fitrAmount = n('fitrAmount');
-  var fitrTotal = fitrPeople * fitrAmount;
+  /* Additional */
+  var cropValue = getNum('cropValue');
+  var cropNisab = getNum('cropNisab');
+  var irrEl     = document.getElementById('irrigation');
+  var irrRate   = (irrEl && irrEl.value === 'artificial') ? 0.05 : 0.10;
+  /* Only apply ushr if both crop and crop nisab are > 0 and crop meets nisab */
+  var ushr = (cropValue > 0 && cropNisab > 0 && cropValue >= cropNisab) ? cropValue * irrRate : 0;
+
+  var rikazVal  = getNum('rikaz');
+  var rikaz     = rikazVal * 0.20;
+
+  var sheepCount  = getNum('sheepCount');
+  var sheepDue    = calcSheepDue(sheepCount);
+  var cattleCount = getNum('cattleCount');
+  var cattleResult = calcCattleDue(cattleCount);
+
+  var fitrPeople = getNum('fitrPeople');
+  var fitrAmount = getNum('fitrAmount');
+  var fitrTotal  = fitrPeople * fitrAmount;
+
   var grand = zakat + ushr + rikaz;
 
-  state = { cash, goldTrade:goldT, silverTrade:silverT, jewelryIncluded, jewelry, crypto,
-    receivables:recv, business:biz, other, investPortion, debts,
-    assets, net, nisab, zakat, ushr, rikaz, sheepCount:sheepC, sheepDue,
-    cattleCount:cattleC, cattleLabel:cattleResult.label,
-    fitrPeople, fitrAmount, fitrTotal, grand };
+  /* Save state for PDF and copy */
+  state = {
+    cash: cash, goldTrade: goldT, silverTrade: silverT,
+    jewelryIncluded: jewelryIncluded, jewelry: jewelry,
+    crypto: crypto, receivables: recv, business: biz,
+    other: other, investPortion: investPortion, debts: debts,
+    assets: assets, net: net, nisab: nisab, zakat: zakat,
+    ushr: ushr, rikaz: rikaz,
+    sheepCount: sheepCount, sheepDue: sheepDue,
+    cattleCount: cattleCount, cattleLabel: cattleResult.label,
+    fitrPeople: fitrPeople, fitrAmount: fitrAmount, fitrTotal: fitrTotal,
+    grand: grand
+  };
 
-  setVal('assets-out', money(assets));
-  setVal('net-out', money(net));
-  setVal('nisab-out', money(nisab));
-  setVal('zakat-out', money(zakat));
+  /* Update DOM */
+  setVal('assets-out', fmt(assets));
+  setVal('net-out',    fmt(net));
+  setVal('nisab-out',  fmt(nisab));
+  setVal('zakat-out',  fmt(zakat));
 
   var statusEl = document.getElementById('status-out');
-  if (nisab === 0) {
-    statusEl.textContent = 'Set a nisab threshold above to calculate.';
-    statusEl.className = 'result-status';
-  } else if (net < nisab) {
-    statusEl.textContent = 'Below nisab — no zakat on wealth due yet.';
-    statusEl.className = 'result-status';
-  } else {
-    statusEl.textContent = 'Above nisab — zakat on wealth is due. May Allah accept it. ☀️';
-    statusEl.className = 'result-status above';
+  if (statusEl) {
+    if (nisab === 0) {
+      statusEl.textContent = 'Set a nisab threshold to calculate.';
+      statusEl.className = 'res-status';
+    } else if (net < nisab) {
+      statusEl.textContent = 'Below nisab — no zakat on wealth due yet.';
+      statusEl.className = 'res-status';
+    } else {
+      statusEl.textContent = 'Above nisab — zakat is due. May Allah accept it. \u2604\uFE0F';
+      statusEl.className = 'res-status above';
+    }
   }
 
-  setVal('ushr-out', money(ushr));
-  setVal('rikaz-out', money(rikaz));
-  setVal('sheep-out', sheepDue > 0 ? sheepDue + ' head' : '0 head');
+  setVal('ushr-out',   fmt(ushr));
+  setVal('rikaz-out',  fmt(rikaz));
+  setVal('sheep-out',  sheepDue > 0 ? sheepDue + ' head' : '0 head');
   setVal('cattle-out', cattleResult.label);
-  setVal('fitr-out', money(fitrTotal));
-  setVal('grand-out', money(grand));
+  setVal('fitr-out',   fmt(fitrTotal));
+  setVal('grand-out',  fmt(grand));
 
-  // Progress bar: how many sections filled
-  var filled = [cash, goldT, silverT, crypto, biz, zakat].filter(function(v) { return v > 0; }).length;
-  document.getElementById('progFill').style.width = Math.min(100, (filled / 6) * 100) + '%';
+  /* Progress bar — tracks non-zero asset inputs */
+  var filled = [cash, goldT, silverT, crypto, biz, zakat].filter(function(x) { return x > 0; }).length;
+  var prog = document.getElementById('progFill');
+  if (prog) prog.style.width = Math.min(100, Math.round(filled / 6 * 100)) + '%';
 }
 
+/* Update a result span and trigger pop animation */
 function setVal(id, val) {
   var el = document.getElementById(id);
-  if (el.textContent !== val) {
-    el.textContent = val;
-    el.classList.remove('pop');
-    void el.offsetWidth;
-    el.classList.add('pop');
-  }
+  if (!el) return;
+  if (el.textContent === val) return;  /* skip if unchanged */
+  el.textContent = val;
+  /* Restart animation by removing class, forcing reflow, re-adding */
+  el.classList.remove('pop');
+  void el.offsetWidth;
+  el.classList.add('pop');
 }
 
-/* Listen to all inputs */
-document.querySelectorAll('input[type=number], input[type=date], select').forEach(function(el) {
-  el.addEventListener('input', recalc);
+/* Attach input listeners */
+document.querySelectorAll('input[type=number], select').forEach(function(el) {
+  el.addEventListener('input',  recalc);
   el.addEventListener('change', recalc);
 });
 
-/* ─────────────────── COPY SUMMARY ─────────────────── */
+/* ══════════════════════════════════════════════
+   COPY SUMMARY
+══════════════════════════════════════════════ */
 function copySummary() {
   var s = state;
-  if (!s.assets && !s.zakat) { showStatus('Enter your wealth details first.', false); return; }
-  var lines = [
-    'Zakat Summary — ' + new Date().toLocaleDateString(undefined, {year:'numeric',month:'long',day:'numeric'}),
-    '──────────────────────────────',
-    'Total zakatable wealth: ' + money(s.assets),
-    'Net after debts: ' + money(s.net),
-    'Nisab threshold: ' + money(s.nisab),
-    'Zakat on wealth (2.5%): ' + money(s.zakat),
+  var today = new Date().toLocaleDateString(undefined, { year:'numeric', month:'long', day:'numeric' });
+  var text = [
+    'Zakat Summary \u2014 ' + today,
+    '\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500',
+    'Total zakatable wealth : ' + fmt(s.assets || 0),
+    'Net after debts        : ' + fmt(s.net    || 0),
+    'Nisab threshold        : ' + fmt(s.nisab  || 0),
+    'Zakat on wealth (2.5%) : ' + fmt(s.zakat  || 0),
     '',
-    'Additional:',
-    'Produce (ʿushr): ' + money(s.ushr),
-    'Rikaz: ' + money(s.rikaz),
-    'Livestock (sheep/goats due): ' + s.sheepDue + ' head',
-    'Zakat al-Fitr: ' + money(s.fitrTotal),
+    'Additional obligations :',
+    '  Produce (\u02BFushr)       : ' + fmt(s.ushr     || 0),
+    '  Rikaz               : ' + fmt(s.rikaz    || 0),
+    '  Sheep / goats due   : ' + (s.sheepDue || 0) + ' head',
+    '  Zakat al-Fitr       : ' + fmt(s.fitrTotal || 0),
     '',
-    'Grand total (cash): ' + money(s.grand),
-    '──────────────────────────────',
-    'Generated by Dahr · Islamic companion app'
+    'Grand total (cash)     : ' + fmt(s.grand || 0),
+    '\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500',
+    'Generated by Dahr \u00B7 Available on Google Play'
   ].join('\n');
 
-  navigator.clipboard.writeText(lines).then(function() {
-    showStatus('Summary copied to clipboard! 📋', true);
-  }).catch(function() {
-    showStatus('Could not copy — try manually.', false);
-  });
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text)
+      .then(function() { showStatus('Summary copied! \uD83D\uDCCB'); })
+      .catch(function() { fallbackCopy(text); });
+  } else {
+    fallbackCopy(text);
+  }
 }
 
-/* ─────────────────── STATUS TOAST ─────────────────── */
-var statusTimer;
-function showStatus(msg, ok) {
-  var el = document.getElementById('pdf-status');
+function fallbackCopy(text) {
+  try {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none;top:0;left:0;';
+    document.body.appendChild(ta);
+    ta.focus(); ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showStatus('Summary copied!');
+  } catch(e) {
+    showStatus('Could not copy \u2014 try manually');
+  }
+}
+
+/* ══════════════════════════════════════════════
+   STATUS CHIP
+══════════════════════════════════════════════ */
+var _statusTimer;
+function showStatus(msg) {
+  var el = document.getElementById('statusChip');
+  if (!el) return;
   el.textContent = msg;
   el.classList.add('show');
-  clearTimeout(statusTimer);
-  statusTimer = setTimeout(function() { el.classList.remove('show'); }, 3500);
+  clearTimeout(_statusTimer);
+  _statusTimer = setTimeout(function() { el.classList.remove('show'); }, 3200);
 }
 
-/* ─────────────────── PDF ─────────────────── */
+/* ══════════════════════════════════════════════
+   PDF — trigger (handles iframe postMessage
+   vs. direct Capacitor vs. browser fallback)
+══════════════════════════════════════════════ */
 function triggerPDF() {
   var btn = document.getElementById('pdfBtn');
-  if (!window.jspdf) { showStatus('PDF library not loaded — check connection.', false); return; }
-  btn.disabled = true;
-  btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Generating…';
+  if (!btn) return;
 
+  if (!window.jspdf) {
+    showStatus('PDF library not loaded \u2014 check your connection');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = '\u23F3 Generating\u2026';
+
+  /* Safety net: never leave button disabled forever */
   var safetyTimer = setTimeout(function() {
     btn.disabled = false;
-    btn.innerHTML = '<i class="fa-regular fa-file-pdf"></i> Save PDF';
-    showStatus('Timed out. Please try again.', false);
+    btn.textContent = '\uD83D\uDCC4 Save PDF';
+    showStatus('Timed out. Please try again.');
   }, 15000);
 
   setTimeout(function() {
     try {
-      var doc = buildPDF();
+      var doc      = buildPDF();
       var fileName = 'zakat-' + Date.now() + '.pdf';
-      var base64Data = doc.output('datauristring').split(',')[1];
+      var b64      = doc.output('datauristring').split(',')[1];
 
       function done(msg) {
         clearTimeout(safetyTimer);
         btn.disabled = false;
-        btn.innerHTML = '<i class="fa-regular fa-file-pdf"></i> Save PDF';
-        if (msg) showStatus(msg, true);
+        btn.textContent = '\uD83D\uDCC4 Save PDF';
+        if (msg) showStatus(msg);
       }
 
-      // Always postMessage when inside iframe — parent has full Capacitor bridge
+      /* Always relay to parent when inside an iframe —
+         Capacitor Filesystem/Share only work in the top-level frame */
       if (window.parent !== window) {
-        window.parent.postMessage({ type: 'download-pdf', fileName: fileName, data: base64Data }, '*');
-        done('PDF generated — opening share sheet…');
-      } else {
-        var Cap = window.Capacitor;
-        if (Cap && Cap.isNativePlatform && Cap.isNativePlatform() && Cap.Plugins && Cap.Plugins.Filesystem && Cap.Plugins.Share) {
-          Cap.Plugins.Filesystem.writeFile({ path: fileName, data: base64Data, directory: 'CACHE' })
-            .then(function(result) { return Cap.Plugins.Share.share({ title:'Zakat Summary', url:result.uri, dialogTitle:'Save or share your zakat summary' }); })
-            .then(function() { done('PDF ready — choose where to save.'); })
-            .catch(function(err) { console.error(err); doc.save(fileName); done('PDF saved.'); });
-        } else {
-          doc.save(fileName);
-          done('PDF downloaded.');
-        }
+        window.parent.postMessage({ type:'download-pdf', fileName:fileName, data:b64 }, '*');
+        done('\uD83D\uDCC4 PDF ready \u2014 opening share sheet\u2026');
+        return;
       }
+
+      /* Top-level: try Capacitor direct */
+      var Cap = window.Capacitor;
+      if (Cap && typeof Cap.isNativePlatform === 'function' && Cap.isNativePlatform() &&
+          Cap.Plugins && Cap.Plugins.Filesystem && Cap.Plugins.Share) {
+        Cap.Plugins.Filesystem.writeFile({ path:fileName, data:b64, directory:'CACHE' })
+          .then(function(r) {
+            return Cap.Plugins.Share.share({
+              title:'Zakat Summary', url:r.uri,
+              dialogTitle:'Save or share your Zakat summary'
+            });
+          })
+          .then(function() { done('PDF ready \u2014 choose where to save'); })
+          .catch(function(e) {
+            console.warn('Native share failed:', e);
+            doc.save(fileName);
+            done('PDF saved');
+          });
+        return;
+      }
+
+      /* Browser fallback */
+      doc.save(fileName);
+      done('PDF downloaded');
+
     } catch(err) {
       clearTimeout(safetyTimer);
       console.error('PDF error:', err);
-      btn.disabled = false;
-      btn.innerHTML = '<i class="fa-regular fa-file-pdf"></i> Save PDF';
-      showStatus('Could not generate PDF. Please try again.', false);
+      if (btn) { btn.disabled = false; btn.textContent = '\uD83D\uDCC4 Save PDF'; }
+      showStatus('PDF generation failed \u2014 try again');
     }
-  }, 30);
+  }, 50);
 }
 
-/* ─────────────────── BUILD PDF ─────────────────── */
+/* ══════════════════════════════════════════════
+   BUILD PDF
+══════════════════════════════════════════════ */
 function buildPDF() {
   var jsPDF = window.jspdf.jsPDF;
-  var doc = new jsPDF({ unit:'mm', format:'a4' });
-  var pageWidth = doc.internal.pageSize.getWidth();
-  var marginX = 16;
-  var contentWidth = pageWidth - marginX * 2;
-  var emerald = [15,110,86], gold = [169,125,50];
-  var textDark = [32,31,29], textMuted = [107,106,100];
-  var bannerBg = [225,241,236];
+  var doc   = new jsPDF({ unit:'mm', format:'a4' });
+  var W     = doc.internal.pageSize.getWidth();
+  var mx    = 15;
+  var cw    = W - mx * 2;
+  var emerald  = [15, 110, 86];
+  var gold     = [169, 125, 50];
+  var darkText = [32, 31, 29];
+  var mutedText= [107, 106, 100];
+  var lightGreen = [225, 241, 236];
   var s = state;
 
-  // Header
-  doc.setFillColor.apply(doc, emerald);
-  doc.rect(0, 0, pageWidth, 34, 'F');
-  doc.setTextColor(255,255,255);
-  doc.setFont('helvetica','bold'); doc.setFontSize(20);
-  doc.text('Zakat Calculator', marginX, 15);
-  doc.setFont('helvetica','normal'); doc.setFontSize(10);
-  var today = new Date().toLocaleDateString(undefined, {year:'numeric',month:'long',day:'numeric'});
-  doc.text('Summary generated on ' + today, marginX, 23);
-  doc.setFontSize(8); doc.setTextColor(255,255,255,0.6);
-  doc.text('الزَّكَاة', pageWidth - marginX, 20, {align:'right'});
+  /* ── PAGE 1 HEADER ── */
+  doc.setFillColor(emerald[0], emerald[1], emerald[2]);
+  doc.rect(0, 0, W, 32, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(19);
+  doc.text('Zakat Calculator', mx, 14);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9.5);
+  var today = new Date().toLocaleDateString(undefined, { year:'numeric', month:'long', day:'numeric' });
+  doc.text('Generated on ' + today, mx, 23);
+  /* Sub-title right side */
+  doc.setFontSize(9);
+  doc.text('3rd Pillar of Islam', W - mx, 20, { align:'right' });
 
-  var y = 44;
-  doc.setTextColor.apply(doc, textDark);
+  var y = 40;
+  doc.setTextColor(darkText[0], darkText[1], darkText[2]);
 
-  // Disclaimer
-  doc.setFillColor.apply(doc, bannerBg);
-  doc.roundedRect(marginX, y, contentWidth, 14, 2, 2, 'F');
-  doc.setFontSize(8.5); doc.setTextColor.apply(doc, emerald);
-  doc.text('General estimate — consult a scholar or local zakat authority for your specific situation.', marginX+4, y+9);
-  y += 22;
+  /* ── DISCLAIMER BOX ── */
+  doc.setFillColor(lightGreen[0], lightGreen[1], lightGreen[2]);
+  doc.roundedRect(mx, y, cw, 13, 2, 2, 'F');
+  doc.setFontSize(8);
+  doc.setTextColor(emerald[0], emerald[1], emerald[2]);
+  doc.text('Estimate only \u2014 consult a scholar or local zakat authority for your specific situation.', mx + 4, y + 8.5);
+  y += 20;
 
-  // Section: Wealth
-  doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.setTextColor.apply(doc, emerald);
-  doc.text('Wealth Zakat', marginX, y); y += 7;
+  /* ── WEALTH SECTION ── */
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(12.5);
+  doc.setTextColor(emerald[0], emerald[1], emerald[2]);
+  doc.text('Wealth Zakat', mx, y);
+  y += 7;
 
   var wealthRows = [
-    ['Cash and bank savings', money(s.cash)],
-    ['Gold (bars, coins, trade)', money(s.goldTrade)],
-    ['Silver (bars, coins, trade)', money(s.silverTrade)],
-    ['Jewelry' + (s.jewelryIncluded ? '' : ' (excluded)'), money(s.jewelryIncluded ? s.jewelry : 0)],
-    ['Cryptocurrency', money(s.crypto)],
-    ['Money owed to you', money(s.receivables)],
-    ['Business inventory', money(s.business)],
-    ['Other assets', money(s.other)],
-    ['Investments (zakatable portion)', money(s.investPortion)],
-    ['Short-term debts (deducted)', '−' + money(s.debts)]
+    ['Cash and bank savings',           fmt(s.cash || 0)],
+    ['Gold (bars, coins, trade)',        fmt(s.goldTrade || 0)],
+    ['Silver (bars, coins, trade)',      fmt(s.silverTrade || 0)],
+    ['Jewelry' + (s.jewelryIncluded ? '' : ' (excluded)'), fmt(s.jewelryIncluded ? (s.jewelry||0) : 0)],
+    ['Cryptocurrency',                   fmt(s.crypto || 0)],
+    ['Money owed to you',                fmt(s.receivables || 0)],
+    ['Business inventory',               fmt(s.business || 0)],
+    ['Other assets',                     fmt(s.other || 0)],
+    ['Investments (zakatable portion)',  fmt(s.investPortion || 0)],
+    ['Short-term debts (deducted)',      '\u2212' + fmt(s.debts || 0)]
   ];
+
   doc.autoTable({
-    startY:y, margin:{left:marginX, right:marginX},
-    head:[['Item','Value']], body:wealthRows, theme:'plain',
-    styles:{font:'helvetica',fontSize:9.5,textColor:textDark,cellPadding:2.2},
-    headStyles:{fillColor:emerald,textColor:[255,255,255],fontStyle:'bold'},
-    alternateRowStyles:{fillColor:[246,244,238]},
-    columnStyles:{1:{halign:'right'}}
-  });
-  y = doc.lastAutoTable.finalY + 6;
-
-  // Wealth totals box
-  doc.setFillColor.apply(doc, bannerBg);
-  doc.roundedRect(marginX, y, contentWidth, 32, 2, 2, 'F');
-  doc.setFontSize(9.5); doc.setTextColor.apply(doc, textMuted); doc.setFont('helvetica','normal');
-  doc.text('Total zakatable wealth', marginX+5, y+7);
-  doc.text('Net wealth after debts', marginX+5, y+14);
-  doc.text('Nisab threshold in use', marginX+5, y+21);
-  doc.setTextColor.apply(doc, textDark);
-  doc.text(money(s.assets), pageWidth-marginX-5, y+7, {align:'right'});
-  doc.text(money(s.net), pageWidth-marginX-5, y+14, {align:'right'});
-  doc.text(money(s.nisab), pageWidth-marginX-5, y+21, {align:'right'});
-  doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.setTextColor.apply(doc, emerald);
-  doc.text('Zakat on wealth (2.5%)', marginX+5, y+29);
-  doc.text(money(s.zakat), pageWidth-marginX-5, y+29, {align:'right'});
-  y += 42;
-
-  // Section: Additional
-  if (y > 240) { doc.addPage(); y = 20; }
-  doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.setTextColor.apply(doc, gold);
-  doc.text('Additional Obligations', marginX, y); y += 7;
-
-  var addRows = [
-    ['Agricultural produce (ʿushr)', money(s.ushr)],
-    ['Rikaz (found treasure)', money(s.rikaz)],
-    ['Sheep / goats due', s.sheepCount > 0 ? (s.sheepDue + ' head') : '0'],
-    ['Zakat al-Fitr total', money(s.fitrTotal)]
-  ];
-  doc.autoTable({
-    startY:y, margin:{left:marginX, right:marginX},
-    head:[['Item','Value']], body:addRows, theme:'plain',
-    styles:{font:'helvetica',fontSize:9.5,textColor:textDark,cellPadding:2.2},
-    headStyles:{fillColor:gold,textColor:[255,255,255],fontStyle:'bold'},
-    alternateRowStyles:{fillColor:[250,246,238]},
-    columnStyles:{1:{halign:'right'}}
-  });
-  y = doc.lastAutoTable.finalY + 6;
-
-  doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.setTextColor.apply(doc, emerald);
-  doc.text('Grand total payable (cash)', marginX, y);
-  doc.text(money(s.grand), pageWidth-marginX, y, {align:'right'});
-  y += 6;
-  doc.setFont('helvetica','normal'); doc.setFontSize(8); doc.setTextColor.apply(doc, textMuted);
-  doc.text('Excludes livestock paid in kind and Zakat al-Fitr (shown separately).', marginX, y);
-  y += 14;
-
-  // Section: Asnaf
-  if (y > 230) { doc.addPage(); y = 20; }
-  doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.setTextColor.apply(doc, emerald);
-  doc.text('Who Receives Zakat', marginX, y); y += 7;
-
-  var asnaf = ['The poor (fuqara)','The needy (masakin)','Zakat administrators','New Muslims / those inclined','Freeing captives','Those in debt','In the cause of Allah','Stranded travelers'];
-  doc.autoTable({
-    startY:y, margin:{left:marginX, right:marginX},
-    body:asnaf.map(function(a,i) { return [String(i+1).padStart(2,'0'), a]; }),
-    theme:'plain',
-    styles:{font:'helvetica',fontSize:9.5,textColor:textDark,cellPadding:2.2},
-    columnStyles:{0:{cellWidth:12,textColor:gold,fontStyle:'bold'}}
+    startY: y, margin: { left: mx, right: mx },
+    head: [['Item', 'Value']], body: wealthRows, theme: 'plain',
+    styles: { font:'helvetica', fontSize:9.5, textColor:darkText, cellPadding:2.2 },
+    headStyles: { fillColor:emerald, textColor:[255,255,255], fontStyle:'bold' },
+    alternateRowStyles: { fillColor:[246, 244, 238] },
+    columnStyles: { 1: { halign:'right' } }
   });
   y = doc.lastAutoTable.finalY + 5;
-  doc.setFontSize(7.5); doc.setTextColor.apply(doc, textMuted);
-  doc.text('Eight categories named in the Quran, Surah al-Tawbah (9:60).', marginX, y);
 
-  // Footer on every page
+  /* Wealth totals summary box */
+  if (y + 34 > 280) { doc.addPage(); y = 16; }
+  doc.setFillColor(lightGreen[0], lightGreen[1], lightGreen[2]);
+  doc.roundedRect(mx, y, cw, 34, 2, 2, 'F');
+  doc.setFontSize(9); doc.setFont('helvetica', 'normal');
+  doc.setTextColor(mutedText[0], mutedText[1], mutedText[2]);
+  doc.text('Total zakatable wealth', mx + 5, y + 7);
+  doc.text('Net wealth after debts',  mx + 5, y + 14);
+  doc.text('Nisab threshold in use',  mx + 5, y + 21);
+  doc.setTextColor(darkText[0], darkText[1], darkText[2]);
+  doc.text(fmt(s.assets||0),  W - mx - 4, y + 7,  { align:'right' });
+  doc.text(fmt(s.net||0),     W - mx - 4, y + 14, { align:'right' });
+  doc.text(fmt(s.nisab||0),   W - mx - 4, y + 21, { align:'right' });
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(12);
+  doc.setTextColor(emerald[0], emerald[1], emerald[2]);
+  doc.text('Zakat on wealth (2.5%)', mx + 5, y + 30);
+  doc.text(fmt(s.zakat||0), W - mx - 4, y + 30, { align:'right' });
+  y += 42;
+
+  /* ── ADDITIONAL SECTION ── */
+  if (y + 40 > 270) { doc.addPage(); y = 16; }
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(12.5);
+  doc.setTextColor(gold[0], gold[1], gold[2]);
+  doc.text('Additional Obligations', mx, y);
+  y += 7;
+
+  var addRows = [
+    ['Agricultural produce (\u02BFushr)',  fmt(s.ushr || 0)],
+    ['Rikaz (found treasure)',            fmt(s.rikaz || 0)],
+    ['Sheep / goats due',                 (s.sheepCount||0) > 0 ? (s.sheepDue||0) + ' head' : '0'],
+    ['Zakat al-Fitr total',               fmt(s.fitrTotal || 0)]
+  ];
+  doc.autoTable({
+    startY: y, margin: { left:mx, right:mx },
+    head: [['Item', 'Value']], body: addRows, theme:'plain',
+    styles: { font:'helvetica', fontSize:9.5, textColor:darkText, cellPadding:2.2 },
+    headStyles: { fillColor:gold, textColor:[255,255,255], fontStyle:'bold' },
+    alternateRowStyles: { fillColor:[250, 246, 238] },
+    columnStyles: { 1:{ halign:'right' } }
+  });
+  y = doc.lastAutoTable.finalY + 5;
+
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(12);
+  doc.setTextColor(emerald[0], emerald[1], emerald[2]);
+  doc.text('Grand total payable (cash)', mx, y);
+  doc.text(fmt(s.grand||0), W - mx, y, { align:'right' });
+  y += 6;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(7.5);
+  doc.setTextColor(mutedText[0], mutedText[1], mutedText[2]);
+  doc.text('Excludes livestock paid in kind and Zakat al-Fitr (shown separately above).', mx, y);
+  y += 13;
+
+  /* ── ASNAF SECTION ── */
+  if (y + 50 > 270) { doc.addPage(); y = 16; }
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(12.5);
+  doc.setTextColor(emerald[0], emerald[1], emerald[2]);
+  doc.text('Who Receives Zakat', mx, y);
+  y += 7;
+
+  var asnafData = [
+    ['01', 'The poor (fuqara)'],       ['02', 'The needy (masakin)'],
+    ['03', 'Zakat workers'],           ['04', 'New Muslims'],
+    ['05', 'Freeing captives'],        ['06', 'Those in debt'],
+    ['07', 'Cause of Allah'],          ['08', 'Stranded travelers']
+  ];
+  doc.autoTable({
+    startY: y, margin: { left:mx, right:mx },
+    body: asnafData, theme:'plain',
+    styles: { font:'helvetica', fontSize:9.5, textColor:darkText, cellPadding:2.2 },
+    columnStyles: { 0:{ cellWidth:14, textColor:gold, fontStyle:'bold' } }
+  });
+  y = doc.lastAutoTable.finalY + 4;
+  doc.setFontSize(7.5);
+  doc.setFont('helvetica', 'italic');
+  doc.setTextColor(mutedText[0], mutedText[1], mutedText[2]);
+  doc.text('Eight categories from the Quran, Surah al-Tawbah (9:60).', mx, y);
+
+  /* ── FOOTER ON ALL PAGES ── */
   var totalPages = doc.internal.getNumberOfPages();
-  for (var i = 1; i <= totalPages; i++) {
-    doc.setPage(i);
-    doc.setDrawColor.apply(doc, [220,235,228]);
-    doc.setLineWidth(0.3);
-    doc.line(marginX, 282, pageWidth-marginX, 282);
-    doc.setFont('helvetica','bold'); doc.setFontSize(8.5); doc.setTextColor.apply(doc, emerald);
-    doc.text('🕌 Dahr', marginX, 287);
-    doc.setFont('helvetica','normal'); doc.setFontSize(7); doc.setTextColor.apply(doc, textMuted);
-    doc.text('Generated by Dahr · Available on Google Play Store', marginX+14, 287);
-    doc.setFont('helvetica','italic'); doc.setFontSize(7); doc.setTextColor(180,180,175);
-    doc.text('Your Islamic companion app', pageWidth/2, 287, {align:'center'});
-    doc.setFont('helvetica','normal'); doc.setFontSize(7.5); doc.setTextColor.apply(doc, textMuted);
-    doc.text('Page ' + i + ' of ' + totalPages, pageWidth-marginX, 287, {align:'right'});
+  for (var pg = 1; pg <= totalPages; pg++) {
+    doc.setPage(pg);
+    /* Divider line */
+    doc.setDrawColor(220, 235, 228);
+    doc.setLineWidth(0.25);
+    doc.line(mx, 281, W - mx, 281);
+    /* Brand name */
+    doc.setFont('helvetica', 'bold');
+    doc.setFontSize(8);
+    doc.setTextColor(emerald[0], emerald[1], emerald[2]);
+    doc.text('Dahr', mx, 286);
+    /* Sub-text */
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(6.5);
+    doc.setTextColor(mutedText[0], mutedText[1], mutedText[2]);
+    doc.text('Generated by Dahr \u00B7 Your Islamic companion \u00B7 Available on Google Play', mx + 9, 286);
+    /* Page number */
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(7);
+    doc.text('Page ' + pg + ' of ' + totalPages, W - mx, 286, { align:'right' });
   }
+
   return doc;
 }
 
-/* ─────────────────── INIT ─────────────────── */
+/* ══════════════════════════════════════════════
+   INIT
+══════════════════════════════════════════════ */
 recalc();
 updateHawl();
 </script>
