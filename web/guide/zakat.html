@@ -659,52 +659,60 @@
     btn.textContent = 'Generating…';
     statusEl.textContent = '';
 
+    // Safety net: re-enable button after 15 seconds no matter what
+    var safetyTimer = setTimeout(function () {
+      btn.disabled = false;
+      btn.textContent = original;
+      if (!statusEl.textContent) statusEl.textContent = 'Timed out. Please try again.';
+    }, 15000);
+
     setTimeout(function () {
       try {
         var doc = buildPDF();
         var fileName = 'zakat-summary-' + Date.now() + '.pdf';
         var base64Data = doc.output('datauristring').split(',')[1];
 
-        // --- Path 1: Direct Capacitor access (loaded as local same-origin asset) ---
-        var Cap = window.Capacitor;
-        if (Cap && Cap.isNativePlatform && Cap.isNativePlatform() && Cap.Plugins && Cap.Plugins.Filesystem && Cap.Plugins.Share) {
-          var Filesystem = Cap.Plugins.Filesystem;
-          var Share = Cap.Plugins.Share;
-          Filesystem.writeFile({ path: fileName, data: base64Data, directory: 'CACHE' })
-            .then(function (result) {
-              return Share.share({ title: 'Zakat Summary', url: result.uri, dialogTitle: 'Share or save your Zakat summary' });
-            })
-            .then(function () {
-              statusEl.textContent = 'PDF ready — choose where to save or share it.';
-            })
-            .catch(function (err) {
-              console.warn('Native share failed, trying postMessage fallback', err);
-              // If share sheet fails, try postMessage to parent
-              if (window.parent !== window) {
-                window.parent.postMessage({ type: 'download-pdf', fileName: fileName, data: base64Data }, '*');
-              } else {
-                doc.save(fileName);
-              }
-              statusEl.textContent = 'PDF saved.';
-            })
-            .finally(function () { btn.disabled = false; btn.textContent = original; });
+        function done(msg) {
+          clearTimeout(safetyTimer);
+          btn.disabled = false;
+          btn.textContent = original;
+          if (msg) statusEl.textContent = msg;
+        }
 
-        // --- Path 2: Inside cross-origin iframe — relay to parent via postMessage ---
-        } else if (window.parent !== window) {
+        // --- Path 1: Inside an iframe → always postMessage to parent.
+        //     Capacitor plugins only work reliably in the top-level window,
+        //     not inside iframe contexts, so we always delegate upward. ---
+        if (window.parent !== window) {
           window.parent.postMessage({ type: 'download-pdf', fileName: fileName, data: base64Data }, '*');
-          statusEl.textContent = 'PDF generated. Processing download…';
-          btn.disabled = false;
-          btn.textContent = original;
+          done('PDF generated. Processing download…');
 
-        // --- Path 3: Plain browser fallback ---
+        // --- Path 2: Running as standalone top-level page with Capacitor ---
         } else {
-          doc.save(fileName);
-          statusEl.textContent = 'PDF downloaded.';
-          btn.disabled = false;
-          btn.textContent = original;
+          var Cap = window.Capacitor;
+          if (Cap && Cap.isNativePlatform && Cap.isNativePlatform() &&
+              Cap.Plugins && Cap.Plugins.Filesystem && Cap.Plugins.Share) {
+            var Filesystem = Cap.Plugins.Filesystem;
+            var Share = Cap.Plugins.Share;
+            Filesystem.writeFile({ path: fileName, data: base64Data, directory: 'CACHE' })
+              .then(function (result) {
+                return Share.share({ title: 'Zakat Summary', url: result.uri, dialogTitle: 'Share or save your Zakat summary' });
+              })
+              .then(function () { done('PDF ready — choose where to save or share it.'); })
+              .catch(function (err) {
+                console.error('Native share error:', err);
+                doc.save(fileName);
+                done('PDF saved.');
+              });
+
+          // --- Path 3: Plain browser / desktop fallback ---
+          } else {
+            doc.save(fileName);
+            done('PDF downloaded.');
+          }
         }
 
       } catch (err) {
+        clearTimeout(safetyTimer);
         console.error('PDF generation error:', err);
         statusEl.textContent = 'Could not generate the PDF. Please try again.';
         btn.disabled = false;
