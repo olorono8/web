@@ -477,10 +477,9 @@ function openInIframe(targetUrl) {
   }
   const theme = document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
 
-  // If the URL points to one of our own guide HTML files on githack/github,
-  // serve it locally from the app's bundled assets instead.
-  // This eliminates CDN caching and gives the iframe full same-origin Capacitor access.
-  const ourGuidePattern = /raw\.githack\.com\/olorono8\/web\/[^/]+\/web\/guide\/([^?#]+\.html)/;
+  // If the URL points to our 'main' branch on githack, serve it locally from the app's bundled assets.
+  // This allows you to test other branches/URLs by changing the Firebase URL to a non-main branch.
+  const ourGuidePattern = /raw\.githack\.com\/olorono8\/web\/main\/web\/guide\/([^?#]+\.html)/;
   const localMatch = targetUrl.match(ourGuidePattern);
 
   let finalUrl;
