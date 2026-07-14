@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Qibla Compass</title>
+  <!-- Inline theme boot — runs before paint, same pattern as index.html -->
+  <script>
+  (function(){
+    var t = 'dark'; // default
+    try {
+      var g = localStorage.getItem('globalTheme');
+      if (g) t = g;
+      else { var q = localStorage.getItem('quranNightMode'); if (q) t = q === 'true' ? 'dark' : 'light'; }
+    } catch(e){}
+    // Also honour ?theme= URL param (sent by index.html iframe loader)
+    var m = location.search.match(/[?&]theme=(dark|light)/);
+    if (m) t = m[1];
+    document.documentElement.setAttribute('data-theme', t);
+  })();
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <div class="hdr" id="mainHeader">
+    <button class="tb-back" id="btnBack" onclick="if(window.parent!==window){window.parent.postMessage('close-iframe','*')}else{window.location.href='./index.html'}" aria-label="Go back">
+      <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+    </button>
+    <div style="display:flex; flex-direction:column; align-items:center; gap:3px; flex:1;">
+      <div class="hdr-title">QIBLA COMPASS</div>
+      <div class="hdr-status" id="status">Locating you…</div>
+    </div>
+    <!-- empty placeholder to balance back button -->
+    <div id="btnBackPlaceholder" style="width:clamp(26px, 6vw, 32px);"></div>
+  </div>
+  
+  <script>
+    if (location.search.includes('no-back')) {
+      document.getElementById('btnBack').style.display = 'none';
+      document.getElementById('btnBackPlaceholder').style.display = 'none';
+    }
+  </script>
+
+  <!-- SVG Compass Wheel -->
+  <div class="compass-wrap">
+    <svg id="compass-svg" viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+
+      <!-- Static outer rim -->
+      <circle cx="150" cy="150" r="148" fill="none" class="svg-rim1" stroke-width="1.5"/>
+      <circle cx="150" cy="150" r="145" fill="none" class="svg-rim2" stroke-width="1"/>
+
+      <!-- ══ ROTATING DISC ══ -->
+      <g id="disc">
+        <!-- Disc background -->
+        <circle cx="150" cy="150" r="140" class="svg-disc" stroke-width="1.5"/>
+
+        <!-- Inner decorative ring -->
+        <circle cx="150" cy="150" r="76" fill="none" class="svg-inner-ring" stroke-width="1.2"/>
+
+        <!-- Tick marks + cardinal labels drawn by JS -->
+
+        <!-- KAABA MARKER — JS sets rotation via kaabaG.style.transform -->
+        <g id="kaaba-g">
+
+          <!-- ══ KAABA: OUTSIDE the wheel rim ══ -->
+          <circle cx="150" cy="-6" r="19" class="kaaba-halo"/>
+          <text x="150" y="-6" text-anchor="middle" dominant-baseline="central"
+                font-size="20" class="no-sel">🕋</text>
+          <text x="150" y="15" text-anchor="middle" dominant-baseline="central"
+                class="kaaba-label no-sel"
+                font-size="7" font-weight="700"
+                font-family="system-ui,sans-serif" letter-spacing="0.12em">QIBLA</text>
+
+          <!-- ══ RING DOT LINE: inside disc, from rim toward centre ══ -->
+          <circle cx="150" cy="23"  r="4.5" class="ring-dot" stroke-width="3.5"/>
+          <circle cx="150" cy="39"  r="4.5" class="ring-dot" stroke-width="3.5"/>
+          <circle cx="150" cy="55"  r="4.5" class="ring-dot" stroke-width="3.5"/>
+          <circle cx="150" cy="71"  r="4.5" class="ring-dot" stroke-width="3.5"/>
+          <circle cx="150" cy="87"  r="4.5" class="ring-dot" stroke-width="3.5"/>
+          <circle cx="150" cy="103" r="4.5" class="ring-dot" stroke-width="3.5"/>
+          <circle cx="150" cy="119" r="4.5" class="ring-dot" stroke-width="3.5"/>
+          <circle cx="150" cy="135" r="4.5" class="ring-dot" stroke-width="3.5"/>
+
+        </g>
+      </g>
+      <!-- ══ END ROTATING DISC ══ -->
+
+      <!-- ══ FIXED LAYER — never rotates ══ -->
+
+      <!-- Outer alignment ring (turns gold when aligned) -->
+      <circle cx="150" cy="150" r="148" fill="none" stroke="#D4AF37" stroke-width="3"
+              id="align-ring" opacity="0" style="transition:opacity 0.4s"/>
+
+      <!-- ── Original teardrop pointer (downward, fixed at top, same path as before) ── -->
+      <!-- Round bulge extends above viewBox (overflow:visible), tip at y≈22 -->
+      <g transform="translate(133.5,-20.9) scale(0.33)" style="pointer-events:none">
+        <path d="M50 130 C25 95, 5 70, 5 50 A45 45 0 1 0 95 50 C95 70, 75 95, 50 130 Z"
+              class="teardrop-path" stroke-width="10" stroke-linejoin="round"/>
+      </g>
+
+      <!-- Centre hub: 3 stacked ring dots (original design) -->
+      <circle cx="150" cy="138" r="5" class="centre-dot" stroke-width="4"/>
+      <circle cx="150" cy="150" r="5" class="centre-dot" stroke-width="4"/>
+      <circle cx="150" cy="162" r="5" class="centre-dot" stroke-width="4"/>
+
+      <!-- ══ END FIXED LAYER ══ -->
+    </svg>
+  </div>
+
+  <!-- Aligned banner -->
+  <div class="aligned-msg" id="aligned-msg">✦ Facing Qibla — Allahu Akbar! ✦</div>
+
+  <!-- Info strip: 3 cells -->
+  <div class="info-strip">
+    <div class="info-cell">
+      <div class="ic-label">Distance</div>
+      <div class="ic-val" id="distance">–</div>
+      <div class="ic-unit">km to Kaaba</div>
+    </div>
+    <div class="ic-sep"></div>
+    <div class="info-cell">
+      <div class="ic-label">Qibla</div>
+      <div class="ic-val" id="qibla-deg">–</div>
+      <div class="ic-unit">° from North</div>
+    </div>
+    <div class="ic-sep"></div>
+    <div class="info-cell">
+      <div class="ic-label">Heading</div>
+      <div class="ic-val" id="heading-deg">–</div>
+      <div class="ic-unit" id="heading-dir">°</div>
+    </div>
+  </div>
+
+  <!-- Cardinal direction strip -->
+  <div class="dir-strip">
+    <div class="dir-cell" id="dir-n">
+      <div class="dc-arrow">↑</div>
+      <div class="dc-name">N</div>
+      <div class="dc-deg">0°</div>
+    </div>
+    <div class="dir-cell" id="dir-e">
+      <div class="dc-arrow">→</div>
+      <div class="dc-name">E</div>
+      <div class="dc-deg">90°</div>
+    </div>
+    <div class="dir-cell" id="dir-s">
+      <div class="dc-arrow">↓</div>
+      <div class="dc-name">S</div>
+      <div class="dc-deg">180°</div>
+    </div>
+    <div class="dir-cell" id="dir-w">
+      <div class="dc-arrow">←</div>
+      <div class="dc-name">W</div>
+      <div class="dc-deg">270°</div>
+    </div>
+  </div>
+
+  <button class="refs-btn" onclick="openDrawer()" aria-label="View Quran and Hadith references">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
+    Qur’an &amp; Hadith References
+  </button>
+
+  <!-- DRAWER OVERLAY -->
+  <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
+  <!-- DRAWER -->
+  <aside class="drawer" id="drawer" role="complementary" aria-label="Quran and Hadith references">
+    <div class="drawer-header">
+      <div class="drawer-title">
+        <div class="drawer-title-icon">📖</div>
+        <div>
+          <div style="font-size:10.5px;color:var(--t3);font-weight:500">Qur’an &amp; Hadith</div>
+          <div style="font-size:14px">Qibla Direction</div>
+        </div>
+      </div>
+      <button class="drawer-close" onclick="closeDrawer()" aria-label="Close references">✕</button>
+    </div>
+    <div class="drawer-scroll" id="drawerContent">
+      <div class="ref-card quran">
+        <div class="ref-card-header">
+          <span class="ref-type-badge quran">📖 Qur'an</span>
+          <span class="ref-source">Al-Baqarah 2:144</span>
+        </div>
+        <div class="ref-arabic">فَوَلِّ وَجْهَكَ شَطْرَ الْمَسْجِدِ الْحَرَامِ ۚ وَحَيْثُ مَا كُنتُمْ فَوَلُّوا وُجُوهَكُمْ شَطْرَهُ</div>
+        <div class="ref-translation">"So turn your face toward al-Masjid al-Haram. And wherever you [believers] are, turn your faces toward it [in prayer]."</div>
+        <div class="ref-note">This verse established the Kaaba in Mecca as the eternal Qibla for Muslims across the world.</div>
+      </div>
+      <div class="ref-card hadith">
+        <div class="ref-card-header">
+          <span class="ref-type-badge hadith">📜 Hadith</span>
+          <span class="ref-source">Bukhari & Muslim</span>
+        </div>
+        <div class="ref-arabic">إِذَا قُمْتَ إِلَى الصَّلَاةِ فَأَسْبِغِ الْوُضُوءَ، ثُمَّ اسْتَقْبِلِ الْقِبْلَةَ فَكَبِّرْ</div>
+        <div class="ref-translation">"When you stand up for prayer, perform Wudu perfectly, then face the Qibla and say: Allahu Akbar."</div>
+        <div class="ref-note">Facing the Qibla is a fundamental condition for the validity of the obligatory prayers.</div>
+      </div>
+    </div>
+  </aside>
+
+  <script src="app.js"></script>
+</body>
+</html>
