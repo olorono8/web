@@ -658,13 +658,13 @@ function renderData(data) {
 // Fallback data removed to ensure strict Firebase loading.
 const CACHE_KEY = 'guideData_v4';  // bump version to wipe old stale cache
 
-function resetFirebaseData() {
+window.resetFirebaseData = function() {
   localStorage.removeItem(CACHE_KEY);
   if(typeof showToast === 'function') {
     showToast('Refreshing...', 'Fetching fresh data from Firebase', '🔄', '');
   }
   loadDynamicContent();
-}
+};
 
 function loadDynamicContent() {
   // Wipe any old cache keys from previous versions
