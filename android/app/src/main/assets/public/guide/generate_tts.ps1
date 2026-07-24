@@ -10,9 +10,8 @@ $items = @(
     @("wa_ashadu_en", "and I bear witness"),
     @("anna_en", "that"),
     @("muhammadan_en", "Muhammad"),
-    @("abduhu_en", "is His servant"),
-    @("rasulullah_en", "and His Messenger"),
-    @("full_shahada_en", "I bear witness that there is no deity worthy of worship except Allah, and I bear witness that Muhammad is His servant and His Messenger.")
+    @("rasulullah_en", "is the Messenger of Allah"),
+    @("full_shahada_en", "I bear witness that there is no deity worthy of worship except Allah, and I bear witness that Muhammad is the Messenger of Allah.")
 )
 
 foreach ($item in $items) {

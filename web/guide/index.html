@@ -419,7 +419,7 @@ function toggleTheme(){
   isDark=!isDark;
   applyTheme();
   localStorage.setItem('globalTheme', isDark ? 'dark' : 'light');
-  localStorage.setItem('quranNightMode', (!isDark).toString());
+  localStorage.setItem('quranNightMode', isDark.toString());
   const iframe = document.getElementById('contentIframe');
   if (iframe && iframe.contentWindow) {
     iframe.contentWindow.postMessage({ type: 'set-theme', theme: isDark ? 'dark' : 'light' }, '*');
@@ -432,7 +432,7 @@ document.getElementById('si').addEventListener('input', function(e) {
   const items = document.querySelectorAll('.pillar, .topic-card, .cat');
   
   items.forEach(item => {
-    const text = item.innerText.toLowerCase();
+    const text = item.textContent.toLowerCase();
     item.style.display = text.includes(term) ? '' : 'none';
   });
   const secLabels = document.querySelectorAll('.sec-label');
